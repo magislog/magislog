@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>BLACKJACK</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+:root {
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --accent: #1a6fd4;
+  --accent2: #1558a8;
+  --high: #d94040;
+  --text: #1a1a2e;
+  --muted: #999;
+  --border: #c5d3ea;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 12px 32px;
+  overflow-x: hidden;
+}
+
+h1 { font-family:'Bebas Neue',cursive; font-size:clamp(2.2rem,9vw,3.5rem); letter-spacing:.18em; color:var(--accent); margin-bottom:2px; }
+.subtitle { font-size:.65rem; color:var(--muted); letter-spacing:.2em; margin-bottom:14px; }
+
+#difficulty-screen { display:flex; flex-direction:column; align-items:center; gap:12px; width:100%; max-width:360px; animation:fadeIn .4s ease; }
+.diff-label { font-size:.7rem; letter-spacing:.2em; color:var(--muted); }
+.diff-btn { width:100%; padding:16px 20px; border:2px solid var(--border); border-radius:var(--radius); background:var(--surface); color:var(--text); font-family:'Noto Sans JP',sans-serif; font-size:.95rem; cursor:pointer; transition:all .2s; display:flex; justify-content:space-between; align-items:center; }
+.diff-btn:hover,.diff-btn:active { border-color:var(--accent); background:#eef5ff; }
+.diff-btn .dn { font-weight:700; font-size:1rem; color:var(--accent); }
+.diff-btn .dd { font-size:.72rem; color:var(--muted); }
+
+#game-screen { display:none; flex-direction:column; align-items:center; width:100%; max-width:400px; gap:10px; animation:fadeIn .3s ease; }
+
+.score-bar { display:flex; gap:10px; width:100%; }
+.score-chip { flex:1; text-align:center; padding:8px 4px; border-radius:8px; background:var(--surface); font-size:.7rem; color:var(--muted); border:1px solid var(--border); }
+.score-chip span { display:block; font-family:'Bebas Neue',cursive; font-size:1.5rem; letter-spacing:.1em; }
+.score-chip.win span { color:var(--accent); }
+.score-chip.lose span { color:var(--high); }
+.score-chip.draw span { color:var(--muted); }
+
+.deck-info { font-size:.7rem; color:var(--muted); }
+
+/* ディーラーキャラ */
+.dealer-area { width:100%; background:#eef5ff; border-radius:var(--radius); border:1.5px solid var(--border); padding:12px 14px; display:flex; align-items:center; gap:12px; }
+.dealer-face { width:54px; height:54px; border-radius:50%; background:#fff; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.9rem; flex-shrink:0; box-shadow:0 2px 8px rgba(26,111,212,.15); transition:transform .2s; }
+.dealer-face.happy { animation:dealerHappy .4s ease; }
+.dealer-face.sad { animation:dealerSad .5s ease; }
+.dealer-face.thinking { animation:dealerThink .6s ease infinite alternate; }
+.dealer-info { flex:1; }
+.dealer-name { font-size:.62rem; letter-spacing:.15em; color:var(--accent); font-weight:700; margin-bottom:3px; }
+.dealer-speech { font-size:.78rem; color:var(--text); line-height:1.45; min-height:34px; }
+.dealer-score-badge { font-family:'Bebas Neue',cursive; font-size:1.1rem; color:var(--accent2); background:#fff; padding:3px 10px; border-radius:20px; border:1.5px solid var(--border); flex-shrink:0; }
+
+/* カードテーブル */
+.hand-box { width:100%; background:var(--surface); border-radius:var(--radius); border:1.5px solid var(--border); padding:10px 14px; }
+.hand-label { font-size:.65rem; letter-spacing:.15em; color:var(--muted); font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.score-tag { font-family:'Bebas Neue',cursive; font-size:1rem; color:var(--text); letter-spacing:.05em; }
+.cards-row { display:flex; gap:7px; flex-wrap:wrap; min-height:70px; align-items:center; }
+
+/* カード */
+.card { width:48px; height:70px; border-radius:7px; border:1.5px solid var(--border); background:var(--surface); display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.1); position:relative; }
+.card.deal-anim { animation:cardSlide .35s cubic-bezier(.17,.67,.35,1.2) forwards; }
+.card.red { color:var(--high); }
+.card.black { color:var(--text); }
+.card-suit { font-size:.62rem; position:absolute; top:4px; left:5px; opacity:.7; }
+.card-num { font-family:'Bebas Neue',cursive; font-size:1.4rem; line-height:1; }
+.card.hidden { background:linear-gradient(135deg,#1a6fd4,#1558a8); border-color:var(--accent2); }
+.card.hidden::after { content:'?'; font-family:'Bebas Neue',cursive; font-size:2rem; color:rgba(255,255,255,.55); position:absolute; }
+
+/* 結果メッセージ */
+.result-msg { text-align:center; font-size:1rem; font-weight:700; letter-spacing:.08em; min-height:26px; }
+.result-msg.win { color:var(--accent); }
+.result-msg.lose { color:var(--high); }
+.result-msg.draw { color:var(--muted); }
+
+/* 確率 */
+.prob-area { width:100%; background:var(--surface); border-radius:var(--radius); border:1.5px solid var(--border); padding:12px 14px; opacity:0; pointer-events:none; transition:opacity .4s; }
+.prob-area.visible { opacity:1; pointer-events:auto; }
+.prob-title { font-size:.65rem; color:var(--muted); letter-spacing:.12em; margin-bottom:10px; font-weight:700; }
+.prob-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+.prob-row:last-child { margin-bottom:0; }
+.prob-label { font-size:.7rem; width:72px; font-weight:700; flex-shrink:0; }
+.prob-label.burst { color:var(--high); }
+.prob-label.safe { color:var(--accent); }
+.prob-label.bj { color:#e8a020; }
+.prob-label.down { color:#9b59b6; }
+.prob-bar-fill.down { background:#9b59b6; }
+.prob-bar-wrap { flex:1; height:7px; background:#e8edf5; border-radius:4px; overflow:hidden; }
+.prob-bar-fill { height:100%; border-radius:4px; transition:width .6s ease; width:0%; }
+.prob-bar-fill.burst { background:var(--high); }
+.prob-bar-fill.safe { background:var(--accent); }
+.prob-bar-fill.bj { background:#e8a020; }
+.prob-pct { font-family:'Bebas Neue',cursive; font-size:.85rem; width:40px; text-align:right; color:var(--muted); }
+.verdict { margin-top:10px; font-size:.72rem; color:var(--muted); padding-top:8px; border-top:1px solid var(--border); line-height:1.5; }
+.verdict.correct { color:var(--accent); font-weight:700; }
+.verdict.risky { color:#e8a020; font-weight:700; }
+.verdict.unlucky { color:#2a9d5c; font-weight:700; }
+
+/* ボタン */
+.btn-row { display:flex; gap:10px; width:100%; }
+.btn { flex:1; padding:15px; border:none; border-radius:var(--radius); font-family:'Bebas Neue',cursive; font-size:1.2rem; letter-spacing:.12em; cursor:pointer; transition:all .2s; }
+.btn:disabled { opacity:.3; cursor:not-allowed; }
+.btn:not(:disabled):active { transform:scale(.97); }
+.btn-hit { background:var(--high); color:#fff; box-shadow:0 4px 16px rgba(217,64,64,.3); }
+.btn-stand { background:var(--accent); color:#fff; box-shadow:0 4px 16px rgba(26,111,212,.3); }
+.btn-hit:not(:disabled):hover,.btn-stand:not(:disabled):hover { filter:brightness(1.1); }
+.btn-next { background:var(--accent); color:#fff; font-size:1rem; }
+.btn-reset { background:var(--surface); color:var(--muted); border:1px solid var(--border); font-size:.85rem; flex:0 0 auto; padding:15px 18px; }
+
+/* 結果画面 */
+#result-screen { display:none; flex-direction:column; align-items:center; gap:14px; width:100%; max-width:360px; animation:fadeIn .5s ease; }
+.result-title { font-family:'Bebas Neue',cursive; font-size:clamp(2.5rem,10vw,4rem); letter-spacing:.15em; color:var(--accent); }
+.result-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; }
+.result-card { background:var(--surface); border-radius:var(--radius); padding:14px 8px; text-align:center; border:1.5px solid var(--border); }
+.rc-num { font-family:'Bebas Neue',cursive; font-size:2.2rem; letter-spacing:.08em; }
+.rc-label { font-size:.68rem; color:var(--muted); margin-top:2px; }
+.result-card.win .rc-num { color:var(--accent); }
+.result-card.lose .rc-num { color:var(--high); }
+.result-card.draw .rc-num { color:var(--muted); }
+.btn-restart { width:100%; padding:16px; background:var(--accent); color:#fff; border:none; border-radius:var(--radius); font-family:'Bebas Neue',cursive; font-size:1.3rem; letter-spacing:.15em; cursor:pointer; transition:all .2s; }
+.btn-restart:hover { filter:brightness(1.1); }
+
+/* 勝敗バナー */
+#win-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:900; align-items:center; justify-content:center; pointer-events:none; }
+#win-overlay.show { display:flex; }
+.win-banner { font-family:'Bebas Neue',cursive; font-size:clamp(3.5rem,18vw,7rem); letter-spacing:.2em; text-align:center; animation:winPop .55s cubic-bezier(.17,.67,.35,1.4) forwards; opacity:0; }
+.win-banner.win { color:#1a6fd4; text-shadow:0 4px 30px rgba(26,111,212,.4); }
+.win-banner.lose { color:#d94040; text-shadow:0 4px 30px rgba(217,64,64,.4); }
+.win-banner.draw { color:#888; }
+.win-banner.bj { color:#e8a020; text-shadow:0 0 40px rgba(232,160,32,.7),0 4px 20px rgba(0,0,0,.2); }
+
+#confetti-canvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999; }
+
+/* アニメーション */
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes cardSlide { from{opacity:0;transform:translateY(-28px) rotate(-8deg) scale(.8)} to{opacity:1;transform:translateY(0) rotate(0) scale(1)} }
+@keyframes dealerHappy { 0%{transform:scale(1)} 40%{transform:scale(1.3) rotate(12deg)} 70%{transform:scale(.95) rotate(-5deg)} 100%{transform:scale(1) rotate(0)} }
+@keyframes dealerSad { 0%{transform:translateY(0)} 30%{transform:translateY(-5px)} 60%{transform:translateY(3px)} 100%{transform:translateY(0)} }
+@keyframes dealerThink { from{transform:rotate(-6deg)} to{transform:rotate(6deg)} }
+@keyframes winPop { 0%{opacity:0;transform:scale(.2)} 60%{opacity:1;transform:scale(1.25)} 80%{transform:scale(.92)} 100%{opacity:1;transform:scale(1)} }
+@keyframes flashBg { 0%{background:var(--bg)} 25%{background:#d6e8ff} 100%{background:var(--bg)} }
+@keyframes flashBgRed { 0%{background:var(--bg)} 25%{background:#ffdede} 100%{background:var(--bg)} }
+body.flash-win { animation:flashBg .5s ease forwards; }
+body.flash-lose { animation:flashBgRed .5s ease forwards; }
+</style>
+</head>
+<body>
+
+<h1>BLACKJACK</h1>
+<p class="subtitle">PROBABILITY TRAINING GAME</p>
+
+<canvas id="confetti-canvas"></canvas>
+<div id="win-overlay"><div class="win-banner" id="win-banner">WIN!</div></div>
+
+<div id="difficulty-screen">
+  <p class="diff-label">DIFFICULTY</p>
+  <button class="diff-btn" onclick="startGame(1)"><span class="dn">EASY</span><span class="dd">易しい　1デッキ（52枚）</span></button>
+  <button class="diff-btn" onclick="startGame(2)"><span class="dn">NORMAL</span><span class="dd">普通　2デッキ（104枚）</span></button>
+  <button class="diff-btn" onclick="startGame(3)"><span class="dn">HARD</span><span class="dd">難しい　3デッキ（156枚）</span></button>
+</div>
+
+<div id="game-screen">
+  <div class="score-bar">
+    <div class="score-chip win"><span id="s-win">0</span>勝ち</div>
+    <div class="score-chip lose"><span id="s-lose">0</span>負け</div>
+    <div class="score-chip draw"><span id="s-draw">0</span>引き分け</div>
+  </div>
+  <div class="deck-info" id="deck-info">残り 48 / 52 枚</div>
+
+  <div class="dealer-area">
+    <div class="dealer-face" id="dealer-face">🎩</div>
+    <div class="dealer-info">
+      <div class="dealer-name">DEALER · VICTOR</div>
+      <div class="dealer-speech" id="dealer-speech">さあ、始めましょう。幸運を祈りますよ。</div>
+    </div>
+    <div class="dealer-score-badge" id="dealer-score-badge">?</div>
+  </div>
+
+  <div class="hand-box">
+    <div class="hand-label">DEALER'S HAND</div>
+    <div class="cards-row" id="dealer-cards"></div>
+  </div>
+
+  <div class="hand-box">
+    <div class="hand-label">YOUR HAND <span class="score-tag" id="player-score">0</span></div>
+    <div class="cards-row" id="player-cards"></div>
+  </div>
+
+  <div class="result-msg" id="result-msg"></div>
+
+  <div class="prob-area" id="prob-area">
+    <div class="prob-title">▌ あの選択は正しかったか？</div>
+    <div class="prob-row">
+      <span class="prob-label burst">バースト確率</span>
+      <div class="prob-bar-wrap"><div class="prob-bar-fill burst" id="bar-burst"></div></div>
+      <span class="prob-pct" id="pct-burst">-</span>
+    </div>
+    <div class="prob-row">
+      <span class="prob-label down">スコア低下</span>
+      <div class="prob-bar-wrap"><div class="prob-bar-fill down" id="bar-down"></div></div>
+      <span class="prob-pct" id="pct-down">-</span>
+    </div>
+    <div class="prob-row">
+      <span class="prob-label safe">安全に引ける</span>
+      <div class="prob-bar-wrap"><div class="prob-bar-fill safe" id="bar-safe"></div></div>
+      <span class="prob-pct" id="pct-safe">-</span>
+    </div>
+    <div class="prob-row">
+      <span class="prob-label bj">21到達</span>
+      <div class="prob-bar-wrap"><div class="prob-bar-fill bj" id="bar-bj"></div></div>
+      <span class="prob-pct" id="pct-bj">-</span>
+    </div>
+    <div class="verdict" id="verdict"></div>
+  </div>
+
+  <div class="btn-row" id="action-btns">
+    <button class="btn btn-hit" id="btn-hit" onclick="playerHit()">HIT ▲</button>
+    <button class="btn btn-stand" id="btn-stand" onclick="playerStand()">STAND ■</button>
+  </div>
+  <div class="btn-row" id="next-btn-row" style="display:none;">
+    <button class="btn btn-next" onclick="nextRound()">NEXT ROUND ▶</button>
+    <button class="btn btn-reset" onclick="resetGame()">RESET</button>
+  </div>
+</div>
+
+<div id="result-screen">
+  <div class="result-title">GAME OVER</div>
+  <div class="result-grid">
+    <div class="result-card win"><div class="rc-num" id="r-win">0</div><div class="rc-label">勝ち</div></div>
+    <div class="result-card lose"><div class="rc-num" id="r-lose">0</div><div class="rc-label">負け</div></div>
+    <div class="result-card draw"><div class="rc-num" id="r-draw">0</div><div class="rc-label">引き分け</div></div>
+  </div>
+  <button class="btn-restart" onclick="resetGame()">PLAY AGAIN</button>
+</div>
+
+<script>
+const SUITS=['♠','♥','♦','♣'], RED_SUITS=['♥','♦'];
+const VALUES=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+
+const LINES={
+  start:['さあ、始めましょう。幸運を祈りますよ。','どうぞ。いい手が来るといいですね。','準備はよろしいですか？'],
+  hit:['なるほど。引きますか。','勇気ありますね。','どうぞ。'],
+  stand:['スタンドですね。では私の番です。','賢明な判断かもしれません。'],
+  playerBurst:['あらら、バーストですね。','残念でした。'],
+  dealerBurst:['しまった…私のバーストです。','お見事です。'],
+  playerWin:['お見事です。','やられました。'],
+  playerLose:['私の勝ちです。','また挑戦してください。'],
+  push:['引き分けですね。','互角でしたね。'],
+  bj:['ブラックジャック！おめでとうございます！','これは見事！'],
+};
+
+function say(key){ const l=LINES[key]||LINES.start; document.getElementById('dealer-speech').textContent=l[Math.floor(Math.random()*l.length)]; }
+
+function emotion(type){
+  const f=document.getElementById('dealer-face');
+  const map={normal:'🎩',thinking:'🤔',happy:'😄',sad:'😔',surprised:'😲',cool:'😎'};
+  f.className='dealer-face';
+  f.textContent=map[type]||'🎩';
+  void f.offsetWidth;
+  if(type==='happy') f.classList.add('happy');
+  else if(type==='sad') f.classList.add('sad');
+  else if(type==='thinking') f.classList.add('thinking');
+}
+
+let deck=[],playerHand=[],dealerHand=[];
+let score={win:0,lose:0,draw:0};
+let numDecks=1,roundOver=false,lastAction=null,probSnapshot=null;
+
+function buildDeck(n){ const d=[]; for(let i=0;i<n;i++) for(const s of SUITS) for(const v of VALUES) d.push({suit:s,value:v}); return shuffle(d); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function pt(v){ if(v==='A') return 11; if(['J','Q','K'].includes(v)) return 10; return parseInt(v); }
+function total(h){ let t=0,a=0; for(const c of h){t+=pt(c.value);if(c.value==='A')a++;} while(t>21&&a>0){t-=10;a--;} return t; }
+function isBurst(h){ return total(h)>21; }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+function calcProb(hand){
+  const rem=deck.length;
+  if(!rem) return{burst:'0.0',down:'0.0',safe:'0.0',bj:'0.0'};
+  const cur=total(hand);
+  let b=0,d=0,s=0,j=0;
+  for(const c of deck){
+    const t=total([...hand,c]);
+    if(t>21) b++;
+    else if(t===21) j++;
+    else if(t<cur) d++;  // スコアが現在より下がる
+    else s++;            // 安全に引けてスコアも維持/上昇
+  }
+  return{burst:(b/rem*100).toFixed(1),down:(d/rem*100).toFixed(1),safe:(s/rem*100).toFixed(1),bj:(j/rem*100).toFixed(1)};
+}
+
+function startGame(n){
+  numDecks=n; deck=buildDeck(n); score={win:0,lose:0,draw:0};
+  document.getElementById('difficulty-screen').style.display='none';
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('game-screen').style.display='flex';
+  dealNewRound();
+}
+
+async function dealNewRound(){
+  roundOver=false; lastAction=null; probSnapshot=null;
+  playerHand=[]; dealerHand=[];
+  if(deck.length<10) deck=buildDeck(numDecks);
+  emotion('normal'); say('start');
+  updateUI(); hideProbArea(); showActionBtns();
+  document.getElementById('result-msg').textContent='';
+  document.getElementById('result-msg').className='result-msg';
+  document.getElementById('dealer-score-badge').textContent='?';
+  document.getElementById('dealer-cards').innerHTML='';
+  document.getElementById('player-cards').innerHTML='';
+  document.getElementById('player-score').textContent='0';
+
+  await deal('player'); await sleep(180);
+  await deal('dealer',false); await sleep(180);
+  await deal('player'); await sleep(180);
+  await deal('dealer',true);
+
+  if(total(playerHand)===21) setTimeout(()=>endRound('bj'),400);
+}
+
+async function deal(target,hidden=false){
+  const c=deck.shift();
+  if(target==='player'){
+    playerHand.push(c);
+    addCard('player-cards',c,false);
+    document.getElementById('player-score').textContent=total(playerHand);
+  } else {
+    dealerHand.push(c);
+    addCard('dealer-cards',c,hidden);
+  }
+  updateDeckInfo();
+}
+
+function addCard(id,c,hidden){
+  const div=document.createElement('div');
+  div.className='card deal-anim '+(hidden?'hidden':(RED_SUITS.includes(c.suit)?'red':'black'));
+  if(!hidden){
+    const s=document.createElement('span'); s.className='card-suit'; s.textContent=c.suit;
+    const n=document.createElement('span'); n.className='card-num'; n.textContent=c.value;
+    div.appendChild(s); div.appendChild(n);
+  }
+  document.getElementById(id).appendChild(div);
+}
+
+function revealDealer(){
+  document.getElementById('dealer-cards').innerHTML='';
+  for(const c of dealerHand) addCard('dealer-cards',c,false);
+  document.getElementById('dealer-score-badge').textContent=total(dealerHand);
+}
+
+async function playerHit(){
+  if(roundOver) return;
+  lastAction='hit'; probSnapshot=calcProb(playerHand);
+  emotion('thinking'); say('hit');
+  await deal('player');
+  if(isBurst(playerHand)){ emotion('happy'); say('playerBurst'); endRound('player-burst'); }
+  else if(total(playerHand)===21) endRound('player-21');
+}
+
+async function playerStand(){
+  if(roundOver) return;
+  lastAction='stand'; probSnapshot=calcProb(playerHand);
+  emotion('thinking'); say('stand');
+  await sleep(400); revealDealer();
+  while(total(dealerHand)<17){ await sleep(500); await deal('dealer',false); revealDealer(); }
+  const pt2=total(playerHand), dt=total(dealerHand);
+  if(isBurst(dealerHand)) endRound('dealer-burst');
+  else if(pt2>dt) endRound('player-win');
+  else if(pt2<dt) endRound('dealer-win');
+  else endRound('push');
+}
+
+function endRound(reason){
+  roundOver=true;
+  const m=document.getElementById('result-msg');
+  let gr;
+  const map={
+    bj:       ['win','★ ブラックジャック！','bj','BJ!!',true,'surprised','bj'],
+    'player-burst':['lose','✗ バーストしました…','lose','BURST',false,'happy','playerBurst'],
+    'player-21':   ['win','✓ 21！','win','21!',true,'surprised','playerWin'],
+    'dealer-burst':['win','✓ ディーラーバースト！','win','WIN!',true,'sad','dealerBurst'],
+    'player-win':  ['win','✓ 勝ち！','win','WIN!',true,'sad','playerWin'],
+    'dealer-win':  ['lose','✗ 負け','lose','LOSE',false,'cool','playerLose'],
+    push:          ['draw','— 引き分け','draw','DRAW',false,'normal','push'],
+  };
+  const [result,msg,bannerType,bannerText,confetti,emo,speechKey]=map[reason];
+  gr=result;
+  m.textContent=msg; m.className='result-msg '+result;
+  emotion(emo); say(speechKey);
+  showBanner(bannerType,bannerText);
+  if(confetti) startConfetti();
+  if(result==='win') score.win++; else if(result==='lose') score.lose++; else score.draw++;
+  updateScoreUI();
+  revealDealer();
+  if(probSnapshot) setTimeout(()=>showProb(gr,reason),700);
+  showNextBtn();
+}
+
+function showBanner(type,text){
+  const o=document.getElementById('win-overlay'), b=document.getElementById('win-banner');
+  b.className='win-banner '+type; b.textContent=text;
+  o.classList.add('show');
+  document.body.className=''; void document.body.offsetWidth;
+  if(type==='win'||type==='bj') document.body.classList.add('flash-win');
+  else if(type==='lose') document.body.classList.add('flash-lose');
+  setTimeout(()=>{ o.classList.remove('show'); document.body.className=''; showNextBtn(); },1200);
+}
+
+function showProb(gr,reason){
+  const p=probSnapshot, bp=parseFloat(p.burst);
+  document.getElementById('pct-burst').textContent=p.burst+'%';
+  document.getElementById('pct-down').textContent=p.down+'%';
+  document.getElementById('pct-safe').textContent=p.safe+'%';
+  document.getElementById('pct-bj').textContent=p.bj+'%';
+  setTimeout(()=>{
+    document.getElementById('bar-burst').style.width=p.burst+'%';
+    document.getElementById('bar-down').style.width=p.down+'%';
+    document.getElementById('bar-safe').style.width=p.safe+'%';
+    document.getElementById('bar-bj').style.width=p.bj+'%';
+  },50);
+  const v=document.getElementById('verdict'), safer=bp<50;
+  if(lastAction==='hit'){
+    if(reason==='player-burst'){
+      v.textContent=safer?`ヒットは正しい判断だった（バースト確率${p.burst}%）。運が悪かっただけ！`:`バースト確率${p.burst}%でのヒットはリスクが高かった。スタンドが賢明だったかも。`;
+      v.className='verdict '+(safer?'unlucky':'');
+    } else {
+      v.textContent=!safer?`バースト確率${p.burst}%でのヒットはギャンブル。でも今回はラッキー！`:`ヒットは正しい判断だった（バースト確率${p.burst}%）。`;
+      v.className='verdict '+(!safer?'risky':'correct');
+    }
+  } else {
+    v.textContent=safer?`スタンドを選んだが、バースト確率は${p.burst}%。ヒットも十分アリだった。`:`スタンドは正しい判断だった（バースト確率${p.burst}%）。`;
+    v.className='verdict '+(safer?'':'correct');
+  }
+  document.getElementById('prob-area').classList.add('visible');
+}
+
+function hideProbArea(){
+  document.getElementById('prob-area').classList.remove('visible');
+  ['burst','down','safe','bj'].forEach(k=>document.getElementById('bar-'+k).style.width='0%');
+}
+
+function showActionBtns(){
+  document.getElementById('action-btns').style.display='flex';
+  document.getElementById('next-btn-row').style.display='none';
+  document.getElementById('btn-hit').disabled=false;
+  document.getElementById('btn-stand').disabled=false;
+}
+
+function showNextBtn(){
+  document.getElementById('action-btns').style.display='none';
+  const nb = document.getElementById('next-btn-row');
+  nb.style.display='flex';
+  nb.style.position='relative';
+  nb.style.zIndex='1000';
+}
+
+function updateScoreUI(){
+  document.getElementById('s-win').textContent=score.win;
+  document.getElementById('s-lose').textContent=score.lose;
+  document.getElementById('s-draw').textContent=score.draw;
+}
+
+function updateDeckInfo(){ document.getElementById('deck-info').textContent=`残り ${deck.length} / ${numDecks*52} 枚`; }
+function updateUI(){ updateScoreUI(); updateDeckInfo(); }
+
+function nextRound(){ if(deck.length<10) deck=buildDeck(numDecks); dealNewRound(); }
+function resetGame(){
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('difficulty-screen').style.display='flex';
+}
+
+function startConfetti(){
+  const cv=document.getElementById('confetti-canvas'), ctx=cv.getContext('2d');
+  cv.width=window.innerWidth; cv.height=window.innerHeight;
+  const colors=['#1a6fd4','#4a9eff','#ffd700','#ff6b6b','#51cf66','#cc5de8','#ff922b'];
+  const p=Array.from({length:100},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height-cv.height,w:Math.random()*10+5,h:Math.random()*6+3,color:colors[Math.floor(Math.random()*colors.length)],rot:Math.random()*360,vx:(Math.random()-.5)*3,vy:Math.random()*4+2,vr:(Math.random()-.5)*8}));
+  let f=0; const max=150;
+  function draw(){ ctx.clearRect(0,0,cv.width,cv.height); p.forEach(q=>{ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.rot*Math.PI/180);ctx.fillStyle=q.color;ctx.globalAlpha=Math.max(0,1-f/max);ctx.fillRect(-q.w/2,-q.h/2,q.w,q.h);ctx.restore();q.x+=q.vx;q.y+=q.vy;q.rot+=q.vr;}); f++; if(f<max)requestAnimationFrame(draw); else ctx.clearRect(0,0,cv.width,cv.height); }
+  draw();
+}
+</script>
+</body>
+</html>

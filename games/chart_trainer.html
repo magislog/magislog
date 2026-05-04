@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>CHART TRAINER</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Noto+Sans+JP:wght@400;700&display=swap');
+
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2128;
+  --border: #30363d;
+  --accent: #58a6ff;
+  --up: #3fb950;
+  --down: #f85149;
+  --text: #e6edf3;
+  --muted: #7d8590;
+  --gold: #e3b341;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  width: 100%;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.3rem;
+  letter-spacing: .15em;
+  color: var(--accent);
+}
+
+.chip-display {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .8rem;
+  color: var(--gold);
+  background: rgba(227,179,65,.1);
+  border: 1px solid rgba(227,179,65,.3);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.score-display {
+  font-size: .7rem;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.4;
+}
+
+.score-display span { color: var(--text); font-weight: 700; }
+
+.main {
+  width: 100%;
+  max-width: 480px;
+  padding: 10px 10px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* アップロード画面 */
+#upload-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 20px;
+  animation: fadeIn .3s ease;
+}
+
+.upload-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.8rem;
+  letter-spacing: .15em;
+  color: var(--accent);
+}
+
+.upload-desc {
+  font-size: .78rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.upload-box {
+  width: 100%;
+  max-width: 340px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.upload-box:hover { border-color: var(--accent); background: rgba(88,166,255,.05); }
+
+.upload-icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+.upload-box input { display: none; }
+
+.upload-format {
+  font-size: .68rem;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* 銘柄バー */
+.stock-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+}
+
+.stock-name { font-size: .75rem; color: var(--muted); }
+.stock-price { font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; }
+.stock-change { font-family: 'Share Tech Mono', monospace; font-size: .75rem; padding: 2px 8px; border-radius: 4px; }
+.stock-change.up { color: var(--up); background: rgba(63,185,80,.1); }
+.stock-change.down { color: var(--down); background: rgba(248,81,73,.1); }
+
+.phase-badge {
+  font-size: .62rem; letter-spacing: .1em; padding: 3px 8px;
+  border-radius: 3px; font-weight: 700;
+}
+.phase-badge.watching { background: rgba(88,166,255,.15); color: var(--accent); }
+.phase-badge.choosing { background: rgba(227,179,65,.15); color: var(--gold); animation: pulseBadge 1s ease infinite; }
+.phase-badge.playing  { background: rgba(63,185,80,.15); color: var(--up); animation: pulseBadge 1s ease infinite; }
+.phase-badge.result   { background: rgba(248,81,73,.15); color: var(--down); }
+
+@keyframes pulseBadge { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* 問題情報 */
+.question-info {
+  background: rgba(227,179,65,.08);
+  border: 1px solid rgba(227,179,65,.25);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: .72rem;
+  color: var(--gold);
+  display: none;
+}
+
+.question-info.show { display: flex; align-items: center; gap: 8px; }
+.question-info::before { content: '◈'; }
+
+/* チャート */
+.chart-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.chart-overlay-label {
+  position: absolute;
+  top: 8px; left: 10px;
+  font-size: .6rem;
+  color: var(--muted);
+  letter-spacing: .1em;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.chart-date-badge {
+  position: absolute;
+  top: 8px; right: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .65rem;
+  color: var(--gold);
+  background: rgba(227,179,65,.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+canvas { display: block; width: 100%; }
+
+/* 出来高 */
+.vol-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.vol-label {
+  position: absolute;
+  top: 4px; left: 10px;
+  font-size: .55rem;
+  color: var(--muted);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ポジション情報 */
+.position-bar {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.position-bar.show { display: flex; }
+
+.pos-item { text-align: center; }
+.pos-val { font-family: 'Share Tech Mono', monospace; font-size: .9rem; margin-bottom: 2px; }
+.pos-val.up { color: var(--up); }
+.pos-val.down { color: var(--down); }
+.pos-label { font-size: .6rem; color: var(--muted); }
+
+/* 賭けエリア */
+.bet-area {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  display: none;
+}
+
+.bet-area.show { display: block; }
+.bet-label { font-size: .65rem; color: var(--muted); letter-spacing: .1em; margin-bottom: 8px; }
+
+.bet-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.chip-btn {
+  padding: 5px 12px;
+  border: 1px solid rgba(227,179,65,.3);
+  border-radius: 4px;
+  background: rgba(227,179,65,.08);
+  color: var(--gold);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .75rem;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.chip-btn:hover, .chip-btn.active {
+  background: rgba(227,179,65,.2);
+  border-color: var(--gold);
+}
+
+/* 予測ボタン */
+.predict-area { display: none; flex-direction: column; gap: 8px; }
+.predict-area.show { display: flex; }
+.predict-label { font-size: .65rem; color: var(--muted); letter-spacing: .15em; text-align: center; }
+
+.predict-btns { display: flex; gap: 10px; }
+
+.btn-predict {
+  flex: 1; padding: 16px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.3rem; letter-spacing: .12em;
+  cursor: pointer; transition: all .2s;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+
+.btn-predict .sub { font-family: 'Noto Sans JP', sans-serif; font-size: .6rem; font-weight: 400; opacity: .7; }
+
+.btn-up { background: rgba(63,185,80,.12); border-color: rgba(63,185,80,.4); color: var(--up); }
+.btn-up:hover, .btn-up:active { background: rgba(63,185,80,.25); border-color: var(--up); transform: translateY(-2px); }
+.btn-down { background: rgba(248,81,73,.12); border-color: rgba(248,81,73,.4); color: var(--down); }
+.btn-down:hover, .btn-down:active { background: rgba(248,81,73,.25); border-color: var(--down); transform: translateY(-2px); }
+
+/* プレイ中ボタン */
+.play-btns { display: none; gap: 10px; }
+.play-btns.show { display: flex; }
+
+.btn-settle {
+  flex: 1; padding: 14px;
+  background: rgba(227,179,65,.15);
+  border: 2px solid rgba(227,179,65,.4);
+  border-radius: var(--radius);
+  color: var(--gold);
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.1rem; letter-spacing: .12em;
+  cursor: pointer; transition: all .2s;
+}
+
+.btn-settle:hover { background: rgba(227,179,65,.25); border-color: var(--gold); }
+
+.btn-speed {
+  padding: 14px 18px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .75rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.btn-speed:hover { border-color: var(--accent); color: var(--accent); }
+
+/* 確認ダイアログ */
+#confirm-dialog {
+  display: none;
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,.7);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#confirm-dialog.show { display: flex; }
+
+.dialog-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  animation: fadeIn .2s ease;
+}
+
+.dialog-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.2rem;
+  letter-spacing: .1em;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.dialog-body { font-size: .8rem; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.dialog-body strong { color: var(--text); }
+
+.dialog-btns { display: flex; gap: 10px; }
+
+.btn-yes {
+  flex: 1; padding: 12px;
+  background: var(--gold);
+  color: #0d1117;
+  border: none; border-radius: 6px;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1rem; letter-spacing: .1em;
+  cursor: pointer;
+}
+
+.btn-no {
+  flex: 1; padding: 12px;
+  background: var(--surface2);
+  color: var(--muted);
+  border: 1px solid var(--border); border-radius: 6px;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1rem; letter-spacing: .1em;
+  cursor: pointer;
+}
+
+/* 結果エリア */
+.result-area { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+.result-area.show { display: block; animation: fadeIn .3s ease; }
+
+.result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.result-verdict { font-family: 'Bebas Neue', cursive; font-size: 1.6rem; letter-spacing: .1em; }
+.result-verdict.win { color: var(--up); }
+.result-verdict.lose { color: var(--down); }
+
+.result-chip { font-family: 'Share Tech Mono', monospace; font-size: .9rem; }
+.result-chip.gain { color: var(--up); }
+.result-chip.loss { color: var(--down); }
+
+.result-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+
+.stat-item { background: var(--surface2); border-radius: 6px; padding: 8px; text-align: center; }
+.stat-val { font-family: 'Share Tech Mono', monospace; font-size: .88rem; margin-bottom: 2px; }
+.stat-val.up { color: var(--up); }
+.stat-val.down { color: var(--down); }
+.stat-label { font-size: .58rem; color: var(--muted); }
+
+.result-comment { font-size: .72rem; color: var(--muted); padding: 8px 10px; background: var(--surface2); border-radius: 6px; line-height: 1.5; margin-bottom: 10px; }
+.result-comment.good { border-left: 3px solid var(--up); }
+.result-comment.bad { border-left: 3px solid var(--down); }
+
+.btn-row { display: flex; gap: 10px; }
+
+.btn-next {
+  flex: 1; padding: 13px;
+  background: var(--accent); color: #0d1117;
+  border: none; border-radius: var(--radius);
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.1rem; letter-spacing: .12em;
+  cursor: pointer; transition: all .2s; font-weight: 900;
+}
+
+.btn-next:hover { filter: brightness(1.1); }
+
+.btn-skip {
+  padding: 13px 16px;
+  background: var(--surface2);
+  color: var(--muted);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-family: 'Bebas Neue', cursive;
+  font-size: .9rem; cursor: pointer;
+}
+
+/* 問題リスト */
+.diff-select-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all .2s;
+  text-align: center;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .72rem;
+}
+.diff-select-btn:hover { border-color: var(--accent); }
+.diff-select-btn.active { border-color: var(--accent); background: rgba(88,166,255,.1); }
+
+.mode-btn {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface2);
+  color: var(--muted);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .78rem;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: left;
+}
+.mode-btn:hover { border-color: var(--accent); color: var(--text); }
+.mode-btn.active { border-color: var(--accent); background: rgba(88,166,255,.1); color: var(--text); }
+
+.question-list-info {
+  font-size: .65rem; color: var(--muted);
+  text-align: center; letter-spacing: .05em;
+}
+
+.timer-wrap {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  align-items: center;
+  gap: 10px;
+}
+.timer-wrap.show { display: flex; }
+.timer-num {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.4rem;
+  letter-spacing: .1em;
+  min-width: 40px;
+}
+.timer-num.warning { color: var(--down); animation: pulseBadge .5s ease infinite; }
+.timer-bar-outer { flex:1; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+.timer-bar-inner { height:100%; border-radius:3px; background:var(--accent); transition:width .1s linear; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+#flash-overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  pointer-events: none; z-index: 400; opacity: 0; transition: opacity .1s;
+}
+#flash-overlay.up { background: rgba(63,185,80,.12); }
+#flash-overlay.down { background: rgba(248,81,73,.12); }
+#flash-overlay.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="flash-overlay"></div>
+
+<div id="confirm-dialog">
+  <div class="dialog-box">
+    <div class="dialog-title">⚡ 決済確認</div>
+    <div class="dialog-body" id="dialog-body">
+      現在の価格で決済しますか？
+    </div>
+    <div class="dialog-btns">
+      <button class="btn-yes" onclick="confirmSettle(true)">YES — 決済する</button>
+      <button class="btn-no" onclick="confirmSettle(false)">NO — 続ける</button>
+    </div>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-title">CHART TRAINER</div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="chip-display">¥<span id="chip-count">100,000</span></div>
+    <div class="score-display">正解 <span id="s-win">0</span> / 不正解 <span id="s-lose">0</span></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- スタート画面 -->
+  <div id="upload-screen">
+    <div class="upload-title">CHART TRAINER</div>
+    <div class="upload-desc">
+      実際の株価データを使った<br>テクニカル分析練習ゲーム
+    </div>
+    <div class="upload-box" onclick="startWithBuiltinData()">
+      <div class="upload-icon">📈</div>
+      <div style="font-size:.85rem;color:var(--text);">ゲームを始める</div>
+      <div class="upload-format">実際の日本株データを使用</div>
+    </div>
+    <div style="margin-top:14px;width:100%;max-width:340px;">
+      <div style="font-size:.65rem;color:var(--muted);margin-bottom:8px;letter-spacing:.1em;">難易度を選択</div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;">
+        <button class="diff-select-btn active" data-diff="easy" onclick="selectDiff(this)">
+          <div style="font-weight:700;color:var(--up);">EASY</div>
+          <div style="font-size:.6rem;color:var(--muted);">現物・時間無制限</div>
+        </button>
+        <button class="diff-select-btn" data-diff="normal" onclick="selectDiff(this)">
+          <div style="font-weight:700;color:var(--gold);">NORMAL</div>
+          <div style="font-size:.6rem;color:var(--muted);">現物・30秒</div>
+        </button>
+        <button class="diff-select-btn" data-diff="hard" onclick="selectDiff(this)">
+          <div style="font-weight:700;color:var(--down);">HARD</div>
+          <div style="font-size:.6rem;color:var(--muted);">信用・15秒</div>
+        </button>
+      </div>
+    </div>
+    <div style="margin-top:0;width:100%;max-width:340px;">
+      <div style="font-size:.65rem;color:var(--muted);margin-bottom:8px;letter-spacing:.1em;">練習モードを選択</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <button class="mode-btn active" data-mode="random" onclick="selectMode(this)">🎲 ランダム（全パターン）</button>
+        <button class="mode-btn" data-mode="golden" onclick="selectMode(this)">🟡 ゴールデン / デッドクロス</button>
+        <button class="mode-btn" data-mode="candle" onclick="selectMode(this)">🟢 大陽線 / 大陰線</button>
+        <button class="mode-btn" data-mode="volume" onclick="selectMode(this)">📊 出来高急増</button>
+      </div>
+    </div>
+    <div style="font-size:.65rem;color:var(--muted);text-align:center;margin-top:10px;">
+      ※過去データによる練習用です。投資を推奨するものではありません。
+    </div>
+    <div style="margin-top:12px;width:100%;max-width:340px;">
+      <div style="font-size:.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:.1em;">または自分のCSVを使う</div>
+      <div class="upload-box" onclick="document.getElementById('csv-input').click()" style="padding:12px;">
+        <div style="font-size:.78rem;color:var(--muted);">📂 CSVファイルをアップロード</div>
+        <input type="file" id="csv-input" accept=".csv" onchange="loadCSV(event)">
+      </div>
+    </div>
+  </div>
+
+  <!-- ゲーム画面（初期非表示） -->
+  <div id="game-screen" style="display:none;flex-direction:column;gap:10px;">
+
+    <div class="stock-bar">
+      <div>
+        <div class="stock-name" id="stock-name">---</div>
+        <div class="stock-price" id="stock-price">---</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="stock-change" id="stock-change">--</div>
+        <div class="phase-badge watching" id="phase-badge">WATCHING</div>
+      </div>
+    </div>
+
+    <div class="question-list-info" id="q-list-info"></div>
+    <div class="timer-wrap" id="timer-wrap">
+      <div class="timer-num" id="timer-num">30</div>
+      <div class="timer-bar-outer"><div class="timer-bar-inner" id="timer-bar-inner" style="width:100%"></div></div>
+      <div style="font-size:.62rem;color:var(--muted);">秒で自動決済</div>
+    </div>
+
+    <div class="question-info" id="question-info"></div>
+
+    <div class="chart-wrap">
+      <div class="chart-overlay-label" id="chart-label">日足チャート</div>
+      <div class="chart-date-badge" id="chart-date-badge">---</div>
+      <canvas id="main-chart" height="260"></canvas>
+    </div>
+
+    <div class="vol-wrap">
+      <div class="vol-label">出来高</div>
+      <canvas id="vol-chart" height="55"></canvas>
+    </div>
+
+    <div class="position-bar" id="position-bar">
+      <div class="pos-item">
+        <div class="pos-val" id="pos-entry">---</div>
+        <div class="pos-label">エントリー価格</div>
+      </div>
+      <div class="pos-item">
+        <div class="pos-val" id="pos-current">---</div>
+        <div class="pos-label">現在価格</div>
+      </div>
+      <div class="pos-item">
+        <div class="pos-val" id="pos-pnl">---</div>
+        <div class="pos-label">損益</div>
+      </div>
+    </div>
+
+    <div class="bet-area" id="bet-area">
+      <div class="bet-label">BET AMOUNT</div>
+      <div class="bet-chips">
+        <button class="chip-btn active" data-val="10000" onclick="selectBet(this)">1万</button>
+        <button class="chip-btn" data-val="30000" onclick="selectBet(this)">3万</button>
+        <button class="chip-btn" data-val="50000" onclick="selectBet(this)">5万</button>
+        <button class="chip-btn" data-val="100000" onclick="selectBet(this)">10万</button>
+      </div>
+    </div>
+
+    <div class="predict-area" id="predict-area">
+      <div class="predict-label">▌ この後の値動きを予測してください</div>
+      <div class="predict-btns">
+        <button class="btn-predict btn-up" onclick="enterPosition('up')">▲ 買い<span class="sub">Long / 上昇予測</span></button>
+        <button class="btn-predict btn-down" onclick="enterPosition('down')">▼ 売り<span class="sub">Short / 下落予測</span></button>
+      </div>
+    </div>
+
+    <div class="play-btns" id="play-btns">
+      <button class="btn-settle" onclick="requestSettle()">⚡ 決済する</button>
+      <button class="btn-speed" id="speed-btn" onclick="toggleSpeed()">2×</button>
+    </div>
+
+    <div class="result-area" id="result-area">
+      <div class="result-header">
+        <div class="result-verdict" id="result-verdict">WIN!</div>
+        <div class="result-chip" id="result-chip">+¥10,000</div>
+      </div>
+      <div class="result-stats">
+        <div class="stat-item">
+          <div class="stat-val" id="r-entry">--</div>
+          <div class="stat-label">エントリー</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="r-settle">--</div>
+          <div class="stat-label">決済価格</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="r-change">--</div>
+          <div class="stat-label">変動率</div>
+        </div>
+      </div>
+      <div class="result-comment" id="result-comment"></div>
+      <div class="btn-row">
+        <button class="btn-next" onclick="nextQuestion()">NEXT ▶</button>
+        <button class="btn-skip" onclick="changeCSV()">CSV変更</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const BUILTIN_DATA = [
+  {date:'2025/03/27',open:1045.0,high:1073.0,low:1043.0,close:1061.0,vol:1684000.0,ma5:1066.8,ma25:1100.56},
+  {date:'2025/03/28',open:1061.0,high:1067.0,low:1049.0,close:1064.0,vol:1390200.0,ma5:1063.6,ma25:1093.8},
+  {date:'2025/03/31',open:1034.0,high:1036.0,low:985.0,close:985.0,vol:2967800.0,ma5:1045.8,ma25:1086.0},
+  {date:'2025/04/01',open:999.0,high:1010.0,low:965.0,close:969.0,vol:2609400.0,ma5:1026.6,ma25:1077.92},
+  {date:'2025/04/02',open:982.0,high:987.0,low:962.0,close:968.0,vol:1597800.0,ma5:1009.4,ma25:1070.52},
+  {date:'2025/04/03',open:923.0,high:943.0,low:908.0,close:912.0,vol:3013300.0,ma5:979.6,ma25:1061.8},
+  {date:'2025/04/04',open:880.0,high:892.0,low:833.0,close:855.0,vol:3956900.0,ma5:937.8,ma25:1050.4},
+  {date:'2025/04/07',open:753.0,high:795.0,low:745.0,close:760.0,vol:4605300.0,ma5:892.8,ma25:1035.44},
+  {date:'2025/04/08',open:820.0,high:856.0,low:813.0,close:853.0,vol:3546300.0,ma5:869.6,ma25:1023.12},
+  {date:'2025/04/09',open:810.0,high:823.0,low:789.0,close:811.0,vol:2844300.0,ma5:838.2,ma25:1008.8},
+  {date:'2025/04/10',open:916.0,high:946.0,low:881.0,close:941.0,vol:5530600.0,ma5:844.0,ma25:1000.36},
+  {date:'2025/04/11',open:866.0,high:905.0,low:861.0,close:900.0,vol:3702600.0,ma5:853.0,ma25:990.4},
+  {date:'2025/04/14',open:908.0,high:924.0,low:882.0,close:882.0,vol:1706300.0,ma5:877.4,ma25:982.16},
+  {date:'2025/04/15',open:879.0,high:890.0,low:867.0,close:874.0,vol:1763700.0,ma5:881.6,ma25:975.0},
+  {date:'2025/04/16',open:869.0,high:870.0,low:848.0,close:852.0,vol:2167100.0,ma5:889.8,ma25:967.72},
+  {date:'2025/04/17',open:851.0,high:861.0,low:828.0,close:849.0,vol:2851400.0,ma5:871.4,ma25:960.72},
+  {date:'2025/04/18',open:857.0,high:888.0,low:850.0,close:883.0,vol:1943300.0,ma5:868.0,ma25:954.84},
+  {date:'2025/04/21',open:880.0,high:884.0,low:856.0,close:859.0,vol:1678500.0,ma5:863.4,ma25:948.36},
+  {date:'2025/04/22',open:845.0,high:860.0,low:838.0,close:856.0,vol:1436500.0,ma5:859.8,ma25:941.08},
+  {date:'2025/04/23',open:870.0,high:880.0,low:860.0,close:870.0,vol:2036000.0,ma5:863.4,ma25:933.96},
+  {date:'2025/04/24',open:878.0,high:886.0,low:868.0,close:876.0,vol:1430200.0,ma5:868.8,ma25:926.12},
+  {date:'2025/04/25',open:885.0,high:896.0,low:873.0,close:881.0,vol:1255800.0,ma5:868.4,ma25:918.16},
+  {date:'2025/04/28',open:911.0,high:917.0,low:882.0,close:882.0,vol:1631700.0,ma5:873.0,ma25:910.48},
+  {date:'2025/04/30',open:888.0,high:891.0,low:874.0,close:888.0,vol:1107600.0,ma5:879.4,ma25:903.4},
+  {date:'2025/05/01',open:891.0,high:891.0,low:873.0,close:887.0,vol:985300.0,ma5:882.8,ma25:896.72},
+  {date:'2025/05/02',open:888.0,high:894.0,low:871.0,close:888.0,vol:1443300.0,ma5:885.2,ma25:889.8},
+  {date:'2025/05/07',open:894.0,high:899.0,low:882.0,close:894.0,vol:1466800.0,ma5:887.8,ma25:883.0},
+  {date:'2025/05/08',open:870.0,high:884.0,low:866.0,close:878.0,vol:2422300.0,ma5:887.0,ma25:878.72},
+  {date:'2025/05/09',open:922.0,high:1004.0,low:898.0,close:978.0,vol:11557300.0,ma5:905.0,ma25:879.08},
+  {date:'2025/05/12',open:980.0,high:980.0,low:942.0,close:964.0,vol:4893100.0,ma5:920.4,ma25:878.92},
+  {date:'2025/05/13',open:1030.0,high:1107.0,low:1004.0,close:1086.0,vol:8921900.0,ma5:960.0,ma25:885.88},
+  {date:'2025/05/14',open:1070.0,high:1073.0,low:1025.0,close:1044.0,vol:4180800.0,ma5:990.0,ma25:893.44},
+  {date:'2025/05/15',open:1028.0,high:1077.0,low:1027.0,close:1038.0,vol:3314400.0,ma5:1022.0,ma25:904.56},
+  {date:'2025/05/16',open:1054.0,high:1054.0,low:1004.0,close:1024.0,vol:2503500.0,ma5:1031.2,ma25:911.4},
+  {date:'2025/05/19',open:1020.0,high:1030.0,low:1010.0,close:1017.0,vol:1408300.0,ma5:1041.8,ma25:919.64},
+  {date:'2025/05/20',open:1007.0,high:1015.0,low:994.0,close:1005.0,vol:1718200.0,ma5:1025.6,ma25:922.2},
+  {date:'2025/05/21',open:1012.0,high:1013.0,low:996.0,close:1010.0,vol:1315400.0,ma5:1018.8,ma25:926.6},
+  {date:'2025/05/22',open:1000.0,high:1057.0,low:999.0,close:1050.0,vol:3322000.0,ma5:1021.2,ma25:933.32},
+  {date:'2025/05/23',open:1050.0,high:1060.0,low:1042.0,close:1055.0,vol:1858900.0,ma5:1027.4,ma25:940.56},
+  {date:'2025/05/26',open:1076.0,high:1083.0,low:1063.0,close:1071.0,vol:1758600.0,ma5:1038.2,ma25:949.32},
+  {date:'2025/05/27',open:1071.0,high:1099.0,low:1070.0,close:1092.0,vol:1663900.0,ma5:1055.6,ma25:959.04},
+  {date:'2025/05/28',open:1099.0,high:1100.0,low:1083.0,close:1096.0,vol:1400400.0,ma5:1072.8,ma25:967.56},
+  {date:'2025/05/29',open:1105.0,high:1155.0,low:1105.0,close:1120.0,vol:3060300.0,ma5:1086.8,ma25:978.0},
+  {date:'2025/05/30',open:1101.0,high:1117.0,low:1093.0,close:1111.0,vol:2721600.0,ma5:1098.0,ma25:988.2},
+  {date:'2025/06/02',open:1189.0,high:1225.0,low:1165.0,close:1182.0,vol:7166300.0,ma5:1120.2,ma25:1000.68},
+  {date:'2025/06/03',open:1231.0,high:1308.0,low:1220.0,close:1259.0,vol:10508200.0,ma5:1153.6,ma25:1016.0},
+  {date:'2025/06/04',open:1250.0,high:1289.0,low:1243.0,close:1267.0,vol:3571100.0,ma5:1187.8,ma25:1031.44},
+  {date:'2025/06/05',open:1267.0,high:1274.0,low:1230.0,close:1263.0,vol:3564000.0,ma5:1216.4,ma25:1046.68},
+  {date:'2025/06/06',open:1281.0,high:1330.0,low:1259.0,close:1298.0,vol:4108300.0,ma5:1253.8,ma25:1063.08},
+  {date:'2025/06/09',open:1312.0,high:1331.0,low:1277.0,close:1290.0,vol:2547100.0,ma5:1275.4,ma25:1079.2},
+  {date:'2025/06/10',open:1263.0,high:1283.0,low:1243.0,close:1243.0,vol:2936900.0,ma5:1272.2,ma25:1093.4},
+  {date:'2025/06/11',open:1250.0,high:1264.0,low:1236.0,close:1250.0,vol:1967600.0,ma5:1268.8,ma25:1107.64},
+  {date:'2025/06/12',open:1252.0,high:1277.0,low:1246.0,close:1250.0,vol:1591700.0,ma5:1266.2,ma25:1122.52},
+  {date:'2025/06/13',open:1230.0,high:1249.0,low:1227.0,close:1247.0,vol:1583800.0,ma5:1256.0,ma25:1133.28},
+  {date:'2025/06/16',open:1258.0,high:1262.0,low:1237.0,close:1247.0,vol:1312500.0,ma5:1247.4,ma25:1144.6},
+  {date:'2025/06/17',open:1265.0,high:1286.0,low:1263.0,close:1276.0,vol:1512000.0,ma5:1254.0,ma25:1152.2},
+  {date:'2025/06/18',open:1299.0,high:1370.0,low:1296.0,close:1332.0,vol:4324300.0,ma5:1270.4,ma25:1163.72},
+  {date:'2025/06/19',open:1333.0,high:1346.0,low:1316.0,close:1320.0,vol:1425300.0,ma5:1284.4,ma25:1175.0},
+  {date:'2025/06/20',open:1380.0,high:1392.0,low:1335.0,close:1367.0,vol:3361000.0,ma5:1308.4,ma25:1188.72},
+  {date:'2025/06/23',open:1366.0,high:1449.0,low:1341.0,close:1440.0,vol:4437500.0,ma5:1347.0,ma25:1205.64},
+  {date:'2025/06/24',open:1463.0,high:1493.0,low:1440.0,close:1480.0,vol:4444900.0,ma5:1387.8,ma25:1224.64},
+  {date:'2025/06/25',open:1482.0,high:1494.0,low:1467.0,close:1487.0,vol:2362500.0,ma5:1418.8,ma25:1243.72},
+  {date:'2025/06/26',open:1464.0,high:1533.0,low:1457.0,close:1493.0,vol:4615700.0,ma5:1453.4,ma25:1261.44},
+  {date:'2025/06/27',open:1515.0,high:1523.0,low:1496.0,close:1512.0,vol:2501100.0,ma5:1482.4,ma25:1279.72},
+  {date:'2025/06/30',open:1500.0,high:1505.0,low:1461.0,close:1472.0,vol:2918300.0,ma5:1488.8,ma25:1295.76},
+  {date:'2025/07/01',open:1463.0,high:1497.0,low:1453.0,close:1476.0,vol:2443400.0,ma5:1488.0,ma25:1311.12},
+  {date:'2025/07/02',open:1451.0,high:1505.0,low:1436.0,close:1459.0,vol:2991000.0,ma5:1482.4,ma25:1325.64},
+  {date:'2025/07/03',open:1452.0,high:1468.0,low:1435.0,close:1436.0,vol:1317700.0,ma5:1471.0,ma25:1338.28},
+  {date:'2025/07/04',open:1447.0,high:1482.0,low:1440.0,close:1445.0,vol:1193400.0,ma5:1457.6,ma25:1351.64},
+  {date:'2025/07/07',open:1462.0,high:1488.0,low:1455.0,close:1469.0,vol:1344600.0,ma5:1457.0,ma25:1363.12},
+  {date:'2025/07/08',open:1471.0,high:1486.0,low:1457.0,close:1457.0,vol:1756700.0,ma5:1453.2,ma25:1371.04},
+  {date:'2025/07/09',open:1442.0,high:1485.0,low:1415.0,close:1485.0,vol:3164300.0,ma5:1458.4,ma25:1379.76},
+  {date:'2025/07/10',open:1508.0,high:1521.0,low:1465.0,close:1481.0,vol:2406900.0,ma5:1467.4,ma25:1388.48},
+  {date:'2025/07/11',open:1481.0,high:1494.0,low:1455.0,close:1461.0,vol:1739800.0,ma5:1470.6,ma25:1395.0},
+  {date:'2025/07/14',open:1450.0,high:1478.0,low:1445.0,close:1476.0,vol:1081300.0,ma5:1472.0,ma25:1402.44},
+  {date:'2025/07/15',open:1489.0,high:1510.0,low:1479.0,close:1503.0,vol:2054600.0,ma5:1481.2,ma25:1412.84},
+  {date:'2025/07/16',open:1523.0,high:1545.0,low:1508.0,close:1509.0,vol:2076400.0,ma5:1486.0,ma25:1423.2},
+  {date:'2025/07/17',open:1512.0,high:1561.0,low:1509.0,close:1531.0,vol:1894100.0,ma5:1496.0,ma25:1434.44},
+  {date:'2025/07/18',open:1549.0,high:1581.0,low:1539.0,close:1543.0,vol:2699400.0,ma5:1512.4,ma25:1446.28},
+  {date:'2025/07/22',open:1545.0,high:1558.0,low:1520.0,close:1538.0,vol:1478100.0,ma5:1524.8,ma25:1457.92},
+  {date:'2025/07/23',open:1565.0,high:1569.0,low:1524.0,close:1548.0,vol:1860800.0,ma5:1533.8,ma25:1468.8},
+  {date:'2025/07/24',open:1563.0,high:1566.0,low:1513.0,close:1513.0,vol:2698800.0,ma5:1534.6,ma25:1476.04},
+  {date:'2025/07/25',open:1537.0,high:1565.0,low:1527.0,close:1535.0,vol:2744900.0,ma5:1535.4,ma25:1484.64},
+  {date:'2025/07/28',open:1539.0,high:1547.0,low:1525.0,close:1543.0,vol:1153400.0,ma5:1535.4,ma25:1491.68},
+  {date:'2025/07/29',open:1525.0,high:1546.0,low:1517.0,close:1543.0,vol:1279100.0,ma5:1536.4,ma25:1495.8},
+  {date:'2025/07/30',open:1543.0,high:1549.0,low:1531.0,close:1544.0,vol:1086900.0,ma5:1535.6,ma25:1498.36},
+  {date:'2025/07/31',open:1549.0,high:1564.0,low:1536.0,close:1558.0,vol:1377600.0,ma5:1544.6,ma25:1501.2},
+  {date:'2025/08/01',open:1560.0,high:1564.0,low:1540.0,close:1563.0,vol:1539400.0,ma5:1550.2,ma25:1504.0},
+  {date:'2025/08/04',open:1523.0,high:1555.0,low:1516.0,close:1550.0,vol:1347900.0,ma5:1551.6,ma25:1505.52},
+  {date:'2025/08/05',open:1551.0,high:1564.0,low:1551.0,close:1555.0,vol:937700.0,ma5:1554.0,ma25:1508.84},
+  {date:'2025/08/06',open:1567.0,high:1600.0,low:1567.0,close:1590.0,vol:2047900.0,ma5:1563.2,ma25:1513.4},
+  {date:'2025/08/07',open:1598.0,high:1620.0,low:1595.0,close:1615.0,vol:1473700.0,ma5:1574.6,ma25:1519.64},
+  {date:'2025/08/08',open:1598.0,high:1601.0,low:1466.0,close:1515.0,vol:8165600.0,ma5:1565.0,ma25:1522.8},
+  {date:'2025/08/12',open:1571.0,high:1584.0,low:1514.0,close:1514.0,vol:3896800.0,ma5:1557.8,ma25:1525.56},
+  {date:'2025/08/13',open:1490.0,high:1537.0,low:1461.0,close:1536.0,vol:3387900.0,ma5:1554.0,ma25:1528.24},
+  {date:'2025/08/14',open:1538.0,high:1552.0,low:1522.0,close:1549.0,vol:1799300.0,ma5:1545.8,ma25:1531.92},
+  {date:'2025/08/15',open:1555.0,high:1561.0,low:1531.0,close:1544.0,vol:1342500.0,ma5:1531.6,ma25:1534.28},
+  {date:'2025/08/18',open:1557.0,high:1658.0,low:1552.0,close:1646.0,vol:3683700.0,ma5:1557.8,ma25:1540.88},
+  {date:'2025/08/19',open:1631.0,high:1631.0,low:1591.0,close:1599.0,vol:1947700.0,ma5:1574.8,ma25:1546.4},
+  {date:'2025/08/20',open:1573.0,high:1606.0,low:1571.0,close:1596.0,vol:1451500.0,ma5:1586.8,ma25:1551.2},
+  {date:'2025/08/21',open:1598.0,high:1638.0,low:1588.0,close:1599.0,vol:2069700.0,ma5:1596.8,ma25:1555.04},
+  {date:'2025/08/22',open:1614.0,high:1615.0,low:1577.0,close:1589.0,vol:1255600.0,ma5:1605.8,ma25:1558.24},
+  {date:'2025/08/25',open:1580.0,high:1611.0,low:1572.0,close:1602.0,vol:1413700.0,ma5:1597.0,ma25:1561.08},
+  {date:'2025/08/26',open:1600.0,high:1605.0,low:1568.0,close:1571.0,vol:1194500.0,ma5:1591.4,ma25:1562.2},
+  {date:'2025/08/27',open:1584.0,high:1595.0,low:1566.0,close:1579.0,vol:1048600.0,ma5:1588.0,ma25:1563.84},
+  {date:'2025/08/28',open:1580.0,high:1594.0,low:1573.0,close:1575.0,vol:995700.0,ma5:1583.2,ma25:1564.92},
+  {date:'2025/08/29',open:1551.0,high:1554.0,low:1501.0,close:1513.0,vol:2392100.0,ma5:1568.0,ma25:1564.92},
+  {date:'2025/09/01',open:1511.0,high:1517.0,low:1493.0,close:1503.0,vol:914500.0,ma5:1548.2,ma25:1563.64},
+  {date:'2025/09/02',open:1496.0,high:1502.0,low:1447.0,close:1452.0,vol:1789800.0,ma5:1524.4,ma25:1560.0},
+  {date:'2025/09/03',open:1445.0,high:1445.0,low:1404.0,close:1410.0,vol:2218400.0,ma5:1490.6,ma25:1554.68},
+  {date:'2025/09/04',open:1400.0,high:1404.0,low:1373.0,close:1386.0,vol:2153600.0,ma5:1452.8,ma25:1548.36},
+  {date:'2025/09/05',open:1358.0,high:1428.0,low:1347.0,close:1392.0,vol:3691900.0,ma5:1428.6,ma25:1541.72},
+  {date:'2025/09/08',open:1393.0,high:1410.0,low:1343.0,close:1349.0,vol:2838100.0,ma5:1397.8,ma25:1533.16},
+  {date:'2025/09/09',open:1343.0,high:1361.0,low:1320.0,close:1334.0,vol:2361600.0,ma5:1374.2,ma25:1524.52},
+  {date:'2025/09/10',open:1331.0,high:1333.0,low:1315.0,close:1318.0,vol:1728800.0,ma5:1355.8,ma25:1515.04},
+  {date:'2025/09/11',open:1318.0,high:1326.0,low:1289.0,close:1292.0,vol:1533400.0,ma5:1337.0,ma25:1503.12},
+  {date:'2025/09/12',open:1305.0,high:1376.0,low:1298.0,close:1361.0,vol:4193500.0,ma5:1330.8,ma25:1492.96},
+  {date:'2025/09/16',open:1375.0,high:1385.0,low:1339.0,close:1342.0,vol:2884400.0,ma5:1329.4,ma25:1486.04},
+  {date:'2025/09/17',open:1342.0,high:1356.0,low:1317.0,close:1346.0,vol:1401300.0,ma5:1331.8,ma25:1479.32},
+  {date:'2025/09/18',open:1353.0,high:1364.0,low:1319.0,close:1327.0,vol:1468800.0,ma5:1333.6,ma25:1470.96},
+  {date:'2025/09/19',open:1349.0,high:1405.0,low:1339.0,close:1381.0,vol:6381100.0,ma5:1351.4,ma25:1464.24},
+  {date:'2025/09/22',open:1407.0,high:1408.0,low:1323.0,close:1326.0,vol:2514200.0,ma5:1344.4,ma25:1455.52},
+  {date:'2025/09/24',open:1326.0,high:1328.0,low:1303.0,close:1315.0,vol:1780600.0,ma5:1339.0,ma25:1442.28},
+  {date:'2025/09/25',open:1324.0,high:1356.0,low:1313.0,close:1352.0,vol:1832600.0,ma5:1340.2,ma25:1432.4},
+  {date:'2025/09/26',open:1328.0,high:1354.0,low:1326.0,close:1336.0,vol:2151300.0,ma5:1342.0,ma25:1422.0},
+  {date:'2025/09/29',open:1310.0,high:1325.0,low:1295.0,close:1302.0,vol:1479900.0,ma5:1326.2,ma25:1410.12},
+  {date:'2025/09/30',open:1311.0,high:1313.0,low:1296.0,close:1307.0,vol:1090600.0,ma5:1322.4,ma25:1398.84},
+  {date:'2025/10/01',open:1287.0,high:1287.0,low:1255.0,close:1260.0,vol:1939300.0,ma5:1311.4,ma25:1385.16},
+  {date:'2025/10/02',open:1271.0,high:1279.0,low:1234.0,close:1240.0,vol:1553600.0,ma5:1289.0,ma25:1371.92},
+  {date:'2025/10/03',open:1234.0,high:1266.0,low:1234.0,close:1260.0,vol:1023200.0,ma5:1273.8,ma25:1359.16},
+  {date:'2025/10/06',open:1295.0,high:1315.0,low:1275.0,close:1300.0,vol:2034600.0,ma5:1273.4,ma25:1348.16},
+  {date:'2025/10/07',open:1295.0,high:1297.0,low:1247.0,close:1254.0,vol:2696100.0,ma5:1262.8,ma25:1337.8},
+  {date:'2025/10/08',open:1260.0,high:1282.0,low:1256.0,close:1282.0,vol:1544600.0,ma5:1267.2,ma25:1328.96},
+  {date:'2025/10/09',open:1261.0,high:1278.0,low:1178.0,close:1211.0,vol:6433500.0,ma5:1261.4,ma25:1319.32},
+  {date:'2025/10/10',open:1200.0,high:1227.0,low:1192.0,close:1219.0,vol:3434600.0,ma5:1253.2,ma25:1311.68},
+  {date:'2025/10/14',open:1199.0,high:1207.0,low:1143.0,close:1148.0,vol:4315400.0,ma5:1222.8,ma25:1302.16},
+  {date:'2025/10/15',open:1161.0,high:1177.0,low:1155.0,close:1162.0,vol:2629800.0,ma5:1204.4,ma25:1292.96},
+  {date:'2025/10/16',open:1154.0,high:1164.0,low:1126.0,close:1151.0,vol:2935100.0,ma5:1178.2,ma25:1285.04},
+  {date:'2025/10/17',open:1136.0,high:1145.0,low:1121.0,close:1125.0,vol:1989300.0,ma5:1161.0,ma25:1276.68},
+  {date:'2025/10/20',open:1144.0,high:1152.0,low:1133.0,close:1134.0,vol:1527100.0,ma5:1144.0,ma25:1269.32},
+  {date:'2025/10/21',open:1128.0,high:1174.0,low:1108.0,close:1160.0,vol:2437300.0,ma5:1146.4,ma25:1264.04},
+  {date:'2025/10/22',open:1163.0,high:1166.0,low:1146.0,close:1149.0,vol:1565800.0,ma5:1143.8,ma25:1255.56},
+  {date:'2025/10/23',open:1157.0,high:1158.0,low:1138.0,close:1139.0,vol:1221000.0,ma5:1141.4,ma25:1247.44},
+  {date:'2025/10/24',open:1130.0,high:1153.0,low:1126.0,close:1139.0,vol:1481100.0,ma5:1144.2,ma25:1239.16},
+  {date:'2025/10/27',open:1139.0,high:1147.0,low:1133.0,close:1139.0,vol:1892000.0,ma5:1145.2,ma25:1231.64},
+  {date:'2025/10/28',open:1142.0,high:1142.0,low:1112.0,close:1116.0,vol:2321200.0,ma5:1136.4,ma25:1221.04},
+  {date:'2025/10/29',open:1112.0,high:1118.0,low:1068.0,close:1070.0,vol:2834200.0,ma5:1120.6,ma25:1210.8},
+  {date:'2025/10/30',open:1066.0,high:1112.0,low:1061.0,close:1100.0,vol:2531400.0,ma5:1112.8,ma25:1202.2},
+  {date:'2025/10/31',open:1102.0,high:1119.0,low:1098.0,close:1110.0,vol:1850100.0,ma5:1107.0,ma25:1192.52},
+  {date:'2025/11/04',open:1100.0,high:1105.0,low:1074.5,close:1080.5,vol:2101700.0,ma5:1095.3,ma25:1182.3},
+  {date:'2025/11/05',open:1080.0,high:1102.5,low:1066.5,close:1102.5,vol:2679700.0,ma5:1092.6,ma25:1174.32},
+  {date:'2025/11/06',open:1096.0,high:1097.0,low:1054.5,close:1057.5,vol:2426200.0,ma5:1090.1,ma25:1164.34},
+  {date:'2025/11/07',open:1081.0,high:1088.5,low:977.0,close:1030.0,vol:5766700.0,ma5:1076.1,ma25:1155.14},
+  {date:'2025/11/10',open:1028.0,high:1057.0,low:1015.0,close:1048.5,vol:3039200.0,ma5:1063.8,ma25:1147.48},
+  {date:'2025/11/11',open:1040.0,high:1042.0,low:1001.0,close:1018.0,vol:2812300.0,ma5:1051.3,ma25:1137.8},
+  {date:'2025/11/12',open:1022.0,high:1044.5,low:1012.0,close:1037.5,vol:2686200.0,ma5:1038.3,ma25:1127.3},
+  {date:'2025/11/13',open:1034.5,high:1037.0,low:997.0,close:997.0,vol:2505200.0,ma5:1026.2,ma25:1117.02},
+  {date:'2025/11/14',open:982.0,high:1023.5,low:980.7,close:1020.0,vol:2796300.0,ma5:1024.2,ma25:1106.54},
+  {date:'2025/11/17',open:990.0,high:1004.5,low:971.6,close:986.3,vol:3538000.0,ma5:1011.76,ma25:1097.55},
+  {date:'2025/11/18',open:980.5,high:989.2,low:963.4,close:971.1,vol:2336300.0,ma5:1002.38,ma25:1087.64},
+  {date:'2025/11/19',open:967.7,high:978.4,low:957.3,close:965.3,vol:1923900.0,ma5:987.94,ma25:1080.33},
+  {date:'2025/11/20',open:965.3,high:982.6,low:961.8,close:976.0,vol:2558200.0,ma5:983.74,ma25:1072.89},
+  {date:'2025/11/21',open:965.7,high:1006.0,low:965.6,close:999.4,vol:2335900.0,ma5:979.62,ma25:1066.82},
+  {date:'2025/11/25',open:999.6,high:1000.5,low:981.1,close:983.9,vol:1876900.0,ma5:979.14,ma25:1061.18},
+  {date:'2025/11/26',open:995.0,high:1008.0,low:987.4,close:1003.5,vol:1808900.0,ma5:985.62,ma25:1055.96},
+  {date:'2025/11/27',open:999.9,high:1008.0,low:984.8,close:989.6,vol:2104200.0,ma5:990.48,ma25:1049.14},
+  {date:'2025/11/28',open:990.2,high:1021.5,low:988.0,close:1014.0,vol:2039700.0,ma5:998.08,ma25:1043.74},
+  {date:'2025/12/01',open:1001.5,high:1012.0,low:977.0,close:980.5,vol:2582100.0,ma5:994.3,ma25:1037.4},
+  {date:'2025/12/02',open:980.0,high:982.0,low:956.2,close:962.7,vol:2188500.0,ma5:990.06,ma25:1030.35},
+  {date:'2025/12/03',open:974.8,high:981.0,low:956.5,close:975.2,vol:1967600.0,ma5:984.4,ma25:1023.8},
+  {date:'2025/12/04',open:983.0,high:1105.0,low:976.8,close:1090.0,vol:8740100.0,ma5:1004.48,ma25:1022.76},
+  {date:'2025/12/05',open:1088.0,high:1104.0,low:1033.0,close:1047.5,vol:4299400.0,ma5:1011.18,ma25:1021.86},
+  {date:'2025/12/08',open:1053.5,high:1111.0,low:1052.5,close:1107.5,vol:4427200.0,ma5:1036.58,ma25:1022.16},
+  {date:'2025/12/09',open:1103.0,high:1118.5,low:1072.5,close:1084.5,vol:3227500.0,ma5:1060.94,ma25:1021.14},
+  {date:'2025/12/10',open:1093.5,high:1099.0,low:1047.0,close:1050.0,vol:2875800.0,ma5:1075.9,ma25:1019.92},
+  {date:'2025/12/11',open:1058.0,high:1058.5,low:1023.0,close:1035.5,vol:1882100.0,ma5:1065.0,ma25:1017.24},
+  {date:'2025/12/12',open:1055.5,high:1077.0,low:1044.5,close:1077.0,vol:2263500.0,ma5:1070.9,ma25:1018.02},
+  {date:'2025/12/15',open:1090.0,high:1110.0,low:1074.5,close:1094.0,vol:2879700.0,ma5:1068.2,ma25:1020.58},
+  {date:'2025/12/16',open:1100.0,high:1104.0,low:1069.0,close:1076.0,vol:2217300.0,ma5:1066.5,ma25:1021.68},
+  {date:'2025/12/17',open:1081.0,high:1117.5,low:1070.5,close:1080.5,vol:2954400.0,ma5:1072.6,ma25:1024.18},
+  {date:'2025/12/18',open:1080.5,high:1088.5,low:1063.5,close:1084.0,vol:1686200.0,ma5:1082.3,ma25:1026.04},
+  {date:'2025/12/19',open:1094.5,high:1121.0,low:1078.0,close:1105.0,vol:2958500.0,ma5:1087.9,ma25:1030.36},
+  {date:'2025/12/22',open:1104.5,high:1106.0,low:1074.5,close:1084.0,vol:2189500.0,ma5:1085.9,ma25:1032.92},
+  {date:'2025/12/23',open:1100.0,high:1136.0,low:1097.0,close:1124.0,vol:3218700.0,ma5:1095.5,ma25:1038.43},
+  {date:'2025/12/24',open:1130.0,high:1146.0,low:1110.0,close:1119.5,vol:2868800.0,ma5:1103.3,ma25:1044.36},
+  {date:'2025/12/25',open:1137.5,high:1186.0,low:1133.0,close:1170.0,vol:4531600.0,ma5:1120.5,ma25:1052.55},
+  {date:'2025/12/26',open:1169.0,high:1183.0,low:1158.0,close:1165.5,vol:3597100.0,ma5:1132.6,ma25:1060.13},
+  {date:'2025/12/29',open:1185.0,high:1185.0,low:1152.5,close:1156.5,vol:2442600.0,ma5:1147.1,ma25:1066.42},
+  {date:'2025/12/30',open:1150.0,high:1156.0,low:1117.5,close:1120.0,vol:2243000.0,ma5:1146.3,ma25:1071.86},
+  {date:'2026/01/05',open:1129.5,high:1134.5,low:1112.0,close:1131.5,vol:2171300.0,ma5:1148.7,ma25:1076.98},
+  {date:'2026/01/06',open:1135.0,high:1135.0,low:1106.5,close:1113.0,vol:2980800.0,ma5:1137.3,ma25:1081.92},
+  {date:'2026/01/07',open:1101.0,high:1130.0,low:1091.0,close:1124.5,vol:3217800.0,ma5:1129.1,ma25:1086.34},
+  {date:'2026/01/08',open:1128.0,high:1181.0,low:1105.0,close:1157.5,vol:5342900.0,ma5:1129.3,ma25:1093.42},
+  {date:'2026/01/09',open:1152.0,high:1170.0,low:1142.5,close:1161.5,vol:2896100.0,ma5:1137.6,ma25:1101.37},
+  {date:'2026/01/13',open:1175.0,high:1192.0,low:1163.5,close:1175.0,vol:2475000.0,ma5:1146.3,ma25:1109.36},
+  {date:'2026/01/14',open:1170.0,high:1173.0,low:1149.5,close:1156.5,vol:2384300.0,ma5:1155.0,ma25:1112.02},
+  {date:'2026/01/15',open:1152.5,high:1159.0,low:1133.0,close:1139.5,vol:2155700.0,ma5:1158.0,ma25:1115.7},
+  {date:'2026/01/16',open:1135.0,high:1138.0,low:1117.0,close:1124.5,vol:2377400.0,ma5:1151.4,ma25:1116.38},
+  {date:'2026/01/19',open:1111.5,high:1125.0,low:1104.0,close:1106.0,vol:1820800.0,ma5:1140.3,ma25:1117.24},
+  {date:'2026/01/20',open:1120.0,high:1154.0,low:1116.5,close:1144.0,vol:2632400.0,ma5:1134.1,ma25:1121.0},
+  {date:'2026/01/21',open:1120.0,high:1127.5,low:1101.0,close:1102.5,vol:2191700.0,ma5:1123.3,ma25:1123.68},
+  {date:'2026/01/22',open:1110.5,high:1117.5,low:1102.0,close:1107.5,vol:1240700.0,ma5:1116.9,ma25:1124.9},
+  {date:'2026/01/23',open:1124.5,high:1156.0,low:1117.5,close:1143.5,vol:2410300.0,ma5:1120.7,ma25:1126.88},
+  {date:'2026/01/26',open:1125.0,high:1148.5,low:1113.5,close:1113.5,vol:1813000.0,ma5:1122.2,ma25:1128.38},
+  {date:'2026/01/27',open:1121.0,high:1124.0,low:1107.0,close:1116.0,vol:1410500.0,ma5:1116.6,ma25:1129.8},
+  {date:'2026/01/28',open:1096.0,high:1101.5,low:1074.0,close:1100.0,vol:1874400.0,ma5:1116.1,ma25:1130.44},
+  {date:'2026/01/29',open:1085.5,high:1090.0,low:1071.0,close:1077.5,vol:1645700.0,ma5:1110.1,ma25:1129.34},
+  {date:'2026/01/30',open:1086.0,high:1097.5,low:1080.0,close:1087.0,vol:1180200.0,ma5:1098.8,ma25:1129.46},
+  {date:'2026/02/02',open:1100.0,high:1107.0,low:1082.5,close:1082.5,vol:1233100.0,ma5:1092.6,ma25:1127.8},
+  {date:'2026/02/03',open:1088.0,high:1103.5,low:1083.0,close:1098.0,vol:1327900.0,ma5:1089.0,ma25:1126.94},
+  {date:'2026/02/04',open:1092.0,high:1095.5,low:1075.5,close:1088.0,vol:1546300.0,ma5:1086.6,ma25:1123.66},
+  {date:'2026/02/05',open:1095.0,high:1120.0,low:1087.5,close:1099.0,vol:1524300.0,ma5:1090.9,ma25:1121.0},
+  {date:'2026/02/06',open:1084.5,high:1104.0,low:1075.0,close:1098.5,vol:1238500.0,ma5:1093.2,ma25:1118.68},
+  {date:'2026/02/09',open:1103.0,high:1110.0,low:1083.0,close:1097.0,vol:1857100.0,ma5:1096.1,ma25:1117.76},
+  {date:'2026/02/10',open:1105.0,high:1133.5,low:1029.0,close:1059.0,vol:6683800.0,ma5:1088.3,ma25:1114.86},
+  {date:'2026/02/12',open:1050.0,high:1071.5,low:1025.5,close:1061.5,vol:3281000.0,ma5:1083.0,ma25:1112.8},
+  {date:'2026/02/13',open:1050.0,high:1059.0,low:988.0,close:988.0,vol:3914200.0,ma5:1060.8,ma25:1107.34},
+  {date:'2026/02/16',open:994.9,high:1007.0,low:981.2,close:985.2,vol:3111900.0,ma5:1038.14,ma25:1100.45},
+  {date:'2026/02/17',open:995.0,high:999.4,low:973.8,close:979.5,vol:3171900.0,ma5:1014.64,ma25:1093.17},
+  {date:'2026/02/18',open:994.5,high:1022.5,low:991.6,close:1017.5,vol:2922900.0,ma5:1006.34,ma25:1086.87},
+  {date:'2026/02/19',open:1019.0,high:1045.0,low:1009.0,close:1027.0,vol:2066100.0,ma5:999.44,ma25:1081.69},
+  {date:'2026/02/20',open:1015.5,high:1017.0,low:983.5,close:988.3,vol:2722100.0,ma5:999.5,ma25:1075.64},
+  {date:'2026/02/24',open:974.0,high:1002.5,low:970.2,close:984.3,vol:1971700.0,ma5:999.32,ma25:1070.03},
+  {date:'2026/02/25',open:997.9,high:1024.0,low:997.5,close:1013.5,vol:1921200.0,ma5:1006.12,ma25:1066.33},
+  {date:'2026/02/26',open:1025.0,high:1040.0,low:1024.5,close:1034.5,vol:2188900.0,ma5:1009.52,ma25:1061.95},
+  {date:'2026/02/27',open:1047.0,high:1077.0,low:1037.5,close:1074.0,vol:2907700.0,ma5:1018.92,ma25:1060.81},
+  {date:'2026/03/02',open:1049.0,high:1055.5,low:1032.0,close:1037.5,vol:1811200.0,ma5:1028.76,ma25:1058.01},
+  {date:'2026/03/03',open:1016.5,high:1018.0,low:983.9,close:986.3,vol:2616000.0,ma5:1029.16,ma25:1051.72},
+  {date:'2026/03/04',open:955.0,high:982.5,low:941.0,close:962.8,vol:3576100.0,ma5:1019.02,ma25:1045.7},
+  {date:'2026/03/05',open:975.8,high:1001.5,low:971.8,close:972.0,vol:2504700.0,ma5:1006.52,ma25:1039.94},
+  {date:'2026/03/06',open:979.0,high:996.3,low:969.2,close:996.3,vol:1915200.0,ma5:990.98,ma25:1035.79},
+  {date:'2026/03/09',open:947.8,high:972.5,low:941.3,close:970.2,vol:2875500.0,ma5:977.52,ma25:1031.5},
+  {date:'2026/03/10',open:970.2,high:973.8,low:940.1,close:946.2,vol:2754900.0,ma5:969.5,ma25:1025.86},
+  {date:'2026/03/11',open:939.9,high:940.0,low:905.1,close:911.0,vol:5635100.0,ma5:959.14,ma25:1019.0},
+  {date:'2026/03/12',open:911.0,high:913.7,low:886.5,close:900.6,vol:3834600.0,ma5:944.86,ma25:1011.11},
+  {date:'2026/03/13',open:887.2,high:918.1,low:886.2,close:893.1,vol:3068000.0,ma5:924.22,ma25:1003.31},
+  {date:'2026/03/16',open:890.0,high:908.0,low:887.6,close:889.8,vol:1836200.0,ma5:908.14,ma25:994.94},
+  {date:'2026/03/17',open:901.8,high:901.8,low:878.9,close:883.6,vol:1579100.0,ma5:895.62,ma25:986.35},
+  {date:'2026/03/18',open:888.0,high:891.4,low:882.9,close:890.0,vol:1887500.0,ma5:891.42,ma25:978.07},
+  {date:'2026/03/19',open:875.0,high:877.0,low:856.1,close:856.1,vol:2574400.0,ma5:882.52,ma25:969.95},
+  {date:'2026/03/23',open:842.2,high:844.0,low:823.3,close:826.5,vol:3009200.0,ma5:869.2,ma25:960.55},
+  {date:'2026/03/24',open:850.4,high:852.7,low:835.2,close:847.1,vol:2086000.0,ma5:860.66,ma25:954.92},
+  {date:'2026/03/25',open:845.0,high:874.3,low:844.3,close:869.5,vol:2083300.0,ma5:857.84,ma25:950.29},
+  {date:'2026/03/26',open:860.0,high:868.2,low:841.4,close:850.8,vol:2538900.0,ma5:850.0,ma25:945.14},
+  {date:'2026/03/27',open:853.5,high:855.9,low:840.1,close:852.5,vol:3247100.0,ma5:849.28,ma25:938.54}
+];
+const BUILTIN_NAME = 'ラウンドワン（3680）';
+
+// ===== グローバル変数 =====
+let allData = [];       // 全データ（古い順）
+let stockName = '';
+let questions = [];     // 問題候補リスト
+let currentQIdx = 0;
+let currentQ = null;    // 現在の問題
+
+let phase = 'upload';   // upload / watching / choosing / playing / result
+let direction = null;   // 'up' or 'down'
+let entryPrice = 0;
+let entryIdx = 0;       // カットオフの次のバー
+let drawnUpTo = 0;      // 現在描画済みインデックス
+let revealIdx = 0;      // リビール中の現在インデックス
+let animTimer = null;
+let animSpeed = 250;    // ms/bar
+let isSpeedUp = false;
+
+let practiceMode = 'random'; // random / golden / candle / volume
+let difficulty = 'easy'; // easy / normal / hard
+const DIFF_CONFIG = {
+  easy:   { label:'EASY',   timeLimit:0,  margin:false, timeText:'時間無制限' },
+  normal: { label:'NORMAL', timeLimit:30, margin:false, timeText:'30秒' },
+  hard:   { label:'HARD',   timeLimit:15, margin:true,  timeText:'15秒' },
+};
+let timeLeft = 0;
+let timerCountdown = null;
+
+function selectMode(el) {
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  practiceMode = el.dataset.mode;
+}
+
+let chips = 100000;
+let score = { win:0, lose:0 };
+let betAmount = 10000;
+
+const fmt = n => Math.round(n).toLocaleString();
+const fmtPct = n => (n>=0?'+':'')+n.toFixed(2)+'%';
+
+// ===== CSV読み込み =====
+function startWithBuiltinData() {
+  allData = BUILTIN_DATA;
+  stockName = BUILTIN_NAME;
+  generateQuestions();
+  document.getElementById('upload-screen').style.display='none';
+  document.getElementById('game-screen').style.display='flex';
+  document.getElementById('stock-name').textContent = '???';
+  startQuestion(0);
+}
+
+function loadCSV(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  stockName = file.name.replace('.csv','').replace(/"/g,'');
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      parseCSV(ev.target.result);
+    } catch(err) {
+      alert('CSVの読み込みに失敗しました。');
+    }
+  };
+  reader.readAsText(file, 'Shift-JIS');
+}
+
+function parseCSV(text) {
+  const lines = text.split('\n').filter(l=>l.trim());
+  const header = lines[0];
+
+  // カラム名を検出
+  const cols = header.split(',').map(c=>c.replace(/"/g,'').trim());
+  const iDate   = cols.findIndex(c=>c.includes('日付'));
+  const iOpen   = cols.findIndex(c=>c.includes('始値'));
+  const iHigh   = cols.findIndex(c=>c.includes('高値'));
+  const iLow    = cols.findIndex(c=>c.includes('安値'));
+  const iClose  = cols.findIndex(c=>c.includes('終値'));
+  const iVol    = cols.findIndex(c=>c.includes('出来高'));
+  const iMA5    = cols.findIndex(c=>c==='5DMA'||c.includes('5DMA'));
+  const iMA25   = cols.findIndex(c=>c==='25DMA'||c.includes('25DMA'));
+
+  if(iDate<0||iOpen<0||iClose<0) { alert('CSVのフォーマットが対応していません'); return; }
+
+  const rows = [];
+  for(let i=1;i<lines.length;i++) {
+    const cells = lines[i].split(',').map(c=>c.replace(/"/g,'').trim());
+    if(!cells[iDate]) continue;
+    const toNum = idx => idx>=0 ? parseFloat(cells[idx].replace(/,/g,'')) || 0 : 0;
+    rows.push({
+      date:  cells[iDate],
+      open:  toNum(iOpen),
+      high:  toNum(iHigh),
+      low:   toNum(iLow),
+      close: toNum(iClose),
+      vol:   toNum(iVol),
+      ma5:   toNum(iMA5),
+      ma25:  toNum(iMA25),
+    });
+  }
+
+  // 日付順（古い→新しい）にソート
+  rows.sort((a,b)=> new Date(a.date)-new Date(b.date));
+  allData = rows;
+
+  // 問題自動生成
+  generateQuestions();
+
+  // ゲーム画面へ
+  document.getElementById('upload-screen').style.display = 'none';
+  const gs = document.getElementById('game-screen');
+  gs.style.display = 'flex';
+  document.getElementById('stock-name').textContent = '???';
+  startQuestion(0);
+}
+
+// ===== 問題自動生成 =====
+function generateQuestions() {
+  questions = [];
+  const MIN_BEFORE = 40; // カットオフ前に最低40本
+  const MIN_AFTER  = 10; // カットオフ後に最低10本
+
+  for(let i=MIN_BEFORE; i<allData.length-MIN_AFTER; i++) {
+    const d = allData[i];
+    const prev = allData[i-1];
+
+    // ゴールデンクロス（5MAが25MAを下から上に抜いた）
+    if(d.ma5>0 && d.ma25>0 && prev.ma5>0 && prev.ma25>0) {
+      if(prev.ma5 <= prev.ma25 && d.ma5 > d.ma25) {
+        questions.push({ idx:i, type:'golden', label:'🟡 ゴールデンクロス発生', dir:'up' });
+      }
+      // デッドクロス
+      if(prev.ma5 >= prev.ma25 && d.ma5 < d.ma25) {
+        questions.push({ idx:i, type:'dead', label:'☠️ デッドクロス発生', dir:'down' });
+      }
+    }
+
+    // 大陽線（前日比+5%以上）
+    const chgPct = prev.close>0 ? (d.close-prev.close)/prev.close*100 : 0;
+    if(chgPct >= 5) {
+      questions.push({ idx:i, type:'big-up', label:'🟢 大陽線（+'+chgPct.toFixed(1)+'%）', dir:'up' });
+    }
+    // 大陰線
+    if(chgPct <= -5) {
+      questions.push({ idx:i, type:'big-down', label:'🔴 大陰線（'+chgPct.toFixed(1)+'%）', dir:'down' });
+    }
+
+    // 出来高急増（直近25日平均の2倍以上）
+    if(i >= 25) {
+      const avgVol = allData.slice(i-25,i).reduce((s,r)=>s+r.vol,0)/25;
+      if(d.vol >= avgVol*2 && d.vol > 0) {
+        questions.push({ idx:i, type:'vol-surge', label:'📊 出来高急増（平均の'+((d.vol/avgVol).toFixed(1))+'倍）', dir:null });
+      }
+    }
+  }
+
+  // モードフィルタリング
+  if(practiceMode !== 'random') {
+    const modeMap = {
+      golden: ['golden','dead'],
+      candle: ['big-up','big-down'],
+      volume: ['vol-surge'],
+    };
+    const allowed = modeMap[practiceMode] || [];
+    questions = questions.filter(q => allowed.includes(q.type));
+  }
+
+  // シャッフル
+  questions = questions.sort(()=>Math.random()-.5);
+  updateQuestionListInfo();
+}
+
+function updateQuestionListInfo() {
+  document.getElementById('q-list-info').textContent =
+    `問題候補 ${questions.length}問 | 残り ${questions.length - currentQIdx}問`;
+}
+
+// ===== 問題開始 =====
+function startQuestion(idx) {
+  if(idx >= questions.length) {
+    alert('全問題完了！CSVを変えて続けるか、もう一度最初から。');
+    currentQIdx = 0;
+    startQuestion(0);
+    return;
+  }
+
+  currentQIdx = idx;
+  currentQ = questions[idx];
+  phase = 'watching';
+  direction = null;
+  entryPrice = 0;
+  drawnUpTo = 0;
+  revealIdx = currentQ.idx + 1;
+  isSpeedUp = false;
+  animSpeed = 250;
+
+  updateQuestionListInfo();
+
+  // UI初期化
+  setPhaseBadge('watching', 'WATCHING');
+  document.getElementById('question-info').className = 'question-info';
+  document.getElementById('bet-area').className = 'bet-area';
+  document.getElementById('predict-area').className = 'predict-area';
+  document.getElementById('play-btns').className = 'play-btns';
+  document.getElementById('position-bar').className = 'position-bar';
+  document.getElementById('result-area').className = 'result-area';
+  document.getElementById('result-msg-area') && (document.getElementById('result-msg-area').style.display='none');
+
+  // アニメーション描画
+  if(animTimer) clearInterval(animTimer);
+  drawFrame(currentQ.idx); // まず全体を一気に表示
+
+  setTimeout(()=>{
+    const cfg = DIFF_CONFIG[difficulty];
+
+    // ボタンラベルを難易度に応じて変更
+    const downBtn = document.querySelector('.btn-down');
+    if(cfg.margin) {
+      downBtn.innerHTML = '▼ 売り<span class="sub">Short / 下落予測</span>';
+    } else {
+      downBtn.innerHTML = '👁 見送り<span class="sub">エントリーしない</span>';
+    }
+
+    // BETエリアはHARDのみ表示
+    document.getElementById('bet-area').className = cfg.margin ? 'bet-area show' : 'bet-area';
+
+    // 問題情報表示
+    document.getElementById('question-info').className = 'question-info show';
+    document.getElementById('question-info').textContent = currentQ.label + '　この後どう動く？';
+    setPhaseBadge('choosing', 'YOUR CALL');
+    document.getElementById('predict-area').className = 'predict-area show';
+
+    // タイマー開始
+    if(cfg.timeLimit > 0) {
+      startCountdown(cfg.timeLimit);
+    } else {
+      document.getElementById('timer-wrap').className = 'timer-wrap';
+    }
+  }, 200);
+}
+
+// ===== カウントダウン =====
+function startCountdown(seconds) {
+  timeLeft = seconds;
+  const wrap = document.getElementById('timer-wrap');
+  const num  = document.getElementById('timer-num');
+  const bar  = document.getElementById('timer-bar-inner');
+  wrap.className = 'timer-wrap show';
+  num.textContent = timeLeft;
+  num.className = 'timer-num';
+  bar.style.width = '100%';
+
+  if(timerCountdown) clearInterval(timerCountdown);
+  timerCountdown = setInterval(()=>{
+    timeLeft--;
+    num.textContent = timeLeft;
+    bar.style.width = (timeLeft / seconds * 100) + '%';
+    if(timeLeft <= 5) num.className = 'timer-num warning';
+    if(timeLeft <= 0) {
+      clearInterval(timerCountdown);
+      wrap.className = 'timer-wrap';
+      // 時間切れ → 強制的に「見送り」扱いでコマ送り開始
+      enterPosition('skip_timeout');
+    }
+  }, 1000);
+}
+
+function stopCountdown() {
+  if(timerCountdown) clearInterval(timerCountdown);
+  document.getElementById('timer-wrap').className = 'timer-wrap';
+}
+
+// ===== 描画 =====
+function drawFrame(upToIdx) {
+  drawnUpTo = upToIdx;
+  const slice = allData.slice(0, upToIdx+1);
+  drawCharts(slice, upToIdx === currentQ.idx);
+
+  // 現在値更新
+  const d = allData[upToIdx];
+  document.getElementById('stock-price').textContent = fmt(d.close);
+  document.getElementById('chart-date-badge').textContent = d.date;
+
+  const prev = upToIdx>0 ? allData[upToIdx-1] : d;
+  const chg = d.close - prev.close;
+  const chgPct = prev.close>0 ? chg/prev.close*100 : 0;
+  const cel = document.getElementById('stock-change');
+  cel.textContent = (chg>=0?'+':'')+fmt(chg)+' ('+chgPct.toFixed(2)+'%)';
+  cel.className = 'stock-change '+(chg>=0?'up':'down');
+
+  // ポジション中なら損益更新
+  if(phase==='playing' && entryPrice>0) {
+    updatePositionBar(d.close);
+  }
+}
+
+function drawCharts(slice, showCutoff) {
+  const mc = document.getElementById('main-chart');
+  const vc = document.getElementById('vol-chart');
+  const W = mc.parentElement.clientWidth;
+  mc.width = W; mc.height = 260;
+  vc.width = W; vc.height = 55;
+
+  const mCtx = mc.getContext('2d');
+  const vCtx = vc.getContext('2d');
+  mCtx.clearRect(0,0,W,260);
+  vCtx.clearRect(0,0,W,55);
+
+  if(!slice.length) return;
+
+  const PAD = {top:22,right:58,bottom:22,left:6};
+  const H = 260, VH = 55;
+
+  // 価格軸は問題全範囲（カットオフ〜最終日）のhigh/lowで固定してスケールが変わらないようにする
+  const rangeData = currentQ ? allData.slice(0, allData.length) : slice;
+  const highs  = rangeData.map(d=>d.high).filter(v=>v>0);
+  const lows   = rangeData.map(d=>d.low).filter(v=>v>0);
+  const maxP   = Math.max(...highs)*1.003;
+  const minP   = Math.min(...lows)*0.997;
+  const maxV   = Math.max(...slice.map(d=>d.vol));
+
+  const cW = W-PAD.left-PAD.right;
+  const n  = slice.length;
+  const spacing = cW/n;
+  const barW = Math.max(1.5, spacing*0.7);
+
+  const toX = i => PAD.left + i*spacing + spacing/2;
+  const toY = p => PAD.top + (maxP-p)/(maxP-minP)*(H-PAD.top-PAD.bottom);
+  const toVY= v => VH - (v/maxV)*(VH-8) - 4;
+
+  // グリッド
+  mCtx.strokeStyle='#21262d'; mCtx.lineWidth=1;
+  for(let i=0;i<5;i++){
+    const y=PAD.top+i*(H-PAD.top-PAD.bottom)/4;
+    mCtx.beginPath(); mCtx.moveTo(PAD.left,y); mCtx.lineTo(W-PAD.right,y); mCtx.stroke();
+    const p=maxP-i*(maxP-minP)/4;
+    mCtx.fillStyle='#7d8590'; mCtx.font='10px Share Tech Mono,monospace'; mCtx.textAlign='right';
+    mCtx.fillText(fmt(p),W-2,y+4);
+  }
+
+  // MA線
+  const closes = slice.map(d=>d.close);
+  function calcMA(arr,per){ return arr.map((v,i)=>i<per-1?null:arr.slice(i-per+1,i+1).reduce((a,b)=>a+b,0)/per); }
+  function drawMA(ma,color){
+    mCtx.beginPath(); mCtx.strokeStyle=color; mCtx.lineWidth=1.2; let st=false;
+    ma.forEach((v,i)=>{ if(v===null)return; const x=toX(i),y=toY(v); if(!st){mCtx.moveTo(x,y);st=true;}else mCtx.lineTo(x,y); });
+    mCtx.stroke();
+  }
+
+  // CSVのMA優先、なければ計算
+  const useCSVma = slice.some(d=>d.ma5>0);
+  if(useCSVma) {
+    // CSVのMA線
+    function drawMAFromData(key,color){
+      mCtx.beginPath(); mCtx.strokeStyle=color; mCtx.lineWidth=1.2; let st=false;
+      slice.forEach((d,i)=>{ if(!d[key])return; const x=toX(i),y=toY(d[key]); if(!st){mCtx.moveTo(x,y);st=true;}else mCtx.lineTo(x,y); });
+      mCtx.stroke();
+    }
+    drawMAFromData('ma25','#2e7d32');
+    drawMAFromData('ma5','#8e24aa');
+  } else {
+    drawMA(calcMA(closes,75),'#3d5a8a');
+    drawMA(calcMA(closes,25),'#2e7d32');
+    drawMA(calcMA(closes,5),'#8e24aa');
+  }
+
+  // ローソク足・出来高
+  slice.forEach((d,i)=>{
+    const isUp = d.close>=d.open;
+    const color = isUp?'#3fb950':'#f85149';
+    const x=toX(i), hw=Math.max(1,barW/2);
+
+    mCtx.strokeStyle=color; mCtx.lineWidth=1;
+    mCtx.beginPath(); mCtx.moveTo(x,toY(d.high)); mCtx.lineTo(x,toY(d.low)); mCtx.stroke();
+
+    const yO=toY(d.open),yC=toY(d.close);
+    const bodyTop=Math.min(yO,yC), bodyH=Math.max(1.5,Math.abs(yO-yC));
+    mCtx.fillStyle=color;
+    mCtx.fillRect(x-hw,bodyTop,hw*2,bodyH);
+
+    if(d.vol>0){
+      vCtx.fillStyle=isUp?'rgba(63,185,80,.6)':'rgba(248,81,73,.6)';
+      const vy=toVY(d.vol), vw=Math.max(1.5,barW-1);
+      vCtx.fillRect(x-vw/2,vy,vw,VH-vy-4);
+    }
+  });
+
+  // カットオフライン
+  if(showCutoff){
+    const cx=toX(n-1);
+    mCtx.setLineDash([4,3]); mCtx.strokeStyle='#e3b341'; mCtx.lineWidth=1.5;
+    mCtx.beginPath(); mCtx.moveTo(cx,PAD.top); mCtx.lineTo(cx,H-PAD.bottom); mCtx.stroke();
+    mCtx.setLineDash([]);
+    mCtx.fillStyle='#e3b341'; mCtx.font='bold 9px Noto Sans JP,sans-serif'; mCtx.textAlign='center';
+    mCtx.fillText('判定',cx,PAD.top-6);
+  }
+
+  // エントリーライン
+  if(phase==='playing'&&entryPrice>0){
+    const ey=toY(entryPrice);
+    mCtx.setLineDash([3,3]); mCtx.strokeStyle='#58a6ff'; mCtx.lineWidth=1;
+    mCtx.beginPath(); mCtx.moveTo(PAD.left,ey); mCtx.lineTo(W-PAD.right,ey); mCtx.stroke();
+    mCtx.setLineDash([]);
+    mCtx.fillStyle='rgba(88,166,255,.15)';
+    mCtx.fillRect(PAD.left,Math.min(ey,toY(slice[slice.length-1].close)),W-PAD.right-PAD.left,Math.abs(ey-toY(slice[slice.length-1].close)));
+  }
+
+  // 日付ラベル
+  mCtx.textAlign='center'; mCtx.fillStyle='#7d8590'; mCtx.font='9px Share Tech Mono,monospace';
+  const step=Math.max(1,Math.floor(n/5));
+  for(let i=0;i<n;i+=step) mCtx.fillText(slice[i].date.substring(2,7),toX(i),H-5);
+
+  // 現在値バッジ
+  const lc=slice[slice.length-1].close, ly=toY(lc);
+  mCtx.fillStyle='#58a6ff';
+  mCtx.fillRect(W-PAD.right+1,ly-8,PAD.right-2,16);
+  mCtx.fillStyle='#0d1117'; mCtx.font='bold 9px Share Tech Mono,monospace'; mCtx.textAlign='center';
+  mCtx.fillText(fmt(lc),W-PAD.right/2,ly+4);
+}
+
+// ===== 難易度選択 =====
+function selectDiff(el) {
+  document.querySelectorAll('.diff-select-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  difficulty = el.dataset.diff;
+}
+
+// ===== エントリー =====
+function enterPosition(dir) {
+  const cfg = DIFF_CONFIG[difficulty];
+
+  // タイムアウト or 見送り
+  if(dir === 'skip_timeout' || (!cfg.margin && dir === 'down')) {
+    // 見送りとして処理：コマ送りして正解を確認するだけ
+    direction = 'skip';
+    entryIdx = currentQ.idx + 1;
+    if(entryIdx >= allData.length) return;
+    entryPrice = allData[currentQ.idx].close;
+    phase = 'playing';
+    setPhaseBadge('playing', dir==='skip_timeout' ? '⏱ TIME UP' : '👁 WATCH');
+    document.getElementById('bet-area').className='bet-area';
+    document.getElementById('predict-area').className='predict-area';
+    document.getElementById('play-btns').className='play-btns show';
+    // 見送りなのでポジションバーは非表示
+    document.getElementById('position-bar').className='position-bar';
+    startReveal();
+    return;
+  }
+
+  direction = dir;
+  entryIdx = currentQ.idx + 1;
+  if(entryIdx >= allData.length) return;
+  entryPrice = allData[currentQ.idx].close;
+  phase = 'playing';
+
+  // フラッシュ
+  const fl=document.getElementById('flash-overlay');
+  fl.className=dir==='up'?'up show':'down show';
+  setTimeout(()=>fl.className='',400);
+
+  setPhaseBadge('playing', dir==='up'?'LONG ▲':'SHORT ▼');
+  document.getElementById('bet-area').className='bet-area';
+  document.getElementById('predict-area').className='predict-area';
+  document.getElementById('play-btns').className='play-btns show';
+  document.getElementById('position-bar').className='position-bar show';
+  document.getElementById('pos-entry').textContent = fmt(entryPrice);
+
+  // コマ送り開始
+  startReveal();
+}
+
+function updatePositionBar(currentPrice) {
+  const pnlPct = direction==='up'
+    ? (currentPrice-entryPrice)/entryPrice*100
+    : (entryPrice-currentPrice)/entryPrice*100;
+  const pnlChip = Math.round(betAmount * pnlPct/100);
+
+  document.getElementById('pos-current').textContent = fmt(currentPrice);
+  document.getElementById('pos-current').className = 'pos-val '+(pnlPct>=0?'up':'down');
+
+  document.getElementById('pos-pnl').textContent = (pnlPct>=0?'+':'')+pnlPct.toFixed(2)+'% ('+(pnlChip>=0?'+':'')+fmt(pnlChip)+')';
+  document.getElementById('pos-pnl').className = 'pos-val '+(pnlPct>=0?'up':'down');
+}
+
+// ===== コマ送り =====
+function startReveal() {
+  stopCountdown();
+  revealIdx = entryIdx;
+  if(animTimer) clearInterval(animTimer);
+  animTimer = setInterval(revealStep, animSpeed);
+}
+
+function revealStep() {
+  if(revealIdx >= allData.length-1) {
+    clearInterval(animTimer);
+    // 強制決済
+    settlePosition(allData[allData.length-1].close, true);
+    return;
+  }
+  revealIdx++;
+  drawFrame(revealIdx);
+}
+
+function toggleSpeed() {
+  isSpeedUp = !isSpeedUp;
+  animSpeed = isSpeedUp ? 80 : 250;
+  document.getElementById('speed-btn').textContent = isSpeedUp ? '1×' : '2×';
+  if(animTimer) {
+    clearInterval(animTimer);
+    animTimer = setInterval(revealStep, animSpeed);
+  }
+}
+
+// ===== 決済 =====
+function requestSettle() {
+  if(phase !== 'playing') return;
+  clearInterval(animTimer);
+  const currentPrice = allData[revealIdx].close;
+  const pnlPct = direction==='up'
+    ? (currentPrice-entryPrice)/entryPrice*100
+    : (entryPrice-currentPrice)/entryPrice*100;
+
+  document.getElementById('dialog-body').innerHTML =
+    `エントリー: <strong>${fmt(entryPrice)}</strong><br>
+     現在価格: <strong>${fmt(currentPrice)}</strong><br>
+     損益: <strong style="color:${pnlPct>=0?'#3fb950':'#f85149'}">${(pnlPct>=0?'+':'')+pnlPct.toFixed(2)}%</strong><br><br>
+     ここで決済しますか？`;
+
+  document.getElementById('confirm-dialog').classList.add('show');
+}
+
+function confirmSettle(yes) {
+  document.getElementById('confirm-dialog').classList.remove('show');
+  if(yes) {
+    settlePosition(allData[revealIdx].close, false);
+  } else {
+    // 再開
+    animTimer = setInterval(revealStep, animSpeed);
+  }
+}
+
+function settlePosition(settlePrice, forced) {
+  clearInterval(animTimer);
+  stopCountdown();
+  phase = 'result';
+
+  const isSkip = direction === 'skip' || direction === 'skip_timeout';
+
+  if(isSkip) {
+    // 見送りモード：損益なし、予測正解かどうかだけ判定
+    const actualDir = settlePrice > entryPrice ? 'up' : 'down';
+    const teacherDir = currentQ.dir;
+    const isCorrect = teacherDir ? actualDir === teacherDir : false;
+    if(isCorrect) score.win++; else score.lose++;
+    updateGlobalUI();
+    setPhaseBadge('result','RESULT');
+    document.getElementById('play-btns').className='play-btns';
+    showResultSkip(settlePrice, actualDir, forced);
+    return;
+  }
+
+  const pnlPct = direction==='up'
+    ? (settlePrice-entryPrice)/entryPrice*100
+    : (entryPrice-settlePrice)/entryPrice*100;
+  const isWin = pnlPct > 0;
+  const chipDelta = Math.round(betAmount * pnlPct/100);
+
+  chips = Math.max(0, chips + chipDelta);
+  if(isWin) score.win++; else score.lose++;
+
+  updateGlobalUI();
+  setPhaseBadge('result','RESULT');
+  document.getElementById('play-btns').className='play-btns';
+  document.getElementById('position-bar').className='position-bar';
+
+  showResult(isWin, settlePrice, pnlPct, chipDelta, forced);
+}
+
+// 見送りモードの結果表示
+function showResultSkip(settlePrice, actualDir, forced) {
+  const ra = document.getElementById('result-area');
+  ra.className = 'result-area show';
+
+  const teacherDir = currentQ.dir;
+  const isCorrect = teacherDir ? actualDir === teacherDir : null;
+
+  // ヘッダー
+  const verdict = document.getElementById('result-verdict');
+  const chip    = document.getElementById('result-chip');
+
+  if(direction === 'skip_timeout') {
+    verdict.textContent = '⏱ TIME UP';
+    verdict.className = 'result-verdict';
+    chip.textContent = '見送り（時間切れ）';
+    chip.className = 'result-chip';
+  } else {
+    verdict.textContent = '👁 見送り';
+    verdict.className = 'result-verdict';
+    chip.textContent = 'チップ変動なし';
+    chip.className = 'result-chip';
+  }
+
+  // stats
+  document.getElementById('r-entry').textContent = fmt(entryPrice);
+  document.getElementById('r-entry').className = 'stat-val';
+  document.getElementById('r-settle').textContent = fmt(settlePrice);
+  document.getElementById('r-settle').className = 'stat-val '+(actualDir==='up'?'up':'down');
+  const chgPct = (settlePrice-entryPrice)/entryPrice*100;
+  document.getElementById('r-change').textContent = (chgPct>=0?'+':'')+chgPct.toFixed(2)+'%';
+  document.getElementById('r-change').className = 'stat-val '+(chgPct>=0?'up':'down');
+
+  // コメント
+  const comment = document.getElementById('result-comment');
+  if(forced) {
+    comment.textContent = `実際は${actualDir==='up'?'上昇📈':'下落📉'}しました。${isCorrect?'予測は正しかった！':'見送りは正解でした。'}`;
+    comment.className = 'result-comment '+(isCorrect?'good':'');
+  } else if(teacherDir && isCorrect !== null) {
+    comment.textContent = `実際は${actualDir==='up'?'上昇📈':'下落📉'}。教科書的には${teacherDir==='up'?'上昇':'下落'}サインでした。`;
+    comment.className = 'result-comment '+(isCorrect?'good':'bad');
+  } else {
+    comment.textContent = `実際は${actualDir==='up'?'上昇📈':'下落📉'}しました。`;
+    comment.className = 'result-comment';
+  }
+}
+
+function showResult(isWin, settlePrice, pnlPct, chipDelta, forced) {
+  const ra = document.getElementById('result-area');
+  ra.className = 'result-area show';
+
+  document.getElementById('result-verdict').textContent = isWin ? 'WIN !' : 'LOSE...';
+  document.getElementById('result-verdict').className = 'result-verdict '+(isWin?'win':'lose');
+
+  const rc = document.getElementById('result-chip');
+  rc.textContent = (chipDelta>=0?'+':'')+fmt(chipDelta)+'円';
+  rc.className = 'result-chip '+(chipDelta>=0?'gain':'loss');
+
+  document.getElementById('r-entry').textContent = fmt(entryPrice);
+  document.getElementById('r-entry').className = 'stat-val';
+
+  document.getElementById('r-settle').textContent = fmt(settlePrice);
+  document.getElementById('r-settle').className = 'stat-val '+(isWin?'up':'down');
+
+  document.getElementById('r-change').textContent = (pnlPct>=0?'+':'')+pnlPct.toFixed(2)+'%';
+  document.getElementById('r-change').className = 'stat-val '+(pnlPct>=0?'up':'down');
+
+  // コメント
+  const comment = document.getElementById('result-comment');
+  const teacherDir = currentQ.dir;
+  if(forced) {
+    comment.textContent = '最終日まで保有して強制決済になりました。';
+    comment.className = 'result-comment';
+  } else if(isWin && teacherDir && direction===teacherDir) {
+    comment.textContent = `教科書的な方向と一致し、利益も出ました！`;
+    comment.className = 'result-comment good';
+  } else if(!isWin && teacherDir && direction!==teacherDir) {
+    comment.textContent = `教科書的には${teacherDir==='up'?'上昇':'下落'}サインでした。`;
+    comment.className = 'result-comment bad';
+  } else if(isWin) {
+    comment.textContent = '利益確定成功！';
+    comment.className = 'result-comment good';
+  } else {
+    comment.textContent = '損失が出ました。次の問題で取り返しましょう！';
+    comment.className = 'result-comment bad';
+  }
+}
+
+// ===== ユーティリティ =====
+function setPhaseBadge(cls, text) {
+  const el = document.getElementById('phase-badge');
+  el.className = 'phase-badge '+cls;
+  el.textContent = text;
+}
+
+function selectBet(el) {
+  document.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  betAmount = parseInt(el.dataset.val);
+}
+
+function updateGlobalUI() {
+  document.getElementById('chip-count').textContent = fmt(chips);
+  document.getElementById('s-win').textContent = score.win;
+  document.getElementById('s-lose').textContent = score.lose;
+}
+
+function nextQuestion() {
+  startQuestion(currentQIdx + 1);
+}
+
+function changeCSV() {
+  document.getElementById('upload-screen').style.display='flex';
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('csv-input').value='';
+}
+</script>
+</body>
+</html>
