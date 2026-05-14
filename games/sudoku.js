@@ -140,6 +140,8 @@ let currentDiff = 'easy';
 let isGameOver = false;
 let hintsUsed = 0;
 let lastEntered = null; // {r,c} for entry animation
+let hintBusy = false;   // ヒント演出中フラグ（多重起動防止）
+let gameGen = 0;        // ゲーム世代カウンタ（演出途中でリセットされた時の保護）
 
 let isMultiSelectMode = false;
 let multiSelectedCells = new Set();
@@ -189,6 +191,9 @@ async function startGame(diff) {
   completedCols.clear();
   completedBoxes.clear();
   lastEntered = null;
+  hintBusy = false;
+  gameGen++;
+  document.querySelectorAll('.hint-writer').forEach(el => el.remove());
 
   bumpStats(diff, false);
 
@@ -482,8 +487,19 @@ function toggleMemo() {
 }
 
 // ---------- HINT ----------
+// 演出タイミング（調整しやすいよう定数化）
+const HINT1_SHOW_MS       = 1000;  // ヒント1が表示されている時間(ms)
+const HINT1_EXIT_MS       = 400;   // ヒント1が退場しきるまでの待ち(ms)
+const HINT_WRITE_DURATION = 2800;  // 書き込みアニメ(ヒント2/3)の長さ(ms)
+const HINT_SWAP_MS        = 150;   // ヒント2/3の切り替え間隔(ms)
+const HINT_WRITER_W_CELLS = 2.8;   // 書き込みキャラの横幅(マス数)
+const HINT_TIP_X          = 0.777; // 画像内のペン先X位置(0〜1) ヒント2/3のペン先実測平均
+const HINT_TIP_Y          = 0.125; // 画像内のペン先Y位置(0〜1) ヒント2/3のペン先実測平均
+const HINT_BOB_PX         = 3;     // 書き込み中の上下ゆれ幅(px)。0で無効
+const HINT_SE_VOLUME      = 0.21;  // 鉛筆SE(油性マーカー)の音量(0〜1)。小さめ
+
 function useHint() {
-  if (isGameOver) return;
+  if (isGameOver || hintBusy) return;
   // pick selected cell if empty/wrong, else first empty/wrong
   let target = null;
   if (selectedCell) {
@@ -497,33 +513,124 @@ function useHint() {
   }
   if (!target) return;
   const {r,c} = target;
-  const prev = { val: userBoard[r][c], memo: new Set(memoBoard[r][c]) };
-  history.push({r, c, prev});
-  userBoard[r][c] = solution[r][c];
-  memoBoard[r][c].clear();
-  givenMask[r][c] = true; // lock as known
+
   hintsUsed++;
-  selectedCell = {r, c};
-  lastEntered = {r,c};
-  autoRemoveMemo(r,c,solution[r][c]);
-  renderBoard();
-  updateNumpad();
   playSound('hint');
-  showHintCharacter();
-  // hinted glow
-  setTimeout(()=>{
-    const idx = r*9 + c;
-    const cellEl = $('board').children[idx];
-    if (cellEl) {
-      cellEl.classList.add('hinted');
-      setTimeout(()=>cellEl.classList.remove('hinted'), 900);
-    }
+  showHintCharacter();   // ヒント1 が画面下から登場
+
+  // 実際にヒントの数字を盤面に確定させる処理
+  function commitHint() {
+    const prev = { val: userBoard[r][c], memo: new Set(memoBoard[r][c]) };
+    history.push({r, c, prev});
+    userBoard[r][c] = solution[r][c];
+    memoBoard[r][c].clear();
+    givenMask[r][c] = true; // lock as known
+    selectedCell = {r, c};
+    lastEntered = {r,c};
+    autoRemoveMemo(r,c,solution[r][c]);
+    renderBoard();
+    updateNumpad();
+    // 書き込みが終わったら金色は残さない。即座に通常マス＋数字で確定させる
     setTimeout(()=>checkCompletions(r,c), 50);
     if (isBoardComplete()) {
       clearInterval(timerInterval);
       setTimeout(()=>showResult(true), 600);
     }
-  }, 0);
+  }
+
+  // アニメOFF時は即座に確定（従来どおり）
+  if (!getSettings().animations) {
+    commitHint();
+    return;
+  }
+
+  // 対象マスを選択状態にして見せる（数字はまだ出さない）
+  hintBusy = true;
+  const myGen = gameGen;
+  selectedCell = {r, c};
+  renderBoard();
+
+  // ② 約1秒後 → ヒント1を退場 → ③ 退場しきったら → ④ ヒント2/3 で書き込み
+  setTimeout(()=>{
+    if (myGen !== gameGen) { hintBusy = false; return; }
+    hideHintCharacter();   // ヒント1 消える
+    setTimeout(()=>{
+      if (myGen !== gameGen) { hintBusy = false; return; }
+      playWritingAnimation(r, c, ()=>{
+        if (myGen === gameGen) commitHint();
+        hintBusy = false;
+      });
+    }, HINT1_EXIT_MS);
+  }, HINT1_SHOW_MS);
+}
+
+// ヒント2/3 を対象マス上で交互表示して「書き込み中」に見せる
+function playWritingAnimation(r, c, onDone) {
+  const wrap = document.querySelector('.board-wrap');
+  const boardEl = $('board');
+  const cellEl = boardEl && boardEl.children[r*9 + c];
+  if (!wrap || !cellEl) { onDone(); return; }
+
+  // 既存の書き込みキャラが残っていたら掃除
+  const old = wrap.querySelector('.hint-writer');
+  if (old) old.remove();
+
+  // 対象マスの位置を board-wrap 基準で算出
+  const wrapRect = wrap.getBoundingClientRect();
+  const cellRect = cellEl.getBoundingClientRect();
+  const cellCx = cellRect.left - wrapRect.left + cellRect.width / 2;
+  const cellCy = cellRect.top  - wrapRect.top  + cellRect.height / 2;
+
+  const writerW = HINT_WRITER_W_CELLS * cellRect.width;
+  const writerH = writerW * (1536 / 1024); // 画像比率
+  // ペン先が対象マスの中心に来るよう配置
+  const left = cellCx - HINT_TIP_X * writerW;
+  const top  = cellCy - HINT_TIP_Y * writerH;
+
+  const writer = document.createElement('div');
+  writer.className = 'hint-writer';
+  writer.style.left   = left + 'px';
+  writer.style.top    = top + 'px';
+  writer.style.width  = writerW + 'px';
+  writer.style.height = writerH + 'px';
+
+  const img2 = document.createElement('img'); img2.src = 'ヒント2.png'; img2.alt = '';
+  const img3 = document.createElement('img'); img3.src = 'ヒント3.png'; img3.alt = '';
+  img3.style.opacity = '0';
+  writer.appendChild(img2);
+  writer.appendChild(img3);
+  wrap.appendChild(writer);
+  cellEl.classList.add('hint-writing'); // 書き込み中はマスを金色に（数字は終わりに出る）
+
+  // 鉛筆SE（油性マーカー）を書き込み中だけ鳴らす・音量小さめ
+  let writeSE = null;
+  if (getSettings().sound) {
+    try {
+      writeSE = new Audio('油性マーカーで字を書く.mp3');
+      writeSE.volume = HINT_SE_VOLUME;
+      writeSE.play().catch(()=>{});
+    } catch (e) {}
+  }
+
+  // ヒント2/3 を交互に切り替え（＋微妙な上下ゆれ）
+  let frame = 0;
+  const swap = setInterval(()=>{
+    frame++;
+    const showThree = frame % 2 === 1;
+    img2.style.opacity = showThree ? '0' : '1';
+    img3.style.opacity = showThree ? '1' : '0';
+    writer.style.transform = `translateY(${showThree ? -HINT_BOB_PX : 0}px)`;
+  }, HINT_SWAP_MS);
+
+  // 一定時間後：切り替え停止 → 数字確定 → キャラをフェードアウトして消去
+  setTimeout(()=>{
+    clearInterval(swap);
+    if (writeSE) { writeSE.pause(); writeSE.currentTime = 0; }
+    writer.style.transform = 'translateY(0)';
+    onDone();                       // ここで数字が出る
+    writer.classList.add('done');   // フェードアウト（素早く）
+    setTimeout(()=>{ if (writer.parentNode) writer.remove(); }, 150);
+  }, HINT_WRITE_DURATION);
 }
 
 function updateNumpad() {
@@ -761,6 +868,12 @@ function showHintCharacter() {
   showHintCharacter._t = setTimeout(()=>{
     el.classList.remove('show');
   }, 2200);
+}
+function hideHintCharacter() {
+  const el = $('hint-character');
+  if (!el) return;
+  clearTimeout(showHintCharacter._t);
+  el.classList.remove('show');
 }
 
 // ---------- CONFETTI ----------
