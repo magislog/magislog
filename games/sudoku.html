@@ -3,605 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>SUDOKU</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+<title>SUDOKU — ナンプレ</title>
 
-:root {
-  --bg: #f4f6fa;
-  --surface: #ffffff;
-  --accent: #1a6fd4;
-  --accent2: #1558a8;
-  --text: #1a1a2e;
-  --muted: #999;
-  --border: #c5d3ea;
-  --cell-bg: #ffffff;
-  --cell-given: #f8f9fc;
-  --cell-selected: #dceeff;
-  --cell-highlight: #d8ecff;
-  --cell-error: #fff0f0;
-  --cell-error-text: #d94040;
-  --memo-color: #1a6fd4;
-  --radius: 12px;
-  --box-border: #1a6fd4;
-  --cell-border: #c5d3ea;
-  --multi-select: #ffe0a0;
-  --multi-select-border: #e8a020;
-}
+<!-- Fonts: Premium テーマのスタック（Fraunces 斜体 + Inter） -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;500;600;700&display=swap">
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Noto Sans JP', sans-serif;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12px 8px 24px;
-}
-
-h1 {
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(2rem, 8vw, 3rem);
-  letter-spacing: 0.2em;
-  color: var(--accent);
-  margin-bottom: 2px;
-}
-
-.subtitle {
-  font-size: 0.65rem;
-  color: var(--muted);
-  letter-spacing: 0.2em;
-  margin-bottom: 16px;
-}
-
-/* ===== 難易度選択 ===== */
-#difficulty-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  max-width: 340px;
-  animation: fadeIn 0.4s ease;
-}
-
-.diff-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  color: var(--muted);
-}
-
-.diff-btn {
-  width: 100%;
-  padding: 16px 20px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  font-family: 'Noto Sans JP', sans-serif;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.diff-btn:hover, .diff-btn:active {
-  border-color: var(--accent);
-  background: #eef5ff;
-}
-
-.diff-btn .dn { font-weight: 700; font-size: 1rem; color: var(--accent); }
-.diff-btn .dd { font-size: 0.72rem; color: var(--muted); }
-
-/* ===== ゲーム画面 ===== */
-#game-screen {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 400px;
-  gap: 12px;
-  animation: fadeIn 0.3s ease;
-}
-
-/* ヘッダー情報 */
-.game-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 0 4px;
-}
-
-.diff-badge {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  background: #eef2fb;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-
-.timer {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.6rem;
-  letter-spacing: 0.1em;
-  color: var(--text);
-}
-
-.timer.warning { color: #e05555; }
-
-.mistake-counter {
-  font-size: 0.72rem;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.mistake-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--border);
-}
-
-.mistake-dot.used { background: #d94040; }
-
-/* ===== 盤面 ===== */
-.board-wrap {
-  width: 100%;
-  aspect-ratio: 1;
-  max-width: 380px;
-}
-
-.board {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  width: 100%;
-  height: 100%;
-  border: 2.5px solid var(--box-border);
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--box-border);
-  gap: 0;
-}
-
-.cell {
-  background: var(--cell-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-  user-select: none;
-  transition: background 0.15s;
-  border-right: 1px solid var(--cell-border);
-  border-bottom: 1px solid var(--cell-border);
-  overflow: hidden;
-  min-width: 0;
-  min-height: 0;
-}
-
-/* ボックス境界線 */
-.cell:nth-child(3n) { border-right: 2px solid var(--box-border); }
-.cell:nth-child(9n) { border-right: none; }
-.cell:nth-child(n+19):nth-child(-n+27) { border-bottom: 2px solid var(--box-border); }
-.cell:nth-child(n+46):nth-child(-n+54) { border-bottom: 2px solid var(--box-border); }
-.cell:nth-child(n+73):nth-child(-n+81) { border-bottom: none; }
-
-.cell.given {
-  background: var(--cell-given);
-  cursor: default;
-}
-
-.cell.selected { background: var(--cell-selected); }
-.cell.highlight { background: var(--cell-highlight); }
-.cell.error { background: var(--cell-error); }
-.cell.given.highlight { background: #c8e0ff; }
-.cell.same-val .cell-num { font-weight: 900; color: #0a3d7a; text-shadow: 0 1px 2px rgba(10,61,122,0.4); }
-.cell.same-val-memo .memo-num { opacity: 0.4; }
-.cell.same-val-memo .memo-num.active-memo { font-weight: 900; color: #0a3d7a; opacity: 1; font-size: clamp(0.55rem, 2.2vw, 0.75rem); }
-
-.cell-num {
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(1rem, 4.5vw, 1.8rem);
-  letter-spacing: 0.02em;
-  color: var(--text);
-  line-height: 1;
-}
-
-.cell.given .cell-num { color: var(--accent2); }
-.cell.error .cell-num { color: var(--cell-error-text); }
-
-/* メモ表示 */
-.cell-memo {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 1px;
-  gap: 0;
-}
-
-.memo-num {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(0.45rem, 1.8vw, 0.65rem);
-  color: var(--memo-color);
-  font-weight: 700;
-  line-height: 1;
-  opacity: 0.8;
-}
-
-/* ===== コントロール ===== */
-.controls {
-  display: flex;
-  gap: 8px;
-  width: 100%;
-  justify-content: center;
-}
-
-.ctrl-btn {
-  flex: 1;
-  padding: 10px 4px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text);
-  font-family: 'Noto Sans JP', sans-serif;
-  font-size: 0.7rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.ctrl-btn .ci { font-size: 1.1rem; }
-.ctrl-btn:hover { border-color: var(--accent); background: #eef5ff; }
-.ctrl-btn.active { border-color: var(--accent); background: #dceeff; color: var(--accent); font-weight: 700; }
-
-/* 数字パッド */
-.numpad {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  gap: 4px;
-  width: 100%;
-}
-
-.num-btn {
-  aspect-ratio: 1;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text);
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(1rem, 4vw, 1.5rem);
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  padding: 2px 0;
-}
-
-.num-btn .num-remain {
-  font-family: 'Noto Sans JP', sans-serif;
-  font-size: clamp(0.45rem, 1.6vw, 0.6rem);
-  color: var(--muted);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 0;
-}
-
-.num-btn:hover, .num-btn:active { background: var(--accent); color: #fff; border-color: var(--accent); }
-.num-btn.completed { 
-  opacity: 1; 
-  pointer-events: none; 
-  color: transparent;
-  background: #eef5ff;
-  border-color: #a0c4f0;
-  position: relative;
-}
-.num-btn.completed::after {
-  content: '✓';
-  position: absolute;
-  color: #1a6fd4;
-  font-size: clamp(0.9rem, 3.5vw, 1.3rem);
-  font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 700;
-}
-
-/* ===== 結果画面 ===== */
-#result-screen {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  max-width: 340px;
-  animation: fadeIn 0.5s ease;
-}
-
-.result-title {
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(2.5rem, 10vw, 4rem);
-  letter-spacing: 0.15em;
-  color: var(--accent);
-  text-align: center;
-}
-
-.result-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  width: 100%;
-}
-
-.result-card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 16px;
-  text-align: center;
-  border: 1.5px solid var(--border);
-}
-
-.rc-num {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 2.2rem;
-  color: var(--accent);
-  letter-spacing: 0.08em;
-}
-
-.rc-label { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
-
-.btn-restart {
-  width: 100%;
-  padding: 16px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.3rem;
-  letter-spacing: 0.15em;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-restart:hover { filter: brightness(1.1); }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes cellPop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
-}
-
-.cell.pop { animation: cellPop 0.2s ease; }
-
-@keyframes lineFlash {
-  0%   { background: var(--cell-bg); }
-  30%  { background: #b3d9ff; }
-  60%  { background: #dceeff; }
-  100% { background: var(--cell-bg); }
-}
-
-@keyframes boxFlash {
-  0%   { background: var(--cell-bg); }
-  30%  { background: #ffe0a0; }
-  60%  { background: #fff3cc; }
-  100% { background: var(--cell-bg); }
-}
-
-@keyframes givenLineFlash {
-  0%   { background: #f8f9fc; }
-  30%  { background: #90c4ff; }
-  60%  { background: #c8e4ff; }
-  100% { background: #f8f9fc; }
-}
-
-@keyframes givenBoxFlash {
-  0%   { background: #f8f9fc; }
-  30%  { background: #ffd080; }
-  60%  { background: #ffe8aa; }
-  100% { background: #f8f9fc; }
-}
-
-.cell.flash-line { animation: lineFlash 0.6s ease forwards; }
-.cell.flash-box  { animation: boxFlash 0.6s ease forwards; }
-.cell.given.flash-line { animation: givenLineFlash 0.6s ease forwards; }
-.cell.given.flash-box  { animation: givenBoxFlash 0.6s ease forwards; }
-
-.cell.multi-selected {
-  background: var(--multi-select) !important;
-  outline: 2px solid var(--multi-select-border);
-  outline-offset: -2px;
-  z-index: 2;
-}
-
-/* 複数選択モードバナー */
-#multi-select-bar {
-  display: none;
-  width: 100%;
-  background: #fff8e6;
-  border: 1.5px solid #e8a020;
-  border-radius: 8px;
-  padding: 8px 14px;
-  align-items: center;
-  justify-content: space-between;
-  animation: fadeIn 0.2s ease;
-}
-
-#multi-select-bar.show { display: flex; }
-
-.multi-bar-label {
-  font-size: 0.72rem;
-  color: #a06000;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.multi-bar-count {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.1rem;
-  color: #e8a020;
-  letter-spacing: 0.05em;
-}
-
-.btn-multi-cancel {
-  font-size: 0.7rem;
-  color: #a06000;
-  background: none;
-  border: 1px solid #e8a020;
-  border-radius: 6px;
-  padding: 4px 10px;
-  cursor: pointer;
-  font-family: 'Noto Sans JP', sans-serif;
-}
-
-.btn-multi-cancel:hover { background: #ffecc0; }
-
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 999;
-}
-
-/* 全クリアオーバーレイ */
-#clear-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(26,111,212,0.15);
-  z-index: 998;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 16px;
-}
-
-#clear-overlay.show {
-  display: flex !important;
-}
-
-@keyframes clearTitle {
-  0%   { opacity: 0; transform: scale(0.3) rotate(-10deg); }
-  60%  { transform: scale(1.2) rotate(3deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-@keyframes clearPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(26,111,212,0.5); }
-  50%       { box-shadow: 0 0 40px 20px rgba(26,111,212,0.2); }
-}
-
-.clear-title {
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(3rem, 15vw, 6rem);
-  letter-spacing: 0.2em;
-  color: #1a6fd4;
-  text-shadow: 0 4px 20px rgba(26,111,212,0.5);
-  animation: clearTitle 0.7s cubic-bezier(.17,.67,.35,1.3) forwards, clearPulse 1.5s ease 0.7s infinite;
-}
-
-.clear-sub {
-  font-size: 0.9rem;
-  color: #1558a8;
-  letter-spacing: 0.15em;
-  opacity: 0;
-  animation: fadeIn 0.5s ease 0.8s forwards;
-}
-
-.clear-stats {
-  background: white;
-  border-radius: 16px;
-  padding: 20px 32px;
-  display: flex;
-  gap: 32px;
-  box-shadow: 0 8px 32px rgba(26,111,212,0.15);
-  opacity: 0;
-  animation: fadeIn 0.5s ease 1s forwards;
-}
-
-.cs-item { text-align: center; }
-.cs-num {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 2.2rem;
-  color: #1a6fd4;
-  letter-spacing: 0.1em;
-}
-.cs-label { font-size: 0.7rem; color: #999; margin-top: 2px; }
-
-.clear-btn {
-  padding: 14px 40px;
-  background: #1a6fd4;
-  color: #fff;
-  border: none;
-  border-radius: 50px;
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.3rem;
-  letter-spacing: 0.15em;
-  cursor: pointer;
-  opacity: 0;
-  animation: fadeIn 0.5s ease 1.3s forwards;
-  box-shadow: 0 4px 20px rgba(26,111,212,0.35);
-}
-</style>
+<link rel="stylesheet" href="sudoku.css">
 </head>
 <body>
 
-<h1>SUDOKU</h1>
-<p class="subtitle">NUMBER PLACEMENT PUZZLE</p>
-
-<!-- 難易度選択 -->
-<div id="difficulty-screen">
-  <p class="diff-label">DIFFICULTY</p>
-  <button class="diff-btn" onclick="startGame('easy')">
-    <span class="dn">EASY</span>
-    <span class="dd">易しい　空きマス少なめ</span>
-  </button>
-  <button class="diff-btn" onclick="startGame('normal')">
-    <span class="dn">NORMAL</span>
-    <span class="dd">普通　バランス型</span>
-  </button>
-  <button class="diff-btn" onclick="startGame('hard')">
-    <span class="dn">HARD</span>
-    <span class="dd">難しい　上級テクニック必要</span>
-  </button>
+<!-- Brand -->
+<div class="brand" id="brand-block">
+  <h1 class="title">SUDOKU</h1>
+  <p class="subtitle">Number Placement Puzzle</p>
+  <span class="brand-rule"></span>
 </div>
 
-<!-- ゲーム画面 -->
+<!-- Difficulty -->
+<div id="difficulty-screen">
+  <p class="diff-label">Select Difficulty</p>
+
+  <button class="diff-btn" onclick="startGame('easy')">
+    <span>
+      <span class="dn">EASY</span>
+      <span class="dd" style="display:block;margin-top:2px;">易しい・空きマス少なめ</span>
+    </span>
+    <span class="dr" id="diff-meta-easy"><b>--:--</b><span>0回クリア</span></span>
+  </button>
+
+  <button class="diff-btn" onclick="startGame('normal')">
+    <span>
+      <span class="dn">NORMAL</span>
+      <span class="dd" style="display:block;margin-top:2px;">普通・バランス型</span>
+    </span>
+    <span class="dr" id="diff-meta-normal"><b>--:--</b><span>0回クリア</span></span>
+  </button>
+
+  <button class="diff-btn" onclick="startGame('hard')">
+    <span>
+      <span class="dn">HARD</span>
+      <span class="dd" style="display:block;margin-top:2px;">難しい・上級テクニック必要</span>
+    </span>
+    <span class="dr" id="diff-meta-hard"><b>--:--</b><span>0回クリア</span></span>
+  </button>
+
+  <div class="diff-screen-foot">
+    <button class="foot-btn" onclick="openStats()">統計</button>
+    <button class="foot-btn" onclick="openSettings()">設定</button>
+  </div>
+</div>
+
+<!-- Game -->
 <div id="game-screen">
   <div class="game-header">
     <div class="diff-badge" id="diff-badge">EASY</div>
     <div class="timer" id="timer">0:00</div>
-    <div class="mistake-counter">
-      <div class="mistake-dot" id="md1"></div>
-      <div class="mistake-dot" id="md2"></div>
-      <div class="mistake-dot" id="md3"></div>
+    <div class="header-right">
+      <div class="mistake-counter" title="ミス回数">
+        <div class="mistake-dot" id="md1"></div>
+        <div class="mistake-dot" id="md2"></div>
+        <div class="mistake-dot" id="md3"></div>
+        <span id="mc-count" style="margin-left:2px;">0/3</span>
+      </div>
+      <button class="icon-btn" onclick="openSettings()" title="設定">⚙</button>
     </div>
+  </div>
+
+  <div class="best-strip">
+    <span>BEST <b id="best-time">--:--</b></span>
+    <span class="bs-trail" id="best-trail">—</span>
   </div>
 
   <div class="board-wrap">
@@ -610,7 +82,7 @@ h1 {
 
   <div id="multi-select-bar">
     <div class="multi-bar-label">
-      ✏ 複数選択中
+      <span>✏</span> 複数選択中
       <span class="multi-bar-count" id="multi-count">0</span>マス
     </div>
     <button class="btn-multi-cancel" onclick="exitMultiSelect()">✕ 解除</button>
@@ -620,7 +92,8 @@ h1 {
     <button class="ctrl-btn" onclick="doUndo()"><span class="ci">↩</span>もどす</button>
     <button class="ctrl-btn" id="memo-btn" onclick="toggleMemo()"><span class="ci">✏</span>メモ</button>
     <button class="ctrl-btn" onclick="clearCell()"><span class="ci">✕</span>けす</button>
-    <button class="ctrl-btn" onclick="exportBoard()"><span class="ci">📤</span>保存</button>
+    <button class="ctrl-btn" onclick="useHint()"><span class="ci">💡</span>ヒント</button>
+    <button class="ctrl-btn" id="save-btn" onclick="exportBoard()"><span class="ci">📋</span>保存</button>
     <button class="ctrl-btn" onclick="resetGame()"><span class="ci">⟳</span>やめる</button>
   </div>
 
@@ -637,9 +110,9 @@ h1 {
   </div>
 </div>
 
-<!-- 結果画面 -->
+<!-- Result (game over) -->
 <div id="result-screen">
-  <div class="result-title" id="result-title">COMPLETE!</div>
+  <div class="result-title" id="result-title">COMPLETE</div>
   <div class="result-grid">
     <div class="result-card"><div class="rc-num" id="r-time">-</div><div class="rc-label">タイム</div></div>
     <div class="result-card"><div class="rc-num" id="r-mistake">-</div><div class="rc-label">ミス</div></div>
@@ -647,779 +120,68 @@ h1 {
   <button class="btn-restart" onclick="resetGame()">PLAY AGAIN</button>
 </div>
 
-<script>
-// ===== 数独ロジック =====
-
-// 完成済み盤面を生成
-function generateSolution() {
-  const board = Array.from({length:9}, ()=>Array(9).fill(0));
-  fillBoard(board);
-  return board;
-}
-
-function fillBoard(board) {
-  for(let r=0;r<9;r++) {
-    for(let c=0;c<9;c++) {
-      if(board[r][c]===0) {
-        const nums = shuffle([1,2,3,4,5,6,7,8,9]);
-        for(let n of nums) {
-          if(isValid(board,r,c,n)) {
-            board[r][c]=n;
-            if(fillBoard(board)) return true;
-            board[r][c]=0;
-          }
-        }
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-function isValid(board,r,c,n) {
-  for(let i=0;i<9;i++) {
-    if(board[r][i]===n) return false;
-    if(board[i][c]===n) return false;
-  }
-  const br=Math.floor(r/3)*3, bc=Math.floor(c/3)*3;
-  for(let i=0;i<3;i++) for(let j=0;j<3;j++) {
-    if(board[br+i][bc+j]===n) return false;
-  }
-  return true;
-}
-
-function shuffle(arr) {
-  for(let i=arr.length-1;i>0;i--) {
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
-  }
-  return arr;
-}
-
-// 難易度別の空きマス設定
-const DIFFICULTY_CONFIG = {
-  easy:   { remove: 36, label: 'EASY' },
-  normal: { remove: 46, label: 'NORMAL' },
-  hard:   { remove: 54, label: 'HARD' },
-};
-
-function createPuzzle(solution, difficulty) {
-  const puzzle = solution.map(r=>[...r]);
-  const cells = shuffle([...Array(81).keys()]);
-  let removed = 0;
-  const target = DIFFICULTY_CONFIG[difficulty].remove;
-
-  for(let idx of cells) {
-    if(removed >= target) break;
-    const r=Math.floor(idx/9), c=idx%9;
-    const backup = puzzle[r][c];
-    puzzle[r][c] = 0;
-    // 唯一解チェック（簡易版）
-    if(countSolutions(puzzle.map(x=>[...x])) === 1) {
-      removed++;
-    } else {
-      puzzle[r][c] = backup;
-    }
-  }
-  return puzzle;
-}
-
-function countSolutions(board, count={v:0}) {
-  for(let r=0;r<9;r++) {
-    for(let c=0;c<9;c++) {
-      if(board[r][c]===0) {
-        for(let n=1;n<=9;n++) {
-          if(isValid(board,r,c,n)) {
-            board[r][c]=n;
-            countSolutions(board, count);
-            board[r][c]=0;
-            if(count.v>1) return count.v;
-          }
-        }
-        return count.v;
-      }
-    }
-  }
-  count.v++;
-  return count.v;
-}
-
-// ===== ゲーム状態 =====
-let solution = [];
-let puzzle = [];
-let userBoard = []; // 0=空, 1-9=入力値
-let memoBoard = []; // 各セルのメモ数字セット
-let givenMask = []; // true=最初から埋まってる
-let selectedCell = null; // {r, c}
-let isMemoMode = false;
-let mistakes = 0;
-let maxMistakes = 3;
-let timerInterval = null;
-let elapsedSeconds = 0;
-let history = []; // アンドゥ用
-let currentDiff = 'easy';
-let isGameOver = false;
-
-// 複数選択メモ
-let isMultiSelectMode = false;
-let multiSelectedCells = new Set(); // "r,c" 形式のキー
-let longPressTimer = null;
-let longPressTriggered = false;
-const LONG_PRESS_MS = 450;
-
-function startGame(diff) {
-  currentDiff = diff;
-  document.getElementById('difficulty-screen').style.display = 'none';
-  document.getElementById('result-screen').style.display = 'none';
-  document.getElementById('game-screen').style.display = 'flex';
-  document.getElementById('diff-badge').textContent = DIFFICULTY_CONFIG[diff].label;
-
-  solution = generateSolution();
-  puzzle = createPuzzle(solution, diff);
-
-  userBoard = puzzle.map(r=>[...r]);
-  memoBoard = Array.from({length:9}, ()=>Array.from({length:9}, ()=>new Set()));
-  givenMask = puzzle.map(r=>r.map(v=>v!==0));
-
-  selectedCell = null;
-  isMemoMode = false;
-  mistakes = 0;
-  isGameOver = false;
-  history = [];
-  isMultiSelectMode = false;
-  multiSelectedCells = new Set();
-  completedRows.clear();
-  completedCols.clear();
-  completedBoxes.clear();
-
-  // オーバーレイを確実に閉じる
-  const ov = document.getElementById('clear-overlay');
-  if(ov) ov.remove();
-
-  updateMistakeUI();
-  document.getElementById('memo-btn').classList.remove('active');
-
-  elapsedSeconds = 0;
-  clearInterval(timerInterval);
-  updateTimerUI();
-  timerInterval = setInterval(()=>{
-    elapsedSeconds++;
-    updateTimerUI();
-  }, 1000);
-
-  renderBoard();
-  updateNumpad();
-}
-
-function updateTimerUI() {
-  const m = Math.floor(elapsedSeconds/60);
-  const s = elapsedSeconds%60;
-  const el = document.getElementById('timer');
-  el.textContent = `${m}:${String(s).padStart(2,'0')}`;
-  el.classList.toggle('warning', elapsedSeconds >= 600);
-}
-
-function updateMistakeUI() {
-  for(let i=1;i<=3;i++) {
-    document.getElementById(`md${i}`).classList.toggle('used', i<=mistakes);
-  }
-}
-
-// ===== 盤面描画 =====
-function renderBoard() {
-  const board = document.getElementById('board');
-  board.innerHTML = '';
-  for(let r=0;r<9;r++) {
-    for(let c=0;c<9;c++) {
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      cell.dataset.r = r;
-      cell.dataset.c = c;
-
-      if(givenMask[r][c]) cell.classList.add('given');
-
-      // 複数選択ハイライト
-      if(isMultiSelectMode && multiSelectedCells.has(`${r},${c}`)) {
-        cell.classList.add('multi-selected');
-      }
-
-      // 選択・ハイライト
-      if(selectedCell) {
-        const {r:sr, c:sc} = selectedCell;
-        const selVal = userBoard[sr][sc];
-
-        // 選択セルと同じ数字を持つセルの座標を収集
-        const sameValCells = [];
-        if(selVal) {
-          for(let rr=0;rr<9;rr++) for(let cc=0;cc<9;cc++) {
-            if(userBoard[rr][cc]===selVal && !(rr===sr&&cc===sc)) {
-              sameValCells.push({r:rr,c:cc});
-            }
-          }
-        }
-
-        if(r===sr && c===sc) {
-          cell.classList.add('selected');
-        } else {
-          // 選択セルの縦横のみハイライト（ボックスは含めない）
-          const inLine = r===sr || c===sc;
-
-          // 同じ数字セルの縦横ラインのハイライト（ボックスは含めない）
-          const inSameValLine = sameValCells.some(({r:rr,c:cc})=>
-            r===rr || c===cc
-          );
-
-          // 同じ数字のセル自体は太字
-          if(selVal && userBoard[r][c]===selVal) {
-            cell.classList.add('same-val');
-          }
-
-          // メモに同じ数字が含まれる場合、該当数字だけ強調
-          if(selVal && memoBoard[r][c].has(selVal)) {
-            cell.classList.add('same-val-memo');
-            cell.dataset.activeMemo = selVal;
-          }
-        }
-      }
-
-      const val = userBoard[r][c];
-      const memo = memoBoard[r][c];
-
-      if(val !== 0) {
-        // エラー判定
-        if(!givenMask[r][c] && val !== solution[r][c]) {
-          cell.classList.add('error');
-        }
-        const span = document.createElement('span');
-        span.className = 'cell-num';
-        span.textContent = val;
-        cell.appendChild(span);
-      } else if(memo.size > 0) {
-        const memoGrid = document.createElement('div');
-        memoGrid.className = 'cell-memo';
-        const activeMemo = cell.dataset.activeMemo ? parseInt(cell.dataset.activeMemo) : 0;
-        for(let n=1;n<=9;n++) {
-          const mn = document.createElement('div');
-          mn.className = 'memo-num' + (n === activeMemo ? ' active-memo' : '');
-          mn.textContent = memo.has(n) ? n : '';
-          memoGrid.appendChild(mn);
-        }
-        cell.appendChild(memoGrid);
-      }
-
-      cell.addEventListener('click', ()=>onCellClick(r, c));
-      cell.addEventListener('touchstart', (e)=>onCellTouchStart(e, r, c), {passive:true});
-      cell.addEventListener('touchend',   (e)=>onCellTouchEnd(e, r, c));
-      cell.addEventListener('contextmenu',(e)=>onCellRightClick(e, r, c));
-      cell.addEventListener('mousedown',  (e)=>onCellMouseDown(e, r, c));
-      cell.addEventListener('mouseup',    (e)=>onCellMouseUp(e, r, c));
-      cell.addEventListener('mouseleave', (e)=>onCellMouseLeave(e));
-      board.appendChild(cell);
-    }
-  }
-}
-
-function selectCell(r, c) {
-  if(isGameOver) return;
-  selectedCell = {r, c};
-  renderBoard();
-}
-
-// ===== 長押し・複数選択 =====
-// ===== 長押し・複数選択 =====
-
-function onCellClick(r, c) {
-  if(isGameOver) return;
-  // 長押し後のclickは無視
-  if(longPressTriggered) { longPressTriggered = false; return; }
-  // 複数選択モード中はクリックで選択追加/解除
-  if(isMultiSelectMode) {
-    toggleMultiCell(r, c);
-    return;
-  }
-  selectCell(r, c);
-}
-
-function onCellTouchStart(e, r, c) {
-  if(isGameOver) return;
-
-  // 複数選択モード中はタップで選択追加/解除
-  if(isMultiSelectMode) {
-    toggleMultiCell(r, c);
-    return;
-  }
-
-  // メモモード中のみ長押し検出
-  if(isMemoMode) {
-    longPressTriggered = false;
-    longPressTimer = setTimeout(()=>{
-      longPressTriggered = true;
-      enterMultiSelect(r, c);
-    }, LONG_PRESS_MS);
-  }
-}
-
-function onCellRightClick(e, r, c) {
-  e.preventDefault(); // 右クリックメニュー抑制
-}
-
-function onCellMouseDown(e, r, c) {
-  if(e.button !== 0) return; // 左クリックのみ
-  if(isGameOver) return;
-  if(isMultiSelectMode) return;
-  if(!isMemoMode) return;
-
-  longPressTriggered = false;
-  longPressTimer = setTimeout(()=>{
-    longPressTriggered = true;
-    enterMultiSelect(r, c);
-  }, LONG_PRESS_MS);
-}
-
-function onCellMouseUp(e, r, c) {
-  if(longPressTimer) {
-    clearTimeout(longPressTimer);
-    longPressTimer = null;
-  }
-}
-
-function onCellMouseLeave(e) {
-  if(longPressTimer) {
-    clearTimeout(longPressTimer);
-    longPressTimer = null;
-  }
-}
-
-function onCellTouchEnd(e, r, c) {
-  if(longPressTimer) {
-    clearTimeout(longPressTimer);
-    longPressTimer = null;
-  }
-}
-
-function enterMultiSelect(r, c) {
-  isMultiSelectMode = true;
-  multiSelectedCells = new Set();
-  // 長押し元のマスを最初の選択に
-  if(!givenMask[r][c] && userBoard[r][c] === 0) {
-    multiSelectedCells.add(`${r},${c}`);
-  }
-  updateMultiBar();
-  renderBoard();
-}
-
-function toggleMultiCell(r, c) {
-  // 確定済み数字マス・ヒントマスは対象外
-  if(givenMask[r][c] || userBoard[r][c] !== 0) return;
-  const key = `${r},${c}`;
-  if(multiSelectedCells.has(key)) {
-    multiSelectedCells.delete(key);
-  } else {
-    multiSelectedCells.add(key);
-  }
-  updateMultiBar();
-  renderBoard();
-}
-
-function exitMultiSelect() {
-  isMultiSelectMode = false;
-  multiSelectedCells = new Set();
-  document.getElementById('multi-select-bar').classList.remove('show');
-  renderBoard();
-}
-
-function updateMultiBar() {
-  const bar = document.getElementById('multi-select-bar');
-  if(isMultiSelectMode) {
-    bar.classList.add('show');
-    document.getElementById('multi-count').textContent = multiSelectedCells.size;
-  } else {
-    bar.classList.remove('show');
-  }
-}
-
-// ===== 入力 =====
-function inputNum(n) {
-  if(isGameOver) return;
-
-  // 複数選択モード中：一括追加 or 一括削除
-  if(isMultiSelectMode) {
-    if(multiSelectedCells.size === 0) return;
-    // 選択中のいずれかのマスに既にその数字のメモがあれば → 全部消す
-    // 1つも入っていなければ → 全部追加
-    const anyHas = [...multiSelectedCells].some(key => {
-      const [r, c] = key.split(',').map(Number);
-      return !givenMask[r][c] && userBoard[r][c] === 0 && memoBoard[r][c].has(n);
-    });
-    multiSelectedCells.forEach(key => {
-      const [r, c] = key.split(',').map(Number);
-      if(!givenMask[r][c] && userBoard[r][c] === 0) {
-        if(anyHas) memoBoard[r][c].delete(n);
-        else        memoBoard[r][c].add(n);
-      }
-    });
-    renderBoard();
-    return;
-  }
-
-  if(!selectedCell) return;
-  const {r, c} = selectedCell;
-  if(givenMask[r][c]) return;
-
-  if(isMemoMode) {
-    // メモモード
-    if(userBoard[r][c] !== 0) return;
-    const memo = memoBoard[r][c];
-    if(memo.has(n)) memo.delete(n);
-    else memo.add(n);
-    renderBoard();
-    return;
-  }
-
-  // 通常入力
-  const prev = { val: userBoard[r][c], memo: new Set(memoBoard[r][c]) };
-  history.push({r, c, prev});
-
-  userBoard[r][c] = n;
-  memoBoard[r][c].clear();
-
-  // エラー判定
-  if(n !== solution[r][c]) {
-    mistakes++;
-    updateMistakeUI();
-    if(mistakes >= maxMistakes) {
-      // ゲームオーバー
-      clearInterval(timerInterval);
-      isGameOver = true;
-      renderBoard();
-      setTimeout(()=>showResult(false), 800);
-      return;
-    }
-  } else {
-    // 正解入力：関連セルのメモを自動削除
-    autoRemoveMemo(r, c, n);
-  }
-
-  renderBoard();
-  updateNumpad();
-
-  // ライン・ボックス完成チェック（正解入力時のみ）
-  if(n === solution[r][c]) {
-    setTimeout(()=>checkCompletions(r, c), 50);
-  }
-
-  // クリア判定
-  if(isBoardComplete()) {
-    clearInterval(timerInterval);
-    setTimeout(()=>showResult(true), 600);
-  }
-}
-
-// メモの自動削除：同行・同列・同ボックスから該当数字のメモを消す
-function autoRemoveMemo(row, col, num) {
-  const br = Math.floor(row/3)*3, bc = Math.floor(col/3)*3;
-  for(let i=0;i<9;i++) {
-    memoBoard[row][i].delete(num);
-    memoBoard[i][col].delete(num);
-  }
-  for(let i=0;i<3;i++) for(let j=0;j<3;j++) {
-    memoBoard[br+i][bc+j].delete(num);
-  }
-}
-
-function clearCell() {
-  if(!selectedCell || isGameOver) return;
-  const {r, c} = selectedCell;
-  if(givenMask[r][c]) return;
-  const prev = { val: userBoard[r][c], memo: new Set(memoBoard[r][c]) };
-  history.push({r, c, prev});
-  userBoard[r][c] = 0;
-  memoBoard[r][c].clear();
-  renderBoard();
-  updateNumpad();
-}
-
-function doUndo() {
-  if(!history.length || isGameOver) return;
-  const last = history.pop();
-  userBoard[last.r][last.c] = last.prev.val;
-  memoBoard[last.r][last.c] = new Set(last.prev.memo);
-  renderBoard();
-  updateNumpad();
-}
-
-function toggleMemo() {
-  isMemoMode = !isMemoMode;
-  document.getElementById('memo-btn').classList.toggle('active', isMemoMode);
-}
-
-// 各数字が9個入力済みかチェックしてボタンをグレーアウト
-function updateNumpad() {
-  const counts = Array(10).fill(0);
-  for(let r=0;r<9;r++) for(let c=0;c<9;c++) {
-    if(userBoard[r][c]) counts[userBoard[r][c]]++;
-  }
-  document.querySelectorAll('.num-btn').forEach((btn,i)=>{
-    const n = i + 1;
-    const remaining = 9 - counts[n];
-    const completed = remaining <= 0;
-    btn.classList.toggle('completed', completed);
-    const span = document.getElementById(`remain-${n}`);
-    if(span) span.textContent = completed ? '' : `残${remaining}`;
-  });
-}
-
-function exportBoard() {
-  const memoArr = memoBoard.map(row =>
-    row.map(cell => [...cell])
-  );
-  const data = {
-    difficulty: currentDiff,
-    elapsed: elapsedSeconds,
-    mistakes,
-    solution,
-    puzzle,
-    userBoard,
-    memo: memoArr,
-    givenMask,
-  };
-  const json = JSON.stringify(data, null, 2);
-
-  // クリップボードにコピー
-  navigator.clipboard.writeText(json).then(()=>{
-    // ボタンに一時的にフィードバック
-    const btn = document.querySelector('.ctrl-btn:nth-child(4)');
-    const orig = btn.innerHTML;
-    btn.innerHTML = '<span class="ci">✅</span>コピー完了';
-    setTimeout(()=>{ btn.innerHTML = orig; }, 1500);
-  }).catch(()=>{
-    // フォールバック：ダウンロード
-    const blob = new Blob([json], {type:'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `sudoku_${currentDiff}_${Date.now()}.json`;
-    a.click();
-  });
-}
-
-function isBoardComplete() {
-  for(let r=0;r<9;r++) for(let c=0;c<9;c++) {
-    if(userBoard[r][c] !== solution[r][c]) return false;
-  }
-  return true;
-}
-
-// ===== サウンド（Web Audio API） =====
-let audioCtx = null;
-function getAudio() {
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function playSound(type) {
-  try {
-    const ctx = getAudio();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    if(type === 'line') {
-      osc.frequency.setValueAtTime(523, ctx.currentTime);
-      osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
-    } else if(type === 'box') {
-      osc.frequency.setValueAtTime(440, ctx.currentTime);
-      osc.frequency.setValueAtTime(550, ctx.currentTime + 0.08);
-      osc.frequency.setValueAtTime(660, ctx.currentTime + 0.16);
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.5);
-    } else if(type === 'clear') {
-      const notes = [523, 659, 784, 1047];
-      notes.forEach((freq, i) => {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.frequency.value = freq;
-        g.gain.setValueAtTime(0.25, ctx.currentTime + i*0.12);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.12 + 0.5);
-        o.start(ctx.currentTime + i*0.12);
-        o.stop(ctx.currentTime + i*0.12 + 0.5);
-      });
-    }
-  } catch(e) {}
-}
-
-// ===== ライン/ボックス完成チェック =====
-const completedRows = new Set();
-const completedCols = new Set();
-const completedBoxes = new Set();
-
-function checkCompletions(r, c) {
-  const flashCells = [];
-
-  // 行チェック
-  if(!completedRows.has(r)) {
-    let rowOk = true;
-    for(let cc=0;cc<9;cc++) if(userBoard[r][cc]!==solution[r][cc]) { rowOk=false; break; }
-    if(rowOk) {
-      completedRows.add(r);
-      for(let cc=0;cc<9;cc++) flashCells.push({r, c:cc, type:'line'});
-      playSound('line');
-    }
-  }
-
-  // 列チェック
-  if(!completedCols.has(c)) {
-    let colOk = true;
-    for(let rr=0;rr<9;rr++) if(userBoard[rr][c]!==solution[rr][c]) { colOk=false; break; }
-    if(colOk) {
-      completedCols.add(c);
-      for(let rr=0;rr<9;rr++) {
-        if(!flashCells.find(f=>f.r===rr&&f.c===c)) flashCells.push({r:rr, c, type:'line'});
-      }
-      if(!completedRows.has(r)) playSound('line');
-    }
-  }
-
-  // ボックスチェック
-  const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
-  const boxKey = `${br}-${bc}`;
-  if(!completedBoxes.has(boxKey)) {
-    let boxOk = true;
-    for(let i=0;i<3;i++) for(let j=0;j<3;j++) {
-      if(userBoard[br+i][bc+j]!==solution[br+i][bc+j]) { boxOk=false; break; }
-    }
-    if(boxOk) {
-      completedBoxes.add(boxKey);
-      for(let i=0;i<3;i++) for(let j=0;j<3;j++) {
-        if(!flashCells.find(f=>f.r===br+i&&f.c===bc+j))
-          flashCells.push({r:br+i, c:bc+j, type:'box'});
-      }
-      setTimeout(()=>playSound('box'), 150);
-    }
-  }
-
-  if(flashCells.length > 0) {
-    flashCellsEffect(flashCells);
-  }
-}
-
-function flashCellsEffect(cells) {
-  const boardEl = document.getElementById('board');
-  const allCells = boardEl.querySelectorAll('.cell');
-  cells.forEach(({r, c, type}) => {
-    const idx = r*9 + c;
-    const el = allCells[idx];
-    if(!el) return;
-    el.classList.remove('flash-line','flash-box');
-    void el.offsetWidth;
-    el.classList.add(type==='line' ? 'flash-line' : 'flash-box');
-    el.addEventListener('animationend', ()=>{
-      el.classList.remove('flash-line','flash-box');
-    }, {once:true});
-  });
-}
-
-// ===== 紙吹雪 =====
-function startConfetti() {
-  const canvas = document.getElementById('confetti-canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const colors = ['#1a6fd4','#4a9eff','#ffd700','#ff6b6b','#51cf66','#cc5de8','#ff922b'];
-  const pieces = Array.from({length:120}, ()=>({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height - canvas.height,
-    w: Math.random()*10+5,
-    h: Math.random()*6+3,
-    color: colors[Math.floor(Math.random()*colors.length)],
-    rot: Math.random()*360,
-    vx: (Math.random()-0.5)*3,
-    vy: Math.random()*4+2,
-    vr: (Math.random()-0.5)*8,
-  }));
-
-  let frame = 0;
-  const maxFrames = 180;
-
-  function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    pieces.forEach(p => {
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot * Math.PI/180);
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = Math.max(0, 1 - frame/maxFrames);
-      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-      ctx.restore();
-      p.x += p.vx;
-      p.y += p.vy;
-      p.rot += p.vr;
-    });
-    frame++;
-    if(frame < maxFrames) requestAnimationFrame(draw);
-    else ctx.clearRect(0,0,canvas.width,canvas.height);
-  }
-  draw();
-}
-
-function showResult(success) {
-  const m = Math.floor(elapsedSeconds/60);
-  const s = elapsedSeconds%60;
-  const timeStr = `${m}:${String(s).padStart(2,'0')}`;
-
-  if(success) {
-    playSound('clear');
-    startConfetti();
-    let ov = document.getElementById('clear-overlay');
-    if(ov) ov.remove();
-    ov = document.createElement('div');
-    ov.id = 'clear-overlay';
-    ov.style.cssText = 'display:flex;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(26,111,212,0.15);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;';
-    ov.innerHTML = `
-      <div class="clear-title">COMPLETE!</div>
-      <div class="clear-sub">PUZZLE SOLVED</div>
-      <div class="clear-stats">
-        <div class="cs-item"><div class="cs-num">${timeStr}</div><div class="cs-label">タイム</div></div>
-        <div class="cs-item"><div class="cs-num">${mistakes}回</div><div class="cs-label">ミス</div></div>
+<!-- Settings modal -->
+<div class="modal-backdrop" id="settings-modal" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <h2>設定</h2>
+    <div class="modal-row">
+      <span class="lbl">効果音</span>
+      <button class="toggle on" id="toggle-sound" onclick="toggleSound()"></button>
+    </div>
+    <div class="modal-row">
+      <span class="lbl">アニメーション</span>
+      <button class="toggle on" id="toggle-anim" onclick="toggleAnim()"></button>
+    </div>
+    <button class="modal-close" onclick="closeSettings()">閉じる</button>
+  </div>
+</div>
+
+<!-- Stats modal -->
+<div class="modal-backdrop" id="stats-modal" onclick="if(event.target===this)closeStats()">
+  <div class="modal">
+    <h2>統計</h2>
+    <div class="stats-grid">
+      <div class="stat-cell" id="stat-easy">
+        <div class="sc-diff">EASY</div>
+        <div class="sc-num">0</div>
+        <div class="sc-time">--:--</div>
+        <div class="sc-foot">未挑戦</div>
       </div>
-      <button class="clear-btn" onclick="closeClearOverlay()">PLAY AGAIN</button>
-    `;
-    document.body.appendChild(ov);
-  } else {
-    document.getElementById('game-screen').style.display = 'none';
-    document.getElementById('result-screen').style.display = 'flex';
-    document.getElementById('result-title').textContent = 'GAME OVER';
-    document.getElementById('r-time').textContent = timeStr;
-    document.getElementById('r-mistake').textContent = `${mistakes}回`;
-  }
-}
+      <div class="stat-cell" id="stat-normal">
+        <div class="sc-diff">NORMAL</div>
+        <div class="sc-num">0</div>
+        <div class="sc-time">--:--</div>
+        <div class="sc-foot">未挑戦</div>
+      </div>
+      <div class="stat-cell" id="stat-hard">
+        <div class="sc-diff">HARD</div>
+        <div class="sc-num">0</div>
+        <div class="sc-time">--:--</div>
+        <div class="sc-foot">未挑戦</div>
+      </div>
+    </div>
+    <p style="font-size:0.66rem;color:var(--muted);text-align:center;margin-top:10px;letter-spacing:0.06em;">
+      上段=クリア数 / 中段=ベストタイム / 下段=挑戦数
+    </p>
+    <button class="modal-close" onclick="closeStats()">閉じる</button>
+  </div>
+</div>
 
-function closeClearOverlay() {
-  const ov = document.getElementById('clear-overlay');
-  if(ov) ov.remove();
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('difficulty-screen').style.display = 'flex';
-}
+<!-- Loader -->
+<div id="loader">
+  <div class="loader-mark">SUDOKU</div>
+  <div class="loader-bar"></div>
+</div>
 
-function resetGame() {
-  clearInterval(timerInterval);
-  isMultiSelectMode = false;
-  multiSelectedCells = new Set();
-  document.getElementById('multi-select-bar').classList.remove('show');
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('result-screen').style.display = 'none';
-  document.getElementById('difficulty-screen').style.display = 'flex';
-}
-</script>
 <canvas id="confetti-canvas"></canvas>
+
+<!-- HINT CHARACTER: swap .hc-placeholder with <img src="your-character.png" alt=""> when ready -->
+<div id="hint-character" aria-hidden="true">
+  <div class="hc-bubble">HINT!</div>
+  <div class="hc-placeholder">💡</div>
+</div>
+
+<script src="sudoku.js"></script>
 
 </body>
 </html>
