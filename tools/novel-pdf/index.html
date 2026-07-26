@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>縦組み入稿PDFメーカー</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">縦</span>
+    <div>
+      <h1>縦組み入稿PDFメーカー</h1>
+      <p class="tagline">小説を、源暎こぶり明朝で1クリック入稿PDFに。透かしなし・無料・オフラインで完結。</p>
+    </div>
+  </div>
+  <div id="fontStatus" class="font-status">フォント読込中…</div>
+</header>
+
+<main class="layout">
+  <!-- ===== 左：設定 ===== -->
+  <section class="panel controls">
+    <h2>出力設定</h2>
+
+    <label class="row">
+      <span>判型プリセット</span>
+      <select id="preset"></select>
+    </label>
+
+    <label class="row">
+      <span>段組み</span>
+      <select id="columns">
+        <option value="1">一段組み</option>
+        <option value="2">二段組み</option>
+      </select>
+    </label>
+
+    <div class="grid2">
+      <label class="row"><span>1行字数</span><input id="charsPerLine" class="num" type="number" min="1" max="80" step="1"></label>
+      <label class="row"><span>1段の行数</span><input id="linesPerCol" class="num" type="number" min="1" max="60" step="1"></label>
+      <label class="row"><span>文字サイズ(pt)</span><input id="fontSizePt" class="num" type="number" min="4" max="24" step="0.5"></label>
+      <label class="row"><span>行間(pt)</span><input id="leadingPt" class="num" type="number" min="0" max="30" step="0.5"></label>
+    </div>
+
+    <label class="row">
+      <span>フォント</span>
+      <select id="font"></select>
+    </label>
+
+    <h3>余白 (mm)</h3>
+    <div class="grid2">
+      <label class="row"><span>上（天）</span><input id="mTop" class="num" type="number" min="0" max="60" step="1"></label>
+      <label class="row"><span>下（地）</span><input id="mBottom" class="num" type="number" min="0" max="60" step="1"></label>
+      <label class="row"><span>内（ノド）</span><input id="mInner" class="num" type="number" min="0" max="60" step="1"></label>
+      <label class="row"><span>外（小口）</span><input id="mOuter" class="num" type="number" min="0" max="60" step="1"></label>
+    </div>
+
+    <h3>塗り足し</h3>
+    <div id="bleedGroup" class="segmented">
+      <button type="button" class="seg" data-bleed="0">なし</button>
+      <button type="button" class="seg" data-bleed="3">3mm</button>
+      <button type="button" class="seg" data-bleed="5">5mm</button>
+    </div>
+    <p id="finishNote" class="note"></p>
+
+    <h3>自動整形・表示</h3>
+    <label class="check"><input id="optBangs" type="checkbox" checked> ！？ → ⁉ に変換</label>
+    <label class="check"><input id="optRuby" type="checkbox" checked> 青空文庫ルビ（｜漢字《かんじ》）を解釈</label>
+    <label class="check"><input id="optNombre" type="checkbox" checked> ノンブル（ページ番号）を入れる</label>
+    <label class="check"><input id="optTrim" type="checkbox" checked> プレビューに仕上がり線を表示</label>
+
+    <h3>PDF情報 / 奥付</h3>
+    <label class="row"><span>タイトル</span><input id="metaTitle" type="text" placeholder="作品名"></label>
+    <label class="row"><span>著者名</span><input id="metaAuthor" type="text" placeholder="ペンネーム"></label>
+    <label class="check"><input id="optOkupu" type="checkbox"> 奥付ページを最後に付ける</label>
+    <div id="okupuFields" class="okupu-fields" hidden>
+      <label class="row"><span>発行日</span><input id="metaDate" type="text" placeholder="2026年8月1日"></label>
+      <label class="row"><span>発行（サークル）</span><input id="metaCircle" type="text" placeholder="サークル名"></label>
+      <label class="row"><span>印刷所</span><input id="metaPrinter" type="text" placeholder="印刷所名（任意）"></label>
+      <label class="row"><span>連絡先など</span><input id="metaContact" type="text" placeholder="X / pixiv など（任意）"></label>
+    </div>
+  </section>
+
+  <!-- ===== 中：本文 ===== -->
+  <section class="panel editor">
+    <h2>本文</h2>
+    <p class="note">メモ帳などで書いた文章をそのまま貼り付けてください。改行＝改行、行頭の全角スペースで字下げされます。</p>
+    <textarea id="body" spellcheck="false" placeholder="ここに本文を貼り付け…"></textarea>
+    <div id="stats" class="stats"></div>
+  </section>
+
+  <!-- ===== 右：プレビュー ===== -->
+  <section class="panel preview">
+    <div class="preview-bar">
+      <button id="prevPage" class="ghost" type="button">◀</button>
+      <span id="pageInfo">1 / 1</span>
+      <button id="nextPage" class="ghost" type="button">▶</button>
+      <div class="spacer"></div>
+      <button id="btnExport" class="primary" type="button">PDFを書き出す</button>
+    </div>
+    <div id="previewArea" class="preview-area">
+      <canvas id="pageCanvas"></canvas>
+    </div>
+    <p class="foot-note">フォント：源暎こぶり明朝（御琥祢屋・SIL OFL 1.1／PDF埋め込み・商用同人可）</p>
+  </section>
+</main>
+
+<!-- ===== スクリプト（依存順） ===== -->
+<script src="js/lib/pdf-lib.min.js"></script>
+<script src="js/lib/fontkit.umd.min.js"></script>
+<script src="js/engine/units.js"></script>
+<script src="js/engine/preprocess.js"></script>
+<script src="js/engine/vglyph.js"></script>
+<script src="js/engine/kinsoku.js"></script>
+<script src="js/engine/typeset.js"></script>
+<script src="js/engine/render-canvas.js"></script>
+<script src="js/engine/subset.js"></script>
+<script src="js/engine/render-pdf.js"></script>
+<script src="js/engine/okuduke.js"></script>
+<script src="js/presets.js"></script>
+<script src="js/fonts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

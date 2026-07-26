@@ -98,6 +98,7 @@
   .badge-game{background:var(--blue);color:#fff;}
   .badge-video{background:#e03030;color:#fff;}
   .badge-article{background:var(--green);color:#fff;}
+  .badge-tool{background:#8b5cf6;color:#fff;}
   .play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;background:rgba(15,30,61,.4);z-index:1;}
   .content-card:hover .play-btn{opacity:1;}
   .play-btn::after{content:"▶";font-size:36px;color:#fff;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5));}
@@ -272,6 +273,7 @@
     <div class="filter-tabs">
       <button class="filter-tab active" onclick="filterContent('all',this)">すべて</button>
       <button class="filter-tab" onclick="filterContent('game',this)">ゲーム</button>
+      <button class="filter-tab" onclick="filterContent('tool',this)">ツール</button>
       <button class="filter-tab" onclick="filterContent('video',this)">動画</button>
       <button class="filter-tab" onclick="filterContent('article',this)">記事</button>
     </div>
@@ -319,6 +321,17 @@
       <div class="content-info">
         <div class="content-title">ハイロー</div>
         <div class="content-meta">Magis制作 · トランプゲーム</div>
+      </div>
+    </a>
+    <a class="content-card" href="tools/novel-pdf/" data-type="tool" target="_blank">
+      <div class="content-thumb" style="background:linear-gradient(135deg,#2d1a3d,#8b5cf6)">
+        <div class="emoji">📖</div>
+        <span class="content-badge badge-tool">TOOL</span>
+        <div class="play-btn"></div>
+      </div>
+      <div class="content-info">
+        <div class="content-title">縦組み入稿PDFメーカー</div>
+        <div class="content-meta">Magis制作 · 小説を縦書き入稿PDFに（無料）</div>
       </div>
     </a>
     <a class="content-card" href="#" data-type="video" target="_blank">

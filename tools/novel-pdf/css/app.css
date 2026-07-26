@@ -1,0 +1,133 @@
+/* ===== 縦組み入稿PDFメーカー ダークUI ===== */
+:root{
+  --bg:#14151a; --panel:#1c1e27; --panel2:#232634; --line:#2f3342;
+  --ink:#e9eaf2; --sub:#9aa0b4; --accent:#5b8cff; --accent2:#e0563f;
+  --ok:#4bd08b; --warn:#f2b641; --radius:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Meiryo",system-ui,sans-serif;
+  font-size:14px; line-height:1.5;
+}
+h1,h2,h3{margin:0;font-weight:600}
+h2{font-size:15px;letter-spacing:.04em;color:var(--ink);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:12px;color:var(--sub);letter-spacing:.06em;margin:18px 0 8px}
+
+/* ヘッダ */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:12px 20px;background:linear-gradient(180deg,#1a1c25,#15161d);
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{
+  width:40px;height:40px;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--accent),#8a6bff);color:#fff;font-size:22px;font-weight:700;
+  writing-mode:vertical-rl;box-shadow:0 3px 10px rgba(91,140,255,.35)
+}
+.topbar h1{font-size:18px}
+.tagline{margin:2px 0 0;color:var(--sub);font-size:12px}
+.font-status{font-size:12px;color:var(--sub);background:var(--panel2);padding:6px 12px;border-radius:20px;border:1px solid var(--line);white-space:nowrap}
+.font-status.ok{color:var(--ok)} .font-status.warn{color:var(--warn)}
+
+/* レイアウト */
+.layout{
+  display:grid;gap:14px;padding:14px;
+  grid-template-columns:320px minmax(240px,1fr) minmax(380px,1.2fr);
+  align-items:start;height:calc(100vh - 66px);
+}
+.panel{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;overflow:auto;height:100%;
+}
+.panel.controls{scrollbar-width:thin}
+
+/* フォーム */
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.row>span{color:var(--sub);font-size:13px;flex:0 0 auto}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.grid2 .row{margin:4px 0;flex-direction:column;align-items:stretch;gap:4px}
+.grid2 .row>span{font-size:11px}
+input,select,textarea{
+  background:var(--panel2);color:var(--ink);border:1px solid var(--line);
+  border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select{cursor:pointer;min-width:120px}
+input[type=number]{width:100%;text-align:right}
+input[type=text]{width:150px}
+.row>select,.row>input[type=text]{flex:1 1 auto}
+
+/* 数値ステッパー */
+.stepper{display:flex;align-items:stretch;gap:0}
+.stepper input{border-radius:0;text-align:center;width:100%;border-left:none;border-right:none}
+.stepper button{
+  background:var(--panel2);border:1px solid var(--line);color:var(--sub);
+  width:26px;cursor:pointer;font-size:15px;line-height:1;user-select:none
+}
+.stepper button:hover{color:var(--ink);background:var(--line)}
+.stepper button:first-child{border-radius:8px 0 0 8px}
+.stepper button:last-child{border-radius:0 8px 8px 0}
+
+/* セグメント（塗り足し） */
+.segmented{display:flex;gap:6px}
+.seg{
+  flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--sub);
+  padding:9px 0;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit
+}
+.seg:hover{color:var(--ink)}
+.seg.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+
+.check{display:flex;align-items:center;gap:8px;margin:8px 0;color:var(--ink);font-size:13px;cursor:pointer}
+.check input{width:16px;height:16px;accent-color:var(--accent)}
+.note{color:var(--sub);font-size:11.5px;margin:6px 0}
+.okupu-fields{padding:6px 0 0}
+
+/* 本文エディタ */
+.editor{display:flex;flex-direction:column}
+#body{
+  flex:1;min-height:200px;resize:none;width:100%;line-height:1.9;
+  font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:14px
+}
+.stats{margin-top:10px;color:var(--sub);font-size:12px;display:flex;gap:14px;flex-wrap:wrap}
+.stats .warn{color:var(--warn)}
+.stats .hint{color:var(--sub);opacity:.8}
+
+/* プレビュー */
+.preview{display:flex;flex-direction:column;padding:12px}
+.preview-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.preview-bar .spacer{flex:1}
+#pageInfo{font-variant-numeric:tabular-nums;color:var(--sub);min-width:56px;text-align:center}
+.preview-area{
+  flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;
+  background:#0e0f13;border:1px solid var(--line);border-radius:10px;padding:16px
+}
+#pageCanvas{background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.5);border-radius:2px}
+.foot-note{color:var(--sub);font-size:11px;text-align:center;margin:8px 0 0}
+
+/* ボタン */
+button.primary{
+  background:linear-gradient(135deg,var(--accent),#7a6bff);color:#fff;border:none;
+  padding:9px 18px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;
+  box-shadow:0 3px 12px rgba(91,140,255,.35)
+}
+button.primary:hover{filter:brightness(1.08)}
+button.primary:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+button.ghost{
+  background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+  width:34px;height:32px;border-radius:8px;cursor:pointer;font-size:13px
+}
+button.ghost:hover{background:var(--line)}
+
+/* レスポンシブ */
+@media(max-width:1100px){
+  .layout{grid-template-columns:300px 1fr;height:auto}
+  .preview{grid-column:1 / -1;min-height:520px}
+}
+@media(max-width:760px){
+  .layout{grid-template-columns:1fr}
+  .panel{height:auto}
+  .editor #body{min-height:160px}
+}
