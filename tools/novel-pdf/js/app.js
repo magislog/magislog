@@ -24,6 +24,7 @@
   function init() {
     buildPresetOptions();
     buildFontOptions();
+    renderUserPresetSelect();
     buildSteppers();
     bindEvents();
     if (!loadState()) fillFromPreset('a5_2col');   // 初回はA5二段
@@ -76,8 +77,12 @@
 
   function bindEvents() {
     $('preset').addEventListener('change', (e) => { fillFromPreset(e.target.value); onChange(); });
+    $('savePreset').addEventListener('click', saveUserPreset);
+    $('delPreset').addEventListener('click', deleteUserPreset);
+    $('userPreset').addEventListener('change', applyUserPreset);
+    $('paperThick').addEventListener('input', () => { updateSpine(); saveState(); });
     NUM_FIELDS.forEach((id) => $(id).addEventListener('input', onChange));
-    ['columns', 'font', 'optBangs', 'optNombre', 'optTrim', 'optRuby'].forEach((id) => $(id).addEventListener('change', onChange));
+    ['columns', 'font', 'optBangs', 'optNombre', 'optTrim', 'optRuby', 'optToc'].forEach((id) => $(id).addEventListener('change', onChange));
     $('body').addEventListener('input', debounce(onChange, 180));
     ['metaTitle', 'metaAuthor', 'metaDate', 'metaCircle', 'metaPrinter', 'metaContact'].forEach((id) => $(id).addEventListener('input', debounce(onChange, 300)));
     $('optOkupu').addEventListener('change', () => { $('okupuFields').hidden = !$('optOkupu').checked; onChange(); });
@@ -90,19 +95,78 @@
   }
 
   /* ---------- プリセット／塗り足し ---------- */
+  function applySettings(p) {
+    if (p.trimW) state.trimW = p.trimW;
+    if (p.trimH) state.trimH = p.trimH;
+    if (p.columns != null) $('columns').value = p.columns;
+    if (p.charsPerLine != null) $('charsPerLine').value = p.charsPerLine;
+    if (p.linesPerCol != null) $('linesPerCol').value = p.linesPerCol;
+    if (p.fontSizePt != null) $('fontSizePt').value = p.fontSizePt;
+    if (p.leadingPt != null) $('leadingPt').value = p.leadingPt;
+    if (p.mTop != null) $('mTop').value = p.mTop;
+    if (p.mBottom != null) $('mBottom').value = p.mBottom;
+    if (p.mInner != null) $('mInner').value = p.mInner;
+    if (p.mOuter != null) $('mOuter').value = p.mOuter;
+    if (p.fontId && RNK.fonts.FONTS[p.fontId] && p.fontId !== state.fontId) { state.fontId = p.fontId; $('font').value = p.fontId; initFont(); }
+    setBleed(p.bleed != null ? p.bleed : state.bleed);
+  }
+
   function fillFromPreset(id) {
     const p = RNK.presets[id];
     if (!p) return;
     $('preset').value = id;
-    state.trimW = p.trimW; state.trimH = p.trimH;
-    $('columns').value = p.columns;
-    $('charsPerLine').value = p.charsPerLine;
-    $('linesPerCol').value = p.linesPerCol;
-    $('fontSizePt').value = p.fontSizePt;
-    $('leadingPt').value = p.leadingPt;
-    $('mTop').value = p.mTop; $('mBottom').value = p.mBottom;
-    $('mInner').value = p.mInner; $('mOuter').value = p.mOuter;
-    setBleed(p.bleed);
+    applySettings(p);
+  }
+
+  // 現在のUIの設定を1つのオブジェクトに写す（マイプリセット保存用）
+  function captureSettings() {
+    const num = (id) => parseFloat($(id).value);
+    return {
+      trimW: state.trimW, trimH: state.trimH,
+      columns: parseInt($('columns').value, 10),
+      charsPerLine: num('charsPerLine'), linesPerCol: num('linesPerCol'),
+      fontSizePt: num('fontSizePt'), leadingPt: num('leadingPt'),
+      mTop: num('mTop'), mBottom: num('mBottom'), mInner: num('mInner'), mOuter: num('mOuter'),
+      bleed: state.bleed, fontId: state.fontId,
+    };
+  }
+
+  /* ---------- マイプリセット（ユーザーが名前を付けて保存） ---------- */
+  const USERPRESET_KEY = 'rnk_userpresets_v1';
+  function loadUserPresets() { try { return JSON.parse(localStorage.getItem(USERPRESET_KEY)) || {}; } catch (e) { return {}; } }
+  function saveUserPresetsMap(map) { try { localStorage.setItem(USERPRESET_KEY, JSON.stringify(map)); } catch (e) {} }
+  function renderUserPresetSelect() {
+    const sel = $('userPreset');
+    const cur = sel.value;
+    const map = loadUserPresets();
+    sel.innerHTML = '<option value="">（呼び出す）</option>';
+    Object.keys(map).forEach((name) => {
+      const o = document.createElement('option'); o.value = name; o.textContent = name; sel.appendChild(o);
+    });
+    if (map[cur]) sel.value = cur;
+  }
+  function saveUserPreset() {
+    const name = $('userPresetName').value.trim();
+    if (!name) { alert('プリセット名を入れてください。'); return; }
+    const map = loadUserPresets();
+    map[name] = captureSettings();
+    saveUserPresetsMap(map);
+    renderUserPresetSelect();
+    $('userPreset').value = name;
+    $('userPresetName').value = '';
+  }
+  function deleteUserPreset() {
+    const name = $('userPreset').value;
+    if (!name) { alert('削除するプリセットを選んでください。'); return; }
+    if (!confirm('「' + name + '」を削除しますか？')) return;
+    const map = loadUserPresets(); delete map[name]; saveUserPresetsMap(map);
+    renderUserPresetSelect();
+  }
+  function applyUserPreset() {
+    const name = $('userPreset').value;
+    if (!name) return;
+    const map = loadUserPresets();
+    if (map[name]) { applySettings(map[name]); onChange(); }
   }
   function setBleed(mm) {
     state.bleed = mm;
@@ -153,17 +217,34 @@
     };
   }
 
-  // 本文＋（任意で）奥付ページをまとめて組む。プレビューもPDFもこれを使う。
+  function withOffset(s, off) {
+    return Object.assign({}, s, { options: Object.assign({}, s.options, { pageOffset: off }) });
+  }
+
+  // 目次(前付け)＋本文＋奥付(後付け)をまとめて組む。プレビューもPDFもこれを使う。
   function buildDoc() {
     const s = readSettings();
-    const doc = RNK.typeset.layout($('body').value, s);
-    if ($('optOkupu').checked) {
-      const pg = RNK.okuduke.build(getMeta(), s, s.bleed);
-      pg.index = doc.pages.length;
-      pg.pageNo = doc.pages.length + 1;
-      doc.pages.push(pg);
-      doc.meta.totalPages = doc.pages.length;
+    const text = $('body').value;
+    const useToc = $('optToc').checked;
+
+    let doc = RNK.typeset.layout(text, withOffset(s, 0));   // 1回目：章位置を得る
+    let tocPages = [];
+
+    if (useToc && doc.chapters.length > 0) {
+      const slots = s.columns * s.linesPerCol;
+      const tocPageCount = Math.max(1, Math.ceil((doc.chapters.length + 1) / slots));
+      doc = RNK.typeset.layout(text, withOffset(s, tocPageCount));  // 2回目：目次ぶんずらして本組み
+      const chaptersWithPage = doc.chapters.map((c) => ({ title: c.title, page: tocPageCount + c.pageIdx + 1 }));
+      tocPages = RNK.toc.build(chaptersWithPage, s, s.bleed, 1, s.options.showNombre);
+      doc.pages = tocPages.concat(doc.pages);              // 目次を先頭へ
     }
+
+    if ($('optOkupu').checked) {
+      doc.pages.push(RNK.okuduke.build(getMeta(), s, s.bleed));  // 奥付を末尾へ
+    }
+
+    doc.pages.forEach((p, i) => { p.index = i; });          // 通しindex振り直し
+    doc.meta.totalPages = doc.pages.length;
     return { doc, s };
   }
 
@@ -217,6 +298,16 @@
       html += `　<span class="hint">※製本の目安：中綴じは4の倍数(${next4}P)／無線綴じは偶数が無難</span>`;
     }
     $('stats').innerHTML = html;
+    updateSpine();
+  }
+
+  // 背幅 ＝ 総ページ ÷ 2 × 用紙の厚さ(mm/枚)
+  function updateSpine() {
+    if (!state.doc) return;
+    const pages = state.doc.pages.length;
+    const t = parseFloat($('paperThick').value) || 0;
+    const spine = (pages / 2) * t;
+    $('spineNote').textContent = `総${pages}ページ → 背幅 約${spine.toFixed(1)} mm（表紙の紙厚は別途）`;
   }
 
   /* ---------- PDF書き出し ---------- */
@@ -287,9 +378,9 @@
   function saveState() {
     const data = {
       preset: $('preset').value, columns: $('columns').value,
-      trimW: state.trimW, trimH: state.trimH, bleed: state.bleed, fontId: state.fontId,
+      trimW: state.trimW, trimH: state.trimH, bleed: state.bleed, fontId: state.fontId, paperThick: $('paperThick').value,
       nums: {}, body: $('body').value,
-      opts: { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, okupu: $('optOkupu').checked },
+      opts: { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, toc: $('optToc').checked, okupu: $('optOkupu').checked },
       meta: { title: $('metaTitle').value, author: $('metaAuthor').value, date: $('metaDate').value, circle: $('metaCircle').value, printer: $('metaPrinter').value, contact: $('metaContact').value },
     };
     NUM_FIELDS.forEach((id) => data.nums[id] = $(id).value);
@@ -304,7 +395,8 @@
     state.fontId = data.fontId || 'genei'; $('font').value = state.fontId;
     NUM_FIELDS.forEach((id) => { if (data.nums && data.nums[id] != null) $(id).value = data.nums[id]; });
     setBleed(data.bleed != null ? data.bleed : 3);
-    if (data.opts) { $('optBangs').checked = data.opts.bangs; $('optNombre').checked = data.opts.nombre; $('optTrim').checked = data.opts.trim; $('optRuby').checked = data.opts.ruby !== false; $('optOkupu').checked = data.opts.okupu; $('okupuFields').hidden = !data.opts.okupu; }
+    if (data.paperThick != null) $('paperThick').value = data.paperThick;
+    if (data.opts) { $('optBangs').checked = data.opts.bangs; $('optNombre').checked = data.opts.nombre; $('optTrim').checked = data.opts.trim; $('optRuby').checked = data.opts.ruby !== false; $('optToc').checked = !!data.opts.toc; $('optOkupu').checked = data.opts.okupu; $('okupuFields').hidden = !data.opts.okupu; }
     if (data.meta) { $('metaTitle').value = data.meta.title || ''; $('metaAuthor').value = data.meta.author || ''; $('metaDate').value = data.meta.date || ''; $('metaCircle').value = data.meta.circle || ''; $('metaPrinter').value = data.meta.printer || ''; $('metaContact').value = data.meta.contact || ''; }
     $('body').value = (data.body != null && data.body !== '') ? data.body : DEFAULT_TEXT;
     return true;

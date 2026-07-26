@@ -28,6 +28,17 @@
       <select id="preset"></select>
     </label>
 
+    <div class="row">
+      <span>マイプリセット</span>
+      <select id="userPreset"><option value="">（呼び出す）</option></select>
+    </div>
+    <div class="preset-actions">
+      <input id="userPresetName" type="text" placeholder="名前（例：文庫・栄光さん用）">
+      <button id="savePreset" class="mini" type="button">保存</button>
+      <button id="delPreset" class="mini danger" type="button">削除</button>
+    </div>
+    <p class="note">今の設定（判型・字数・余白・塗り足し等）に名前を付けて保存。印刷所ごとの数値を作り置きしておけます。</p>
+
     <label class="row">
       <span>段組み</span>
       <select id="columns">
@@ -64,10 +75,16 @@
     </div>
     <p id="finishNote" class="note"></p>
 
+    <h3>背幅（表紙作成用）</h3>
+    <label class="row"><span>用紙の厚さ(mm/枚)</span><input id="paperThick" type="number" min="0.01" max="1" step="0.01" value="0.11"></label>
+    <p id="spineNote" class="note">総—ページ → 背幅 約— mm</p>
+    <p class="note">目安：書籍用紙≈0.11 ／ 上質紙90kg≈0.12 ／ コミック紙≈0.13（正確な値は印刷所の指定を優先）</p>
+
     <h3>自動整形・表示</h3>
     <label class="check"><input id="optBangs" type="checkbox" checked> ！？ → ⁉ に変換</label>
     <label class="check"><input id="optRuby" type="checkbox" checked> 青空文庫ルビ（｜漢字《かんじ》）を解釈</label>
     <label class="check"><input id="optNombre" type="checkbox" checked> ノンブル（ページ番号）を入れる</label>
+    <label class="check"><input id="optToc" type="checkbox"> 目次ページを作る（[章:タイトル]から自動）</label>
     <label class="check"><input id="optTrim" type="checkbox" checked> プレビューに仕上がり線を表示</label>
 
     <h3>PDF情報 / 奥付</h3>
@@ -86,6 +103,7 @@
   <section class="panel editor">
     <h2>本文</h2>
     <p class="note">メモ帳などで書いた文章をそのまま貼り付けてください。改行＝改行、行頭の全角スペースで字下げされます。</p>
+    <p class="note">章分け：行に <code>[章:タイトル]</code> で改ページ＋見出し。<code>[改ページ]</code> で改ページ。ルビは <code>｜漢字《かんじ》</code>。</p>
     <textarea id="body" spellcheck="false" placeholder="ここに本文を貼り付け…"></textarea>
     <div id="stats" class="stats"></div>
   </section>
@@ -118,6 +136,7 @@
 <script src="js/engine/subset.js"></script>
 <script src="js/engine/render-pdf.js"></script>
 <script src="js/engine/okuduke.js"></script>
+<script src="js/engine/toc.js"></script>
 <script src="js/presets.js"></script>
 <script src="js/fonts.js"></script>
 <script src="js/app.js"></script>

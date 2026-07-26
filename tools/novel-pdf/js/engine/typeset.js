@@ -169,6 +169,14 @@
     return lines;
   }
 
+  // ノンブル1個ぶんを作る（本文/目次で共通・表裏で左右反転）
+  function makeNombre(displayNo, isOdd, s, bleed) {
+    const numSize = Math.max(7, Math.min(s.fontSizePt, 9));
+    const yTrim = s.trimH - Math.min(s.mBottom * 0.55, 7);
+    const nx = isOdd ? s.mInner * 0.6 + 3 : s.trimW - (s.mInner * 0.6 + 3);
+    return { text: String(displayNo), x: bleed + nx, y: bleed + yTrim, sizePt: numSize, align: isOdd ? 'left' : 'right' };
+  }
+
   /* --- メイン: テキスト+設定 → PageDoc --- */
   function layout(text, s) {
     const opt = Object.assign({
@@ -176,6 +184,7 @@
       startParity: 'odd',   // 1ページ目を奇数(右起こし)とみなす
       showNombre: true,
       ruby: true,           // 青空文庫ルビの解釈
+      pageOffset: 0,        // 本文の前にある枚数(目次等)＝通し番号/表裏の起点
     }, s.options || {});
 
     const norm = RNK.preprocess.normalize(text, { combineBangs: opt.combineBangs });
@@ -198,23 +207,36 @@
     const textAreaW = s.trimW - s.mInner - s.mOuter;      // ノド〜小口の使える幅
     const overV = (C === 2) ? (gap < -0.01) : (tierH > availV + 0.01); // 天地はみ出し(段組み非依存)
     const overH = blockW > textAreaW + 0.01;              // 左右(行数過多)のはみ出し
+    const slotsPerPage = C * L;                           // 1ページの行スロット数(段×行)
 
-    // --- 段落→行(全段落を連結した1本の行列) ---
+    // --- 段落→行（[章:タイトル]で改ページ＋見出し、[改ページ]で改ページ、章は目次用に記録） ---
+    const doRuby = opt.ruby !== false;
     const paragraphs = norm.split('\n');
     const gidRef = { n: 0 };                 // ルビのグループ通し番号
     const allLines = [];
+    const chapters = [];                     // {title, pageIdx}（pageIdxは本文内0基点ページ）
+    const padToPage = () => { while (allLines.length % slotsPerPage !== 0) allLines.push({ cells: [], hang: null }); };
     for (const p of paragraphs) {
-      const ls = breakParagraph(paragraphToCells(p, gidRef, opt.ruby !== false), N);
-      for (const ln of ls) allLines.push(ln);
+      const mChap = p.match(/^\s*\[章[:：]\s*(.*?)\s*\]\s*$/);
+      if (mChap) {
+        padToPage();                                             // 章は新ページから
+        chapters.push({ title: mChap[1], pageIdx: allLines.length / slotsPerPage });
+        const head = [{ ch: '　', blank: true }].concat(paragraphToCells(mChap[1], gidRef, doRuby)); // 頭を1マス下げ
+        for (const ln of breakParagraph(head, N)) allLines.push(ln);
+        allLines.push({ cells: [], hang: null });                // 見出し後に1行空け
+        continue;
+      }
+      if (/^\s*\[改ページ\]\s*$/.test(p)) { padToPage(); continue; }
+      for (const ln of breakParagraph(paragraphToCells(p, gidRef, doRuby), N)) allLines.push(ln);
     }
 
     // --- 行をページ/段へ配分して座標付け ---
-    const slotsPerPage = C * L;
+    const pageOffset = opt.pageOffset || 0;
     const totalPages = Math.max(1, Math.ceil(allLines.length / slotsPerPage));
     const pages = [];
     for (let pi = 0; pi < totalPages; pi++) {
-      const pageNo = pi + 1;
-      const isOdd = (opt.startParity === 'odd') ? (pageNo % 2 === 1) : (pageNo % 2 === 0);
+      const displayNo = pi + 1 + pageOffset;              // 通し番号(前付けを足した最終位置)
+      const isOdd = (opt.startParity === 'odd') ? (displayNo % 2 === 1) : (displayNo % 2 === 0);
       // ノド/小口の左右（奇数=右起こし: ノド左・小口右）
       // 右綴じ(縦組みの標準): 奇数=左ページ→小口は左 / 偶数=右ページ→小口は右。
       // 版面は小口(外)側にそろえ、端数はノド(綴じ)側へ。→ 実サンプルと一致・見開きでノド対称。
@@ -255,28 +277,15 @@
       }
       addRuby(glyphs);                                      // 親グリフ配置後にルビを右へ添える
 
-      // ノンブル(ページ番号)
-      let nombre = null;
-      if (opt.showNombre) {
-        const numSize = Math.max(7, Math.min(s.fontSizePt, 9)); // pt（本文より大きくしない）
-        const yTrim = s.trimH - Math.min(s.mBottom * 0.55, 7); // 下余白内
-        const nx = isOdd ? s.mInner * 0.6 + 3 : s.trimW - (s.mInner * 0.6 + 3);
-        nombre = {
-          text: String(pageNo),
-          x: bleed + nx,
-          y: bleed + yTrim,
-          sizePt: numSize,
-          align: isOdd ? 'left' : 'right',
-        };
-      }
-
-      pages.push({ index: pi, pageNo, glyphs, nombre });
+      const nombre = opt.showNombre ? makeNombre(displayNo, isOdd, s, bleed) : null;
+      pages.push({ index: pi, pageNo: displayNo, glyphs, nombre });
     }
 
     return {
       pageW, pageH, bleed,
       trimW: s.trimW, trimH: s.trimH,
       pages,
+      chapters,
       meta: {
         totalPages,
         totalLines: allLines.length,
@@ -289,5 +298,5 @@
     };
   }
 
-  RNK.typeset = { layout, toCells, paragraphToCells, breakParagraph, addRuby };
+  RNK.typeset = { layout, toCells, paragraphToCells, breakParagraph, addRuby, makeNombre };
 })();
