@@ -42,19 +42,22 @@
         pg.setTrimBox(bleedPt, bleedPt, trimWpt, trimHpt);  // 仕上がり矩形（RIPのトンボ基準）
         if (opts.tombo) drawTombo(pg, Wpt, Hpt, bleedPt, ink);
       }
-      for (const g of page.glyphs) drawGlyph(pg, font, g, Hpt, ink, degrees);
-      if (page.nombre && opts.showNombre !== false) {
-        const n = page.nombre;
-        const w = font.widthOfTextAtSize(n.text, n.sizePt);
-        const x = (n.align === 'right') ? (U.mm2pt(n.x) - w) : U.mm2pt(n.x);
-        const y = Hpt - U.mm2pt(n.y);
-        pg.drawText(n.text, { x, y, size: n.sizePt, font, color: ink });
-      }
+      for (const g of page.glyphs) drawGlyph(pg, font, g, Hpt, ink, degrees, opts.fontId);
+      if (page.nombre && opts.showNombre !== false) drawFurniture(pg, font, page.nombre, Hpt, ink);
+      if (page.hashira) drawFurniture(pg, font, page.hashira, Hpt, ink);   // 柱（上部タイトル）
     }
     return await pdf.save();   // Uint8Array
   }
 
-  function drawGlyph(pg, font, g, Hpt, ink, degrees) {
+  // ノンブル/柱など横並びの号物を1つ描く（表裏で右/左そろえ）
+  function drawFurniture(pg, font, item, Hpt, ink) {
+    const w = font.widthOfTextAtSize(item.text, item.sizePt);
+    const x = (item.align === 'right') ? (U.mm2pt(item.x) - w) : U.mm2pt(item.x);
+    const y = Hpt - U.mm2pt(item.y);
+    pg.drawText(item.text, { x, y, size: item.sizePt, font, color: ink });
+  }
+
+  function drawGlyph(pg, font, g, Hpt, ink, degrees, fontId) {
     const size = g.sizePt;
     const cellPt = U.mm2pt(g.cell);
     const cellLeft = U.mm2pt(g.x);
@@ -79,7 +82,16 @@
       }
       return;
     }
-    if (g.rotate) {                                  // 回転（括弧・長音など）
+    if (g.rotate) {                                  // 括弧・長音など縦向きにする字
+      const vg = RNK.vshape ? RNK.vshape.vert(fontId, g.ch) : null;
+      if (vg) {                                       // 縦専用字形をアウトラインで（回転より正確な向き）
+        const scale = size / vg.upm;
+        const x0 = cellLeft + (cellPt - vg.advance * scale) / 2;
+        const baseline = (cellTopY - cellPt) + DESC * size;   // 通常字と同じベースライン
+        drawGlyphPath(pg, vg.commands, scale, x0, baseline, ink);
+        return;
+      }
+      // 縦専用字形が無い字（— ダッシュ等）は従来どおり90°回転
       // origin = center - R(-90)*(0.5size, 0.38size) = (cx-0.38size, cy+0.5size)
       const x = cx - 0.38 * size;
       const y = cy + 0.5 * size;
@@ -92,6 +104,25 @@
     const baseline = (cellTopY - cellPt) + DESC * size;   // em下端 + descent
     const y = baseline - U.mm2pt(g.dy);                   // dy(上=負) → 上へ
     pg.drawText(g.ch, { x, y, size, font, color: ink });
+  }
+
+  // 字形アウトラインをベクター塗りで描く（縦専用字形用）。
+  // commands は fontkit のパス（フォント座標・y上向き）。PDFも y上向きなので反転不要。
+  function drawGlyphPath(pg, commands, scale, x0, y0, ink) {
+    const P = window.PDFLib;
+    const ops = [P.pushGraphicsState(), P.setFillingColor(ink)];
+    for (const c of commands) {
+      const a = c.args;
+      switch (c.command) {
+        case 'moveTo': ops.push(P.moveTo(x0 + a[0] * scale, y0 + a[1] * scale)); break;
+        case 'lineTo': ops.push(P.lineTo(x0 + a[0] * scale, y0 + a[1] * scale)); break;
+        case 'quadraticCurveTo': ops.push(P.appendQuadraticCurve(x0 + a[0] * scale, y0 + a[1] * scale, x0 + a[2] * scale, y0 + a[3] * scale)); break;
+        case 'bezierCurveTo': ops.push(P.appendBezierCurve(x0 + a[0] * scale, y0 + a[1] * scale, x0 + a[2] * scale, y0 + a[3] * scale, x0 + a[4] * scale, y0 + a[5] * scale)); break;
+        case 'closePath': ops.push(P.closePath()); break;
+      }
+    }
+    ops.push(P.fill(), P.popGraphicsState());
+    pg.pushOperators(...ops);
   }
 
   // トンボ（角＝二重L、各辺中央＝十字）。塗り足し内に描く。

@@ -187,12 +187,24 @@
     allLines.push({ cells: col, hang: null });
   }
 
+  // ノンブル/柱の号数（本文サイズより一回り小さく＝6.5〜8pt目安）
+  function furnitureSize(s) { return Math.max(6.5, Math.min(s.fontSizePt * 0.8, 8)); }
+
   // ノンブル1個ぶんを作る（本文/目次で共通・表裏で左右反転）
   function makeNombre(displayNo, isOdd, s, bleed) {
-    const numSize = Math.max(7, Math.min(s.fontSizePt, 9));
+    const numSize = furnitureSize(s);
     const yTrim = s.trimH - Math.min(s.mBottom * 0.55, 7);
     const nx = isOdd ? s.mInner * 0.6 + 3 : s.trimW - (s.mInner * 0.6 + 3);
     return { text: String(displayNo), x: bleed + nx, y: bleed + yTrim, sizePt: numSize, align: isOdd ? 'left' : 'right' };
+  }
+
+  // 柱（ランニングヘッド）＝ページ上部・小口側にタイトルを横並びで置く。
+  // ノンブル（下・小口側）と左右をそろえ、天地対称の位置にする。
+  // 奇数=左ページ→左上そろえ / 偶数=右ページ→右上そろえ。
+  function makeHashira(title, isOdd, s, bleed) {
+    const yTrim = Math.min(s.mTop * 0.55, 7);                                    // 天からの距離（ノンブルと対称）
+    const nx = isOdd ? s.mInner * 0.6 + 3 : s.trimW - (s.mInner * 0.6 + 3);      // ノンブルと同じx
+    return { text: title, x: bleed + nx, y: bleed + yTrim, sizePt: furnitureSize(s), align: isOdd ? 'left' : 'right' };
   }
 
   /* --- メイン: テキスト+設定 → PageDoc --- */
@@ -205,6 +217,8 @@
       pageOffset: 0,        // 本文の前にある枚数(目次等)＝通し番号/表裏の起点
       autoIndent: false,    // 段落の自動字下げ
       hangPunct: true,      // 、。のぶら下げ
+      hashira: false,       // 柱(ランニングヘッド)を入れる
+      hashiraText: '',      // 柱に出すタイトル
     }, s.options || {});
 
     const norm = RNK.preprocess.normalize(text, { combineBangs: opt.combineBangs, autoIndent: opt.autoIndent });
@@ -308,7 +322,8 @@
       addRuby(glyphs);                                      // 親グリフ配置後にルビを右へ添える
 
       const nombre = opt.showNombre ? makeNombre(displayNo, isOdd, s, bleed) : null;
-      pages.push({ index: pi, pageNo: displayNo, glyphs, nombre });
+      const hashira = (opt.hashira && opt.hashiraText) ? makeHashira(opt.hashiraText, isOdd, s, bleed) : null;
+      pages.push({ index: pi, pageNo: displayNo, glyphs, nombre, hashira });
     }
 
     return {

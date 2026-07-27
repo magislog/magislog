@@ -82,7 +82,7 @@
     $('userPreset').addEventListener('change', applyUserPreset);
     $('paperThick').addEventListener('input', () => { updateSpine(); saveState(); });
     NUM_FIELDS.forEach((id) => $(id).addEventListener('input', onChange));
-    ['columns', 'font', 'optBangs', 'optNombre', 'optTrim', 'optRuby', 'optToc', 'optIndent', 'optHang', 'optImpose', 'optTombo'].forEach((id) => $(id).addEventListener('change', onChange));
+    ['columns', 'font', 'optBangs', 'optNombre', 'optTrim', 'optRuby', 'optToc', 'optIndent', 'optHang', 'optHashira', 'optImpose', 'optTombo'].forEach((id) => $(id).addEventListener('change', onChange));
     $('optSpread').addEventListener('change', drawCurrent);
     $('body').addEventListener('input', debounce(onChange, 180));
     ['metaTitle', 'metaAuthor', 'metaDate', 'metaCircle', 'metaPrinter', 'metaContact'].forEach((id) => $(id).addEventListener('input', debounce(onChange, 300)));
@@ -210,6 +210,8 @@
         ruby: $('optRuby').checked,
         autoIndent: $('optIndent').checked,
         hangPunct: $('optHang').checked,
+        hashira: $('optHashira').checked,
+        hashiraText: $('metaTitle').value.trim(),
         startParity: 'odd',
       },
     };
@@ -290,7 +292,7 @@
   function drawCurrent() {
     if (!state.doc) return;
     const fam = state.fontReady ? RNK.fonts.FONTS[state.fontId].family : 'serif';
-    const base = { fontFamily: fam, showTrim: $('optTrim').checked, showNombre: $('optNombre').checked };
+    const base = { fontFamily: fam, fontId: state.fontReady ? state.fontId : null, showTrim: $('optTrim').checked, showNombre: $('optNombre').checked };
     const cvL = $('pageCanvasL'), cvR = $('pageCanvas');
     const spread = $('optSpread').checked && state.doc.pages.length > 1;
     if (spread) {
@@ -397,7 +399,8 @@
         author: $('metaAuthor').value.trim(),
         showNombre: s.options.showNombre,
         tombo: $('optTombo').checked,
-        subset: false,   // 既にサブセット済みなので pdf-lib 側では丸ごと埋める
+        fontId: state.fontId,   // 縦専用字形(vert)をアウトライン描画するのに使う
+        subset: false,          // 既にサブセット済みなので pdf-lib 側では丸ごと埋める
       };
       const pdfBytes = await RNK.pdf.build(doc, embedBytes, meta);
       const name = (meta.title || 'novel') + '_' + RNK.presets[$('preset').value].label.replace(/\s/g, '') + '.pdf';
@@ -419,7 +422,7 @@
 
   /* ---------- プロジェクトの保存 / 読込（ファイル） ---------- */
   function collectOpts() {
-    return { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, toc: $('optToc').checked, indent: $('optIndent').checked, hang: $('optHang').checked, tombo: $('optTombo').checked, impose: $('optImpose').value, okupu: $('optOkupu').checked };
+    return { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, toc: $('optToc').checked, indent: $('optIndent').checked, hang: $('optHang').checked, hashira: $('optHashira').checked, tombo: $('optTombo').checked, impose: $('optImpose').value, okupu: $('optOkupu').checked };
   }
   function saveProject() {
     const data = { _type: 'rakunovel-kai-project', v: 1, preset: $('preset').value, settings: captureSettings(), body: $('body').value, opts: collectOpts(), meta: getMeta(), paperThick: $('paperThick').value };
@@ -442,7 +445,7 @@
         const o = d.opts || {};
         $('optBangs').checked = o.bangs !== false; $('optNombre').checked = o.nombre !== false; $('optTrim').checked = o.trim !== false;
         $('optRuby').checked = o.ruby !== false; $('optToc').checked = !!o.toc; $('optIndent').checked = !!o.indent;
-        $('optHang').checked = o.hang !== false; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
+        $('optHang').checked = o.hang !== false; $('optHashira').checked = !!o.hashira; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
         $('optOkupu').checked = !!o.okupu; $('okupuFields').hidden = !o.okupu;
         const m = d.meta || {};
         $('metaTitle').value = m.title || ''; $('metaAuthor').value = m.author || ''; $('metaDate').value = m.date || '';
@@ -499,7 +502,7 @@
       const o = data.opts;
       $('optBangs').checked = o.bangs !== false; $('optNombre').checked = o.nombre !== false; $('optTrim').checked = o.trim !== false;
       $('optRuby').checked = o.ruby !== false; $('optToc').checked = !!o.toc; $('optIndent').checked = !!o.indent;
-      $('optHang').checked = o.hang !== false; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
+      $('optHang').checked = o.hang !== false; $('optHashira').checked = !!o.hashira; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
       $('optSpread').checked = !!o.spread; $('optOkupu').checked = !!o.okupu; $('okupuFields').hidden = !o.okupu;
     }
     if (data.meta) { $('metaTitle').value = data.meta.title || ''; $('metaAuthor').value = data.meta.author || ''; $('metaDate').value = data.meta.date || ''; $('metaCircle').value = data.meta.circle || ''; $('metaPrinter').value = data.meta.printer || ''; $('metaContact').value = data.meta.contact || ''; }

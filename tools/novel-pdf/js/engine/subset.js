@@ -100,6 +100,7 @@
         else if (g.ch) set.add(g.ch.codePointAt(0));
       }
       if (pg.nombre) for (const c of pg.nombre.text) set.add(c.codePointAt(0));
+      if (pg.hashira) for (const c of pg.hashira.text) set.add(c.codePointAt(0));
     }
     return set;
   }

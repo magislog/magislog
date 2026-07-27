@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>縦組み入稿PDFメーカー</title>
-<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/app.css?v=20260727">
 </head>
 <body>
 <header class="topbar">
@@ -95,6 +95,7 @@
     <label class="check"><input id="optIndent" type="checkbox"> 段落の頭を自動で1字下げ</label>
     <label class="check"><input id="optHang" type="checkbox" checked> 句読点のぶら下げ（、。を行末に）</label>
     <label class="check"><input id="optNombre" type="checkbox" checked> ノンブル（ページ番号）を入れる</label>
+    <label class="check"><input id="optHashira" type="checkbox"> 柱（ページ上部にタイトル）を入れる<span class="hint">※下の「タイトル」欄の文字</span></label>
     <label class="check"><input id="optToc" type="checkbox"> 目次ページを作る（[章:タイトル]から自動）</label>
     <label class="check"><input id="optTombo" type="checkbox"> トンボを付ける（塗り足しありの時）</label>
     <label class="check"><input id="optTrim" type="checkbox" checked> プレビューに仕上がり線を表示</label>
@@ -144,18 +145,19 @@
 <!-- ===== スクリプト（依存順） ===== -->
 <script src="js/lib/pdf-lib.min.js"></script>
 <script src="js/lib/fontkit.umd.min.js"></script>
-<script src="js/engine/units.js"></script>
-<script src="js/engine/preprocess.js"></script>
-<script src="js/engine/vglyph.js"></script>
-<script src="js/engine/kinsoku.js"></script>
-<script src="js/engine/typeset.js"></script>
-<script src="js/engine/render-canvas.js"></script>
-<script src="js/engine/subset.js"></script>
-<script src="js/engine/render-pdf.js"></script>
-<script src="js/engine/okuduke.js"></script>
-<script src="js/engine/toc.js"></script>
-<script src="js/presets.js"></script>
-<script src="js/fonts.js"></script>
-<script src="js/app.js"></script>
+<script src="js/engine/units.js?v=20260727"></script>
+<script src="js/engine/preprocess.js?v=20260727"></script>
+<script src="js/engine/vglyph.js?v=20260727"></script>
+<script src="js/engine/vshape.js?v=20260727"></script>
+<script src="js/engine/kinsoku.js?v=20260727"></script>
+<script src="js/engine/typeset.js?v=20260727"></script>
+<script src="js/engine/render-canvas.js?v=20260727"></script>
+<script src="js/engine/subset.js?v=20260727"></script>
+<script src="js/engine/render-pdf.js?v=20260727"></script>
+<script src="js/engine/okuduke.js?v=20260727"></script>
+<script src="js/engine/toc.js?v=20260727"></script>
+<script src="js/presets.js?v=20260727"></script>
+<script src="js/fonts.js?v=20260727"></script>
+<script src="js/app.js?v=20260727"></script>
 </body>
 </html>

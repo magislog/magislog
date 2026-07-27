@@ -10,6 +10,7 @@
 
   // 縦組み回転の向き（時計回り=true）。PDFと必ず揃える。
   const ROTATE_CW = true;
+  const ASC = 0.88;   // em内のベースライン位置（PDF側 render-pdf.js と揃える）
 
   function drawPage(canvas, doc, pageIdx, opts) {
     opts = opts || {};
@@ -42,21 +43,24 @@
     }
 
     ctx.fillStyle = opts.ink || '#111111';
-    for (const g of page.glyphs) drawGlyph(ctx, g, ppm, fam);
+    for (const g of page.glyphs) drawGlyph(ctx, g, ppm, fam, opts.fontId);
 
-    // ノンブル
-    if (page.nombre && opts.showNombre !== false) {
-      const n = page.nombre;
-      const px = U.pt2mm(n.sizePt) * ppm;
-      ctx.font = px + 'px "' + fam + '"';
-      ctx.textAlign = n.align;
-      ctx.textBaseline = 'alphabetic';
-      ctx.fillText(n.text, n.x * ppm, n.y * ppm);
-    }
+    // ノンブル・柱（横並びの号物）
+    if (page.nombre && opts.showNombre !== false) drawFurniture(ctx, page.nombre, ppm, fam);
+    if (page.hashira) drawFurniture(ctx, page.hashira, ppm, fam);
     return { Wpx, Hpx };
   }
 
-  function drawGlyph(ctx, g, ppm, fam) {
+  // ノンブル/柱など横並びの号物を1つ描く
+  function drawFurniture(ctx, item, ppm, fam) {
+    const px = U.pt2mm(item.sizePt) * ppm;
+    ctx.font = px + 'px "' + fam + '"';
+    ctx.textAlign = item.align;
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(item.text, item.x * ppm, item.y * ppm);
+  }
+
+  function drawGlyph(ctx, g, ppm, fam, fontId) {
     const cell = g.cell * ppm;
     const gpx = U.pt2mm(g.sizePt) * ppm;
     const cx = g.x * ppm + cell / 2;
@@ -77,7 +81,16 @@
       ctx.restore();
       return;
     }
-    if (g.rotate) {                                // 回転（括弧・長音など）
+    if (g.rotate) {                                // 括弧・長音など縦向きにする字
+      const vg = RNK.vshape ? RNK.vshape.vert(fontId, g.ch) : null;
+      if (vg) {                                    // 縦専用字形をアウトラインで（PDFと同じ・回転より正確）
+        const scale = gpx / vg.upm;
+        const x0 = g.x * ppm + (cell - vg.advance * scale) / 2;
+        const baseline = g.y * ppm + ASC * gpx;    // セル上端 + アセント
+        ctx.fill(buildPath2D(vg.commands, scale, x0, baseline));
+        return;
+      }
+      // 縦専用字形が無い字（— ダッシュ等）は従来どおり回転
       ctx.save();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -93,6 +106,22 @@
     ctx.textBaseline = 'middle';
     ctx.fillText(g.ch, cx + g.dx * ppm, cy + g.dy * ppm);
     ctx.restore();
+  }
+
+  // fontkitパス（フォント座標・y上向き）→ Canvasの Path2D（y下向きなので反転）
+  function buildPath2D(commands, scale, x0, baseline) {
+    const p = new Path2D();
+    for (const c of commands) {
+      const a = c.args;
+      switch (c.command) {
+        case 'moveTo': p.moveTo(x0 + a[0] * scale, baseline - a[1] * scale); break;
+        case 'lineTo': p.lineTo(x0 + a[0] * scale, baseline - a[1] * scale); break;
+        case 'quadraticCurveTo': p.quadraticCurveTo(x0 + a[0] * scale, baseline - a[1] * scale, x0 + a[2] * scale, baseline - a[3] * scale); break;
+        case 'bezierCurveTo': p.bezierCurveTo(x0 + a[0] * scale, baseline - a[1] * scale, x0 + a[2] * scale, baseline - a[3] * scale, x0 + a[4] * scale, baseline - a[5] * scale); break;
+        case 'closePath': p.closePath(); break;
+      }
+    }
+    return p;
   }
 
   RNK.canvas = { drawPage, ROTATE_CW };
