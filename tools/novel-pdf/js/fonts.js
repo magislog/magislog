@@ -8,14 +8,14 @@
   'use strict';
   const RNK = (window.RNK = window.RNK || {});
 
+  // ★フォントを足す時はここに1行＋ttfを fonts/ に置くだけ（エンジンは無改修）。
+  //   すべて SIL OFL 1.1（PDF埋め込み・商用同人OK）。選んだ時だけ読み込む。
   const FONTS = {
-    genei: {
-      family: 'GenEiKoburiMin',
-      label: '源暎こぶり明朝 v6',
-      url: 'fonts/GenEiKoburiMin6-R.ttf',
-    },
-    // 例）別フォントを足す時はここに1行:
-    // shippori: { family:'ShipporiMincho', label:'しっぽり明朝', url:'fonts/ShipporiMincho-Regular.ttf' },
+    genei:    { family: 'GenEiKoburiMin',  label: '源暎こぶり明朝',            url: 'fonts/GenEiKoburiMin6-R.ttf' },
+    shippori: { family: 'ShipporiMincho',  label: 'しっぽり明朝',              url: 'fonts/ShipporiMincho-jp.ttf' },
+    chikugo:  { family: 'GenEiChikugoMin', label: '源暎ちくご明朝',            url: 'fonts/GenEiChikugoMin3-R.ttf' },
+    antique:  { family: 'GenEiAntique',    label: '源暎アンチック（漫画風）',  url: 'fonts/GenEiAntiqueNv6-M.ttf' },
+    mgothic:  { family: 'GenEiMGothic',    label: '源暎エムゴ（ゴシック）',    url: 'fonts/GenEiMGothic2-Regular.ttf' },
   };
 
   const state = { bytes: {}, ready: {} };
