@@ -572,6 +572,19 @@ canvas { display: block; width: 100%; }
         <input type="file" id="csv-input" accept=".csv" onchange="loadCSV(event)">
       </div>
     </div>
+    <!-- x-bot(ハブ)の蓄積日足から選ぶ: x-bot経由で開いた時だけ表示(root相対 /api/game で自動判定) -->
+    <div id="xbot-section" style="margin-top:12px;width:100%;max-width:340px;display:none;">
+      <div style="font-size:.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:.1em;">または x-bot の蓄積データから選ぶ</div>
+      <input id="xbot-filter" type="text" placeholder="コード / 銘柄名で絞り込み" oninput="filterXbot()"
+             style="width:100%;box-sizing:border-box;padding:8px;margin-bottom:6px;background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--muted);border-radius:6px;font-size:.75rem;">
+      <select id="xbot-picker" size="6"
+              style="width:100%;box-sizing:border-box;padding:6px;background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--muted);border-radius:6px;font-size:.72rem;"></select>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.62rem;color:var(--muted);margin:6px 0;">
+        <input type="checkbox" id="xbot-adjusted"> 分割・配当 調整後で表示(段差なし)
+      </label>
+      <button onclick="startFromXbot()"
+              style="width:100%;padding:10px;background:var(--gold,#c9a227);color:#111;border:none;border-radius:6px;font-weight:700;cursor:pointer;">この銘柄で始める</button>
+    </div>
   </div>
 
   <!-- ゲーム画面（初期非表示） -->
@@ -1618,6 +1631,55 @@ function changeCSV() {
   document.getElementById('game-screen').style.display='none';
   document.getElementById('csv-input').value='';
 }
+
+// ==== x-bot(ハブ)連携 (Magis合議2026-07-12・ハブ化Phase4) ====
+// x-bot が同一オリジンで配信した時だけ root相対 /api/game/* が繋がる。公開サイト経由や x-bot 未起動なら
+// 取得に失敗 → 何も出さず従来(組み込みデータ / 手動CSVアップロード)のまま = 自動判定・フォールバック。
+let XBOT_STOCKS = [];
+async function initXbot() {
+  try {
+    const res = await fetch('/api/game/stocks', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    XBOT_STOCKS = (data && data.stocks) || [];
+    if (!XBOT_STOCKS.length) return;
+    document.getElementById('xbot-section').style.display = 'block';
+    renderXbot(XBOT_STOCKS);
+  } catch (e) { /* x-bot未起動 / 公開サイト経由 → 手動のまま(fail-loud: 偽データで動かさない) */ }
+}
+function renderXbot(list) {
+  const sel = document.getElementById('xbot-picker');
+  if (!sel) return;
+  sel.innerHTML = '';
+  list.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.code;
+    o.textContent = s.code + (s.name ? ' ' + s.name : '') + (s.end ? '  〜' + s.end : '');
+    o.dataset.name = s.name || '';
+    sel.appendChild(o);
+  });
+}
+function filterXbot() {
+  const q = (document.getElementById('xbot-filter').value || '').trim();
+  renderXbot(!q ? XBOT_STOCKS : XBOT_STOCKS.filter(s => ((s.code || '') + ' ' + (s.name || '')).indexOf(q) >= 0));
+}
+async function startFromXbot() {
+  const sel = document.getElementById('xbot-picker');
+  const opt = sel && sel.options[sel.selectedIndex];
+  if (!opt) { alert('銘柄を選んでください'); return; }
+  const adjusted = document.getElementById('xbot-adjusted').checked ? 'true' : 'false';
+  try {
+    const res = await fetch('/api/game/daily.csv?code=' + encodeURIComponent(opt.value) +
+                            '&period=5y&adjusted=' + adjusted, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    stockName = (opt.dataset.name ? opt.dataset.name + '（' + opt.value + '）' : opt.value);
+    parseCSV(text);   // allData 設定 → generateQuestions → ゲーム画面へ(既存パーサを再利用)
+  } catch (e) {
+    alert('x-botからの取得に失敗しました（' + e.message + '）。\nx-bot(:8502)が起動しているか確認してください。手動アップロードも使えます。');
+  }
+}
+initXbot();
 </script>
 </body>
 </html>
