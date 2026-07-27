@@ -27,6 +27,14 @@
     s = s.normalize('NFC');
     s = s.replace(/\r\n?/g, '\n');            // CRLF/CR → LF
     s = s.replace(/\t/g, '　');           // タブ→全角空白（升目を崩さない）
+    if (opts.autoIndent) {
+      // 段落の頭を1字下げ（既に字下げ済み・空行・[章:]等のマーカー行は触らない）
+      s = s.split('\n').map((line) => {
+        if (!line || /^[\s　]/.test(line)) return line;
+        if (/^\[.+\]\s*$/.test(line)) return line;
+        return '　' + line;
+      }).join('\n');
+    }
     if (opts.combineBangs !== false) s = combineBangs(s);
     return s;
   }

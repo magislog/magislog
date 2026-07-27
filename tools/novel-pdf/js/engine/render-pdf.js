@@ -40,6 +40,7 @@
       if (doc.bleed > 0) {
         pg.setBleedBox(0, 0, Wpt, Hpt);                     // 塗り足し込みの全面
         pg.setTrimBox(bleedPt, bleedPt, trimWpt, trimHpt);  // 仕上がり矩形（RIPのトンボ基準）
+        if (opts.tombo) drawTombo(pg, Wpt, Hpt, bleedPt, ink);
       }
       for (const g of page.glyphs) drawGlyph(pg, font, g, Hpt, ink, degrees);
       if (page.nombre && opts.showNombre !== false) {
@@ -91,6 +92,22 @@
     const baseline = (cellTopY - cellPt) + DESC * size;   // em下端 + descent
     const y = baseline - U.mm2pt(g.dy);                   // dy(上=負) → 上へ
     pg.drawText(g.ch, { x, y, size, font, color: ink });
+  }
+
+  // トンボ（角＝二重L、各辺中央＝十字）。塗り足し内に描く。
+  function drawTombo(pg, W, H, b, ink) {
+    const lw = 0.4;
+    const L = b, R = W - b, B = b, T = H - b;
+    const ln = (x1, y1, x2, y2) => pg.drawLine({ start: { x: x1, y: y1 }, end: { x: x2, y: y2 }, thickness: lw, color: ink });
+    ln(0, T, L, T); ln(L, T, L, H); ln(0, H, L, H); ln(0, T, 0, H);          // 左上
+    ln(R, T, W, T); ln(R, T, R, H); ln(R, H, W, H); ln(W, T, W, H);          // 右上
+    ln(0, B, L, B); ln(L, 0, L, B); ln(0, 0, L, 0); ln(0, 0, 0, B);          // 左下
+    ln(R, B, W, B); ln(R, 0, R, B); ln(R, 0, W, 0); ln(W, 0, W, B);          // 右下
+    const cx = W / 2, cy = H / 2, t = b * 0.55;
+    ln(cx, T, cx, H); ln(cx - t, (T + H) / 2, cx + t, (T + H) / 2);          // 上辺中央
+    ln(cx, 0, cx, B); ln(cx - t, B / 2, cx + t, B / 2);                      // 下辺中央
+    ln(0, cy, L, cy); ln(L / 2, cy - t, L / 2, cy + t);                      // 左辺中央
+    ln(R, cy, W, cy); ln((R + W) / 2, cy - t, (R + W) / 2, cy + t);          // 右辺中央
   }
 
   RNK.pdf = { build };

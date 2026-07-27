@@ -80,11 +80,23 @@
     <p id="spineNote" class="note">総—ページ → 背幅 約— mm</p>
     <p class="note">目安：書籍用紙≈0.11 ／ 上質紙90kg≈0.12 ／ コミック紙≈0.13（正確な値は印刷所の指定を優先）</p>
 
+    <h3>製本</h3>
+    <label class="row"><span>面付け（白紙で調整）</span>
+      <select id="optImpose">
+        <option value="none">しない</option>
+        <option value="even">偶数ページに</option>
+        <option value="four">4の倍数に</option>
+      </select>
+    </label>
+
     <h3>自動整形・表示</h3>
     <label class="check"><input id="optBangs" type="checkbox" checked> ！？ → ⁉ に変換</label>
     <label class="check"><input id="optRuby" type="checkbox" checked> 青空文庫ルビ（｜漢字《かんじ》）を解釈</label>
+    <label class="check"><input id="optIndent" type="checkbox"> 段落の頭を自動で1字下げ</label>
+    <label class="check"><input id="optHang" type="checkbox" checked> 句読点のぶら下げ（、。を行末に）</label>
     <label class="check"><input id="optNombre" type="checkbox" checked> ノンブル（ページ番号）を入れる</label>
     <label class="check"><input id="optToc" type="checkbox"> 目次ページを作る（[章:タイトル]から自動）</label>
+    <label class="check"><input id="optTombo" type="checkbox"> トンボを付ける（塗り足しありの時）</label>
     <label class="check"><input id="optTrim" type="checkbox" checked> プレビューに仕上がり線を表示</label>
 
     <h3>PDF情報 / 奥付</h3>
@@ -103,7 +115,7 @@
   <section class="panel editor">
     <h2>本文</h2>
     <p class="note">メモ帳などで書いた文章をそのまま貼り付けてください。改行＝改行、行頭の全角スペースで字下げされます。</p>
-    <p class="note">章分け：行に <code>[章:タイトル]</code> で改ページ＋見出し。<code>[改ページ]</code> で改ページ。ルビは <code>｜漢字《かんじ》</code>。</p>
+    <p class="note">記号：<code>[章:タイトル]</code>＝改ページ＋見出し／<code>[中扉:タイトル]</code>＝扉ページ／<code>[改ページ]</code>／<code>[空白]</code>＝白紙。ルビ＝<code>｜漢字《かんじ》</code>。.txtはここにドロップでも読み込めます。</p>
     <textarea id="body" spellcheck="false" placeholder="ここに本文を貼り付け…"></textarea>
     <div id="stats" class="stats"></div>
   </section>
@@ -114,10 +126,15 @@
       <button id="prevPage" class="ghost" type="button">◀</button>
       <span id="pageInfo">1 / 1</span>
       <button id="nextPage" class="ghost" type="button">▶</button>
+      <label class="check inline"><input id="optSpread" type="checkbox"> 見開き</label>
       <div class="spacer"></div>
+      <button id="btnOpenProj" class="ghost" type="button" title="プロジェクトを開く">開く</button>
+      <button id="btnSaveProj" class="ghost" type="button" title="プロジェクトを保存">保存</button>
+      <input id="fileProj" type="file" accept=".json" hidden>
       <button id="btnExport" class="primary" type="button">PDFを書き出す</button>
     </div>
     <div id="previewArea" class="preview-area">
+      <canvas id="pageCanvasL" style="display:none"></canvas>
       <canvas id="pageCanvas"></canvas>
     </div>
     <p class="foot-note">フォント：源暎こぶり明朝（御琥祢屋・SIL OFL 1.1／PDF埋め込み・商用同人可）</p>

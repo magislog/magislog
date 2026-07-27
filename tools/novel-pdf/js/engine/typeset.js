@@ -134,8 +134,10 @@
   }
 
   /* --- 1段落を行(升目N個)へ割る。禁則(追い出し/ぶら下げ)込み --- */
-  function breakParagraph(cells, N) {
+  const NOSPLIT = new Set(['—', '―', '…', '‥', '─', '━']); // 連続を割らない（ダーシ・三点リーダ）
+  function breakParagraph(cells, N, allowHang) {
     const K = RNK.kinsoku;
+    if (allowHang === undefined) allowHang = true;
     N = Math.max(1, N | 0);              // N=0での無限ループ自衛（公開APIとして単体でも安全に）
     const lines = [];
     if (cells.length === 0) { lines.push({ cells: [], hang: null }); return lines; }
@@ -151,8 +153,12 @@
           take--; changed = true; continue;                        // 行末禁則: 開き括弧を次行へ
         }
         if (take > 1 && nextIdx < cells.length &&
-            K.isStartForbidden(cells[nextIdx].ch) && !K.isHangable(cells[nextIdx].ch)) {
-          take--; changed = true; continue;                        // 行頭禁則(ぶら下げ不可): 末尾を次行へ
+            K.isStartForbidden(cells[nextIdx].ch) && !(allowHang && K.isHangable(cells[nextIdx].ch))) {
+          take--; changed = true; continue;                        // 行頭禁則: 末尾を次行へ
+        }
+        if (take > 1 && nextIdx < cells.length &&
+            NOSPLIT.has(cells[endIdx].ch) && NOSPLIT.has(cells[nextIdx].ch)) {
+          take--; changed = true; continue;                        // 分離禁則: ——・……を割らない
         }
         if (!changed) break;
       }
@@ -160,13 +166,25 @@
       let hang = null;
       let consumed = take;
       const nextIdx = i + take;
-      if (take === N && nextIdx < cells.length && K.isHangable(cells[nextIdx].ch)) {
+      if (allowHang && take === N && nextIdx < cells.length && K.isHangable(cells[nextIdx].ch)) {
         hang = cells[nextIdx]; consumed = take + 1;                 // ぶら下げ: 、。を行末に
       }
       lines.push({ cells: lineCells, hang });
       i += consumed;
     }
     return lines;
+  }
+
+  // 中扉ページ：中央付近にタイトルを1列で置く（残りは空白＝padToPageが埋める）
+  function pushNakatobira(allLines, title, N, L, gidRef, doRuby) {
+    const tcells = paragraphToCells(title, gidRef, doRuby);
+    const midCol = Math.max(0, Math.floor((L - 1) / 2));
+    for (let c = 0; c < midCol; c++) allLines.push({ cells: [], hang: null });
+    const topPad = Math.max(0, Math.floor((N - tcells.length) / 2));
+    const col = [];
+    for (let k = 0; k < topPad; k++) col.push({ ch: '　', blank: true });
+    for (const c of tcells) col.push(c);
+    allLines.push({ cells: col, hang: null });
   }
 
   // ノンブル1個ぶんを作る（本文/目次で共通・表裏で左右反転）
@@ -185,9 +203,11 @@
       showNombre: true,
       ruby: true,           // 青空文庫ルビの解釈
       pageOffset: 0,        // 本文の前にある枚数(目次等)＝通し番号/表裏の起点
+      autoIndent: false,    // 段落の自動字下げ
+      hangPunct: true,      // 、。のぶら下げ
     }, s.options || {});
 
-    const norm = RNK.preprocess.normalize(text, { combineBangs: opt.combineBangs });
+    const norm = RNK.preprocess.normalize(text, { combineBangs: opt.combineBangs, autoIndent: opt.autoIndent });
 
     // --- 幾何(すべてmm) ---
     const cellMm = U.pt2mm(s.fontSizePt);                 // マス目=1em
@@ -216,18 +236,28 @@
     const allLines = [];
     const chapters = [];                     // {title, pageIdx}（pageIdxは本文内0基点ページ）
     const padToPage = () => { while (allLines.length % slotsPerPage !== 0) allLines.push({ cells: [], hang: null }); };
+    const addBlankPage = () => { padToPage(); for (let k = 0; k < slotsPerPage; k++) allLines.push({ cells: [], hang: null }); };
     for (const p of paragraphs) {
+      const mTobira = p.match(/^\s*\[中扉[:：]\s*(.*?)\s*\]\s*$/);
+      if (mTobira) {
+        padToPage();                                             // 中扉は新ページ
+        chapters.push({ title: mTobira[1], pageIdx: allLines.length / slotsPerPage });
+        pushNakatobira(allLines, mTobira[1], N, L, gidRef, doRuby);
+        padToPage();                                             // 扉ページの残りは空白
+        continue;
+      }
       const mChap = p.match(/^\s*\[章[:：]\s*(.*?)\s*\]\s*$/);
       if (mChap) {
         padToPage();                                             // 章は新ページから
         chapters.push({ title: mChap[1], pageIdx: allLines.length / slotsPerPage });
         const head = [{ ch: '　', blank: true }].concat(paragraphToCells(mChap[1], gidRef, doRuby)); // 頭を1マス下げ
-        for (const ln of breakParagraph(head, N)) allLines.push(ln);
+        for (const ln of breakParagraph(head, N, opt.hangPunct)) allLines.push(ln);
         allLines.push({ cells: [], hang: null });                // 見出し後に1行空け
         continue;
       }
       if (/^\s*\[改ページ\]\s*$/.test(p)) { padToPage(); continue; }
-      for (const ln of breakParagraph(paragraphToCells(p, gidRef, doRuby), N)) allLines.push(ln);
+      if (/^\s*\[空白\]\s*$/.test(p)) { addBlankPage(); continue; }
+      for (const ln of breakParagraph(paragraphToCells(p, gidRef, doRuby), N, opt.hangPunct)) allLines.push(ln);
     }
 
     // --- 行をページ/段へ配分して座標付け ---

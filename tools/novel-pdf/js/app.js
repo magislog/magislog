@@ -82,15 +82,25 @@
     $('userPreset').addEventListener('change', applyUserPreset);
     $('paperThick').addEventListener('input', () => { updateSpine(); saveState(); });
     NUM_FIELDS.forEach((id) => $(id).addEventListener('input', onChange));
-    ['columns', 'font', 'optBangs', 'optNombre', 'optTrim', 'optRuby', 'optToc'].forEach((id) => $(id).addEventListener('change', onChange));
+    ['columns', 'font', 'optBangs', 'optNombre', 'optTrim', 'optRuby', 'optToc', 'optIndent', 'optHang', 'optImpose', 'optTombo'].forEach((id) => $(id).addEventListener('change', onChange));
+    $('optSpread').addEventListener('change', drawCurrent);
     $('body').addEventListener('input', debounce(onChange, 180));
     ['metaTitle', 'metaAuthor', 'metaDate', 'metaCircle', 'metaPrinter', 'metaContact'].forEach((id) => $(id).addEventListener('input', debounce(onChange, 300)));
     $('optOkupu').addEventListener('change', () => { $('okupuFields').hidden = !$('optOkupu').checked; onChange(); });
     $('bleedGroup').querySelectorAll('.seg').forEach((b) => b.addEventListener('click', () => { setBleed(parseInt(b.dataset.bleed, 10)); onChange(); }));
-    $('prevPage').onclick = () => { gotoPage(state.page - 1); };
-    $('nextPage').onclick = () => { gotoPage(state.page + 1); };
+    $('prevPage').onclick = () => { gotoPage(state.page - ($('optSpread').checked ? 2 : 1)); };
+    $('nextPage').onclick = () => { gotoPage(state.page + ($('optSpread').checked ? 2 : 1)); };
     $('btnExport').onclick = exportPDF;
     $('font').addEventListener('change', (e) => { state.fontId = e.target.value; initFont(); });
+    $('btnSaveProj').addEventListener('click', saveProject);
+    $('btnOpenProj').addEventListener('click', () => $('fileProj').click());
+    $('fileProj').addEventListener('change', (e) => { if (e.target.files[0]) loadProjectFile(e.target.files[0]); e.target.value = ''; });
+    const bodyEl = $('body');
+    bodyEl.addEventListener('dragover', (e) => { if (e.dataTransfer && Array.from(e.dataTransfer.items || []).some((it) => it.kind === 'file')) e.preventDefault(); });
+    bodyEl.addEventListener('drop', (e) => {
+      const f = e.dataTransfer && e.dataTransfer.files[0];
+      if (f && /\.txt$/i.test(f.name)) { e.preventDefault(); const r = new FileReader(); r.onload = () => { bodyEl.value = r.result; onChange(); }; r.readAsText(f, 'utf-8'); }
+    });
     window.addEventListener('resize', debounce(drawCurrent, 120));
   }
 
@@ -198,6 +208,8 @@
         combineBangs: $('optBangs').checked,
         showNombre: $('optNombre').checked,
         ruby: $('optRuby').checked,
+        autoIndent: $('optIndent').checked,
+        hangPunct: $('optHang').checked,
         startParity: 'odd',
       },
     };
@@ -243,6 +255,13 @@
       doc.pages.push(RNK.okuduke.build(getMeta(), s, s.bleed));  // 奥付を末尾へ
     }
 
+    // 面付け：総ページを白紙で目標(偶数/4の倍数)に合わせる
+    const imp = $('optImpose').value;
+    if (imp === 'even' || imp === 'four') {
+      const mult = imp === 'four' ? 4 : 2;
+      while (doc.pages.length % mult !== 0) doc.pages.push({ index: 0, pageNo: null, glyphs: [], nombre: null, blank: true });
+    }
+
     doc.pages.forEach((p, i) => { p.index = i; });          // 通しindex振り直し
     doc.meta.totalPages = doc.pages.length;
     return { doc, s };
@@ -257,26 +276,46 @@
     updateStats();
   }
 
-  function fitScale() {
+  function fitScale(nPages) {
     const area = $('previewArea');
     if (!state.doc) return 3.4;
+    nPages = nPages || 1;
     const availH = area.clientHeight - 34;
-    const availW = area.clientWidth - 34;
+    const availW = area.clientWidth - 34 - (nPages > 1 ? 12 : 0);
     const byH = availH / state.doc.pageH;
-    const byW = availW / state.doc.pageW;
-    return Math.max(1.2, Math.min(byH, byW));   // mmあたりpx
+    const byW = availW / (state.doc.pageW * nPages);
+    return Math.max(1.0, Math.min(byH, byW));   // mmあたりpx
   }
 
   function drawCurrent() {
     if (!state.doc) return;
     const fam = state.fontReady ? RNK.fonts.FONTS[state.fontId].family : 'serif';
-    RNK.canvas.drawPage($('pageCanvas'), state.doc, state.page, {
-      fontFamily: fam,
-      pxPerMm: fitScale(),
-      showTrim: $('optTrim').checked,
-      showNombre: $('optNombre').checked,
-    });
-    $('pageInfo').textContent = `${state.page + 1} / ${state.doc.pages.length}`;
+    const base = { fontFamily: fam, showTrim: $('optTrim').checked, showNombre: $('optNombre').checked };
+    const cvL = $('pageCanvasL'), cvR = $('pageCanvas');
+    const spread = $('optSpread').checked && state.doc.pages.length > 1;
+    if (spread) {
+      const ppm = fitScale(2);
+      const P = state.page + 1;                       // 1-based
+      const leftNo = (P % 2 === 1) ? P : P + 1;       // 右綴じ: 奇数=左ページ
+      const rightNo = leftNo - 1;
+      cvL.style.display = '';
+      drawPageOrBlank(cvL, leftNo - 1, base, ppm);    // 左（大きい番号）
+      drawPageOrBlank(cvR, rightNo - 1, base, ppm);   // 右（小さい番号）
+      $('pageInfo').textContent = `${rightNo >= 1 ? rightNo : '–'}–${leftNo} / ${state.doc.pages.length}`;
+    } else {
+      cvL.style.display = 'none';
+      RNK.canvas.drawPage(cvR, state.doc, state.page, Object.assign({ pxPerMm: fitScale(1) }, base));
+      $('pageInfo').textContent = `${state.page + 1} / ${state.doc.pages.length}`;
+    }
+  }
+
+  function drawPageOrBlank(cv, idx, base, ppm) {
+    if (idx >= 0 && idx < state.doc.pages.length) {
+      RNK.canvas.drawPage(cv, state.doc, idx, Object.assign({ pxPerMm: ppm }, base));
+    } else {
+      const blank = { pageW: state.doc.pageW, pageH: state.doc.pageH, bleed: state.doc.bleed, trimW: state.doc.trimW, trimH: state.doc.trimH, pages: [{ glyphs: [], nombre: null }] };
+      RNK.canvas.drawPage(cv, blank, 0, Object.assign({ pxPerMm: ppm }, base));
+    }
   }
 
   function gotoPage(p) {
@@ -297,9 +336,32 @@
       const next4 = Math.ceil(P / 4) * 4;
       html += `　<span class="hint">※製本の目安：中綴じは4の倍数(${next4}P)／無線綴じは偶数が無難</span>`;
     }
+    if (state.fontReady) {
+      const missing = checkCoverage(state.fontId, state.doc);
+      if (missing.length) html += `　<span class="warn">⚠ このフォントに無い字：${escapeHtml(missing.slice(0, 20).join(' '))}${missing.length > 20 ? ' …' : ''}（印刷で□になります）</span>`;
+    }
     $('stats').innerHTML = html;
     updateSpine();
   }
+
+  // フォントに無い字（豆腐になる字）を洗い出す。fontkitで判定・fontごとにキャッシュ。
+  const _fkCache = {};
+  function checkCoverage(fontId, doc) {
+    try {
+      const bytes = RNK.fonts.bytes(fontId);
+      if (!window.fontkit || !bytes) return [];
+      let fk = _fkCache[fontId];
+      if (!fk) { fk = window.fontkit.create(new Uint8Array(bytes)); _fkCache[fontId] = fk; }
+      const has = (cp) => (fk.hasGlyphForCodePoint ? fk.hasGlyphForCodePoint(cp) : (fk.glyphForCodePoint(cp).id !== 0));
+      const missing = new Set();
+      for (const cp of RNK.subset.collectCodepoints(doc)) {
+        if (cp === 0x20 || cp === 0x3000) continue;
+        if (!has(cp)) missing.add(String.fromCodePoint(cp));
+      }
+      return Array.from(missing);
+    } catch (e) { return []; }
+  }
+  function escapeHtml(s) { return String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
 
   // 背幅 ＝ 総ページ ÷ 2 × 用紙の厚さ(mm/枚)
   function updateSpine() {
@@ -334,6 +396,7 @@
         title: $('metaTitle').value.trim(),
         author: $('metaAuthor').value.trim(),
         showNombre: s.options.showNombre,
+        tombo: $('optTombo').checked,
         subset: false,   // 既にサブセット済みなので pdf-lib 側では丸ごと埋める
       };
       const pdfBytes = await RNK.pdf.build(doc, embedBytes, meta);
@@ -352,6 +415,42 @@
     const a = document.createElement('a');
     a.href = url; a.download = filename; document.body.appendChild(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+
+  /* ---------- プロジェクトの保存 / 読込（ファイル） ---------- */
+  function collectOpts() {
+    return { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, toc: $('optToc').checked, indent: $('optIndent').checked, hang: $('optHang').checked, tombo: $('optTombo').checked, impose: $('optImpose').value, okupu: $('optOkupu').checked };
+  }
+  function saveProject() {
+    const data = { _type: 'rakunovel-kai-project', v: 1, preset: $('preset').value, settings: captureSettings(), body: $('body').value, opts: collectOpts(), meta: getMeta(), paperThick: $('paperThick').value };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = (getMeta().title || 'project') + '.rnk.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+  function loadProjectFile(file) {
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const d = JSON.parse(r.result);
+        if (d.settings) applySettings(d.settings);
+        if (d.preset) $('preset').value = d.preset;
+        if (d.body != null) $('body').value = d.body;
+        if (d.paperThick != null) $('paperThick').value = d.paperThick;
+        const o = d.opts || {};
+        $('optBangs').checked = o.bangs !== false; $('optNombre').checked = o.nombre !== false; $('optTrim').checked = o.trim !== false;
+        $('optRuby').checked = o.ruby !== false; $('optToc').checked = !!o.toc; $('optIndent').checked = !!o.indent;
+        $('optHang').checked = o.hang !== false; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
+        $('optOkupu').checked = !!o.okupu; $('okupuFields').hidden = !o.okupu;
+        const m = d.meta || {};
+        $('metaTitle').value = m.title || ''; $('metaAuthor').value = m.author || ''; $('metaDate').value = m.date || '';
+        $('metaCircle').value = m.circle || ''; $('metaPrinter').value = m.printer || ''; $('metaContact').value = m.contact || '';
+        onChange();
+      } catch (e) { alert('プロジェクトファイルを読めませんでした: ' + e.message); }
+    };
+    r.readAsText(file, 'utf-8');
   }
 
   /* ---------- フォント読込 ---------- */
@@ -380,7 +479,7 @@
       preset: $('preset').value, columns: $('columns').value,
       trimW: state.trimW, trimH: state.trimH, bleed: state.bleed, fontId: state.fontId, paperThick: $('paperThick').value,
       nums: {}, body: $('body').value,
-      opts: { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, toc: $('optToc').checked, okupu: $('optOkupu').checked },
+      opts: Object.assign(collectOpts(), { spread: $('optSpread').checked }),
       meta: { title: $('metaTitle').value, author: $('metaAuthor').value, date: $('metaDate').value, circle: $('metaCircle').value, printer: $('metaPrinter').value, contact: $('metaContact').value },
     };
     NUM_FIELDS.forEach((id) => data.nums[id] = $(id).value);
@@ -396,7 +495,13 @@
     NUM_FIELDS.forEach((id) => { if (data.nums && data.nums[id] != null) $(id).value = data.nums[id]; });
     setBleed(data.bleed != null ? data.bleed : 3);
     if (data.paperThick != null) $('paperThick').value = data.paperThick;
-    if (data.opts) { $('optBangs').checked = data.opts.bangs; $('optNombre').checked = data.opts.nombre; $('optTrim').checked = data.opts.trim; $('optRuby').checked = data.opts.ruby !== false; $('optToc').checked = !!data.opts.toc; $('optOkupu').checked = data.opts.okupu; $('okupuFields').hidden = !data.opts.okupu; }
+    if (data.opts) {
+      const o = data.opts;
+      $('optBangs').checked = o.bangs !== false; $('optNombre').checked = o.nombre !== false; $('optTrim').checked = o.trim !== false;
+      $('optRuby').checked = o.ruby !== false; $('optToc').checked = !!o.toc; $('optIndent').checked = !!o.indent;
+      $('optHang').checked = o.hang !== false; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
+      $('optSpread').checked = !!o.spread; $('optOkupu').checked = !!o.okupu; $('okupuFields').hidden = !o.okupu;
+    }
     if (data.meta) { $('metaTitle').value = data.meta.title || ''; $('metaAuthor').value = data.meta.author || ''; $('metaDate').value = data.meta.date || ''; $('metaCircle').value = data.meta.circle || ''; $('metaPrinter').value = data.meta.printer || ''; $('metaContact').value = data.meta.contact || ''; }
     $('body').value = (data.body != null && data.body !== '') ? data.body : DEFAULT_TEXT;
     return true;
