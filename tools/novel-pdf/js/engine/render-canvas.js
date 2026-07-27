@@ -51,13 +51,21 @@
     return { Wpx, Hpx };
   }
 
-  // ノンブル/柱など横並びの号物を1つ描く
+  // ノンブル/柱など横並びの号物を1つ描く（長い柱は…で詰める）
   function drawFurniture(ctx, item, ppm, fam) {
     const px = U.pt2mm(item.sizePt) * ppm;
     ctx.font = px + 'px "' + fam + '"';
     ctx.textAlign = item.align;
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText(item.text, item.x * ppm, item.y * ppm);
+    let text = item.text;
+    if (item.maxWidthMm) {
+      const maxPx = item.maxWidthMm * ppm;
+      if (ctx.measureText(text).width > maxPx) {
+        while (text.length > 1 && ctx.measureText(text + '…').width > maxPx) text = text.slice(0, -1);
+        text += '…';
+      }
+    }
+    ctx.fillText(text, item.x * ppm, item.y * ppm);
   }
 
   function drawGlyph(ctx, g, ppm, fam, fontId) {

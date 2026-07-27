@@ -49,12 +49,22 @@
     return await pdf.save();   // Uint8Array
   }
 
-  // ノンブル/柱など横並びの号物を1つ描く（表裏で右/左そろえ）
+  // ノンブル/柱など横並びの号物を1つ描く（表裏で右/左そろえ・長い柱は…で詰める）
   function drawFurniture(pg, font, item, Hpt, ink) {
-    const w = font.widthOfTextAtSize(item.text, item.sizePt);
+    let text = clampWidth(font, item.text, item.sizePt, item.maxWidthMm);
+    const w = font.widthOfTextAtSize(text, item.sizePt);
     const x = (item.align === 'right') ? (U.mm2pt(item.x) - w) : U.mm2pt(item.x);
     const y = Hpt - U.mm2pt(item.y);
-    pg.drawText(item.text, { x, y, size: item.sizePt, font, color: ink });
+    pg.drawText(text, { x, y, size: item.sizePt, font, color: ink });
+  }
+  // 版面幅を超える柱は末尾を…に詰める（反対マージンへの突き抜け防止）
+  function clampWidth(font, text, sizePt, maxWidthMm) {
+    if (!maxWidthMm) return text;
+    const maxPt = U.mm2pt(maxWidthMm);
+    if (font.widthOfTextAtSize(text, sizePt) <= maxPt) return text;
+    let t = text;
+    while (t.length > 1 && font.widthOfTextAtSize(t + '…', sizePt) > maxPt) t = t.slice(0, -1);
+    return t + '…';
   }
 
   function drawGlyph(pg, font, g, Hpt, ink, degrees, fontId) {

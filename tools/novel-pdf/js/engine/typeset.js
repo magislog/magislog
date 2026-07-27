@@ -204,7 +204,8 @@
   function makeHashira(title, isOdd, s, bleed) {
     const yTrim = Math.min(s.mTop * 0.55, 7);                                    // 天からの距離（ノンブルと対称）
     const nx = isOdd ? s.mInner * 0.6 + 3 : s.trimW - (s.mInner * 0.6 + 3);      // ノンブルと同じx
-    return { text: title, x: bleed + nx, y: bleed + yTrim, sizePt: furnitureSize(s), align: isOdd ? 'left' : 'right' };
+    const maxWidthMm = Math.max(10, s.trimW - s.mInner - s.mOuter);              // 版面幅を超えたら描画側で…に詰める
+    return { text: title, x: bleed + nx, y: bleed + yTrim, sizePt: furnitureSize(s), align: isOdd ? 'left' : 'right', maxWidthMm };
   }
 
   /* --- メイン: テキスト+設定 → PageDoc --- */
@@ -249,13 +250,16 @@
     const gidRef = { n: 0 };                 // ルビのグループ通し番号
     const allLines = [];
     const chapters = [];                     // {title, pageIdx}（pageIdxは本文内0基点ページ）
+    const tobiraSet = new Set();             // 中扉ページのindex（柱を出さない）
     const padToPage = () => { while (allLines.length % slotsPerPage !== 0) allLines.push({ cells: [], hang: null }); };
     const addBlankPage = () => { padToPage(); for (let k = 0; k < slotsPerPage; k++) allLines.push({ cells: [], hang: null }); };
     for (const p of paragraphs) {
       const mTobira = p.match(/^\s*\[中扉[:：]\s*(.*?)\s*\]\s*$/);
       if (mTobira) {
         padToPage();                                             // 中扉は新ページ
-        chapters.push({ title: mTobira[1], pageIdx: allLines.length / slotsPerPage });
+        const tpi = allLines.length / slotsPerPage;
+        tobiraSet.add(tpi);                                      // このページは扉＝柱を出さない
+        chapters.push({ title: mTobira[1], pageIdx: tpi });
         pushNakatobira(allLines, mTobira[1], N, L, gidRef, doRuby);
         padToPage();                                             // 扉ページの残りは空白
         continue;
@@ -322,7 +326,9 @@
       addRuby(glyphs);                                      // 親グリフ配置後にルビを右へ添える
 
       const nombre = opt.showNombre ? makeNombre(displayNo, isOdd, s, bleed) : null;
-      const hashira = (opt.hashira && opt.hashiraText) ? makeHashira(opt.hashiraText, isOdd, s, bleed) : null;
+      // 柱＝左ページ(奇数)のみ・中扉ページは除外（あやか指示「左ページの左上」準拠）
+      const hashira = (opt.hashira && opt.hashiraText && isOdd && !tobiraSet.has(pi))
+        ? makeHashira(opt.hashiraText, isOdd, s, bleed) : null;
       pages.push({ index: pi, pageNo: displayNo, glyphs, nombre, hashira });
     }
 
