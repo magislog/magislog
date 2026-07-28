@@ -82,6 +82,7 @@
     $('userPreset').addEventListener('change', applyUserPreset);
     $('paperThick').addEventListener('input', () => { updateSpine(); saveState(); });
     NUM_FIELDS.forEach((id) => $(id).addEventListener('input', onChange));
+    $('nombreStart').addEventListener('input', onChange);
     ['columns', 'font', 'optBangs', 'optNombre', 'optTrim', 'optRuby', 'optToc', 'optIndent', 'optHang', 'optHashira', 'optImpose', 'optTombo'].forEach((id) => $(id).addEventListener('change', onChange));
     $('optSpread').addEventListener('change', drawCurrent);
     $('body').addEventListener('input', debounce(onChange, 180));
@@ -212,6 +213,7 @@
         hangPunct: $('optHang').checked,
         hashira: $('optHashira').checked,
         hashiraText: $('metaTitle').value.trim(),
+        nombreStart: Math.max(1, Math.round(n('nombreStart') || 1)),
         startParity: 'odd',
       },
     };
@@ -240,6 +242,7 @@
     const s = readSettings();
     const text = $('body').value;
     const useToc = $('optToc').checked;
+    const nombreStart = s.options.nombreStart || 1;
 
     let doc = RNK.typeset.layout(text, withOffset(s, 0));   // 1回目：章位置を得る
     let tocPages = [];
@@ -248,8 +251,8 @@
       const slots = s.columns * s.linesPerCol;
       const tocPageCount = Math.max(1, Math.ceil((doc.chapters.length + 1) / slots));
       doc = RNK.typeset.layout(text, withOffset(s, tocPageCount));  // 2回目：目次ぶんずらして本組み
-      const chaptersWithPage = doc.chapters.map((c) => ({ title: c.title, page: tocPageCount + c.pageIdx + 1 }));
-      tocPages = RNK.toc.build(chaptersWithPage, s, s.bleed, 1, s.options.showNombre);
+      const chaptersWithPage = doc.chapters.map((c) => ({ title: c.title, page: tocPageCount + c.pageIdx + nombreStart }));
+      tocPages = RNK.toc.build(chaptersWithPage, s, s.bleed, nombreStart, s.options.showNombre);
       doc.pages = tocPages.concat(doc.pages);              // 目次を先頭へ
     }
 
@@ -422,7 +425,7 @@
 
   /* ---------- プロジェクトの保存 / 読込（ファイル） ---------- */
   function collectOpts() {
-    return { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, toc: $('optToc').checked, indent: $('optIndent').checked, hang: $('optHang').checked, hashira: $('optHashira').checked, tombo: $('optTombo').checked, impose: $('optImpose').value, okupu: $('optOkupu').checked };
+    return { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, toc: $('optToc').checked, indent: $('optIndent').checked, hang: $('optHang').checked, hashira: $('optHashira').checked, tombo: $('optTombo').checked, impose: $('optImpose').value, okupu: $('optOkupu').checked, nombreStart: parseInt($('nombreStart').value, 10) || 1 };
   }
   function saveProject() {
     const data = { _type: 'rakunovel-kai-project', v: 1, preset: $('preset').value, settings: captureSettings(), body: $('body').value, opts: collectOpts(), meta: getMeta(), paperThick: $('paperThick').value };
@@ -447,6 +450,7 @@
         $('optRuby').checked = o.ruby !== false; $('optToc').checked = !!o.toc; $('optIndent').checked = !!o.indent;
         $('optHang').checked = o.hang !== false; $('optHashira').checked = !!o.hashira; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
         $('optOkupu').checked = !!o.okupu; $('okupuFields').hidden = !o.okupu;
+        if (o.nombreStart != null) $('nombreStart').value = o.nombreStart;
         const m = d.meta || {};
         $('metaTitle').value = m.title || ''; $('metaAuthor').value = m.author || ''; $('metaDate').value = m.date || '';
         $('metaCircle').value = m.circle || ''; $('metaPrinter').value = m.printer || ''; $('metaContact').value = m.contact || '';
@@ -504,6 +508,7 @@
       $('optRuby').checked = o.ruby !== false; $('optToc').checked = !!o.toc; $('optIndent').checked = !!o.indent;
       $('optHang').checked = o.hang !== false; $('optHashira').checked = !!o.hashira; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
       $('optSpread').checked = !!o.spread; $('optOkupu').checked = !!o.okupu; $('okupuFields').hidden = !o.okupu;
+      if (o.nombreStart != null) $('nombreStart').value = o.nombreStart;
     }
     if (data.meta) { $('metaTitle').value = data.meta.title || ''; $('metaAuthor').value = data.meta.author || ''; $('metaDate').value = data.meta.date || ''; $('metaCircle').value = data.meta.circle || ''; $('metaPrinter').value = data.meta.printer || ''; $('metaContact').value = data.meta.contact || ''; }
     $('body').value = (data.body != null && data.body !== '') ? data.body : DEFAULT_TEXT;

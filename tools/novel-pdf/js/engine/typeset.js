@@ -220,6 +220,7 @@
       hangPunct: true,      // 、。のぶら下げ
       hashira: false,       // 柱(ランニングヘッド)を入れる
       hashiraText: '',      // 柱に出すタイトル
+      nombreStart: 1,       // ノンブル開始番号（先頭ページの番号）
     }, s.options || {});
 
     const norm = RNK.preprocess.normalize(text, { combineBangs: opt.combineBangs, autoIndent: opt.autoIndent });
@@ -283,7 +284,7 @@
     const totalPages = Math.max(1, Math.ceil(allLines.length / slotsPerPage));
     const pages = [];
     for (let pi = 0; pi < totalPages; pi++) {
-      const displayNo = pi + 1 + pageOffset;              // 通し番号(前付けを足した最終位置)
+      const displayNo = pi + pageOffset + (opt.nombreStart || 1);   // 通し番号(開始番号＋前付け)
       const isOdd = (opt.startParity === 'odd') ? (displayNo % 2 === 1) : (displayNo % 2 === 0);
       // ノド/小口の左右（奇数=右起こし: ノド左・小口右）
       // 右綴じ(縦組みの標準): 奇数=左ページ→小口は左 / 偶数=右ページ→小口は右。

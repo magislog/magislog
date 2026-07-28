@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>縦組み入稿PDFメーカー</title>
-<link rel="stylesheet" href="css/app.css?v=20260727c">
+<link rel="stylesheet" href="css/app.css?v=20260728">
 </head>
 <body>
 <header class="topbar">
@@ -95,6 +95,7 @@
     <label class="check"><input id="optIndent" type="checkbox"> 段落の頭を自動で1字下げ</label>
     <label class="check"><input id="optHang" type="checkbox" checked> 句読点のぶら下げ（、。を行末に）</label>
     <label class="check"><input id="optNombre" type="checkbox" checked> ノンブル（ページ番号）を入れる</label>
+    <label class="row"><span>ノンブル開始番号</span><input id="nombreStart" class="num" type="number" min="1" max="9999" step="1" value="1"></label>
     <label class="check"><input id="optHashira" type="checkbox"> 柱（ページ上部にタイトル）を入れる<span class="hint">※下の「タイトル」欄の文字</span></label>
     <label class="check"><input id="optToc" type="checkbox"> 目次ページを作る（[章:タイトル]から自動）</label>
     <label class="check"><input id="optTombo" type="checkbox"> トンボを付ける（塗り足しありの時）</label>
@@ -124,9 +125,9 @@
   <!-- ===== 右：プレビュー ===== -->
   <section class="panel preview">
     <div class="preview-bar">
-      <button id="prevPage" class="ghost" type="button">◀</button>
+      <button id="nextPage" class="ghost" type="button" title="次のページ（読み進む＝左へ）">◀</button>
       <span id="pageInfo">1 / 1</span>
-      <button id="nextPage" class="ghost" type="button">▶</button>
+      <button id="prevPage" class="ghost" type="button" title="前のページ（戻る＝右へ）">▶</button>
       <label class="check inline"><input id="optSpread" type="checkbox"> 見開き</label>
       <div class="spacer"></div>
       <button id="btnOpenProj" class="ghost" type="button" title="プロジェクトを開く">開く</button>
@@ -145,19 +146,19 @@
 <!-- ===== スクリプト（依存順） ===== -->
 <script src="js/lib/pdf-lib.min.js"></script>
 <script src="js/lib/fontkit.umd.min.js"></script>
-<script src="js/engine/units.js?v=20260727c"></script>
-<script src="js/engine/preprocess.js?v=20260727c"></script>
-<script src="js/engine/vglyph.js?v=20260727c"></script>
-<script src="js/engine/vshape.js?v=20260727c"></script>
-<script src="js/engine/kinsoku.js?v=20260727c"></script>
-<script src="js/engine/typeset.js?v=20260727c"></script>
-<script src="js/engine/render-canvas.js?v=20260727c"></script>
-<script src="js/engine/subset.js?v=20260727c"></script>
-<script src="js/engine/render-pdf.js?v=20260727c"></script>
-<script src="js/engine/okuduke.js?v=20260727c"></script>
-<script src="js/engine/toc.js?v=20260727c"></script>
-<script src="js/presets.js?v=20260727c"></script>
-<script src="js/fonts.js?v=20260727c"></script>
-<script src="js/app.js?v=20260727c"></script>
+<script src="js/engine/units.js?v=20260728"></script>
+<script src="js/engine/preprocess.js?v=20260728"></script>
+<script src="js/engine/vglyph.js?v=20260728"></script>
+<script src="js/engine/vshape.js?v=20260728"></script>
+<script src="js/engine/kinsoku.js?v=20260728"></script>
+<script src="js/engine/typeset.js?v=20260728"></script>
+<script src="js/engine/render-canvas.js?v=20260728"></script>
+<script src="js/engine/subset.js?v=20260728"></script>
+<script src="js/engine/render-pdf.js?v=20260728"></script>
+<script src="js/engine/okuduke.js?v=20260728"></script>
+<script src="js/engine/toc.js?v=20260728"></script>
+<script src="js/presets.js?v=20260728"></script>
+<script src="js/fonts.js?v=20260728"></script>
+<script src="js/app.js?v=20260728"></script>
 </body>
 </html>

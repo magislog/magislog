@@ -35,7 +35,7 @@ h3{font-size:12px;color:var(--sub);letter-spacing:.06em;margin:18px 0 8px}
 /* レイアウト */
 .layout{
   display:grid;gap:14px;padding:14px;
-  grid-template-columns:320px minmax(240px,1fr) minmax(380px,1.2fr);
+  grid-template-columns:300px minmax(340px,1.4fr) minmax(360px,1fr);
   align-items:start;height:calc(100vh - 66px);
 }
 .panel{
@@ -98,7 +98,7 @@ button.mini.danger:hover{background:#7a2e2e;border-color:#a33}
 /* 本文エディタ */
 .editor{display:flex;flex-direction:column}
 #body{
-  flex:1;min-height:200px;resize:none;width:100%;line-height:1.9;
+  flex:1;min-height:240px;resize:none;width:100%;line-height:1.9;
   font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:14px
 }
 .stats{margin-top:10px;color:var(--sub);font-size:12px;display:flex;gap:14px;flex-wrap:wrap}
