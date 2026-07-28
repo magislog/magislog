@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>縦組み入稿PDFメーカー</title>
-<link rel="stylesheet" href="css/app.css?v=20260728">
+<link rel="stylesheet" href="css/app.css?v=20260728b">
 </head>
 <body>
 <header class="topbar">
@@ -40,6 +40,14 @@
     <p class="note">今の設定（判型・字数・余白・塗り足し等）に名前を付けて保存。印刷所ごとの数値を作り置きしておけます。</p>
 
     <label class="row">
+      <span>綴じ方向</span>
+      <select id="bindDir">
+        <option value="right">右綴じ（縦書きの標準）</option>
+        <option value="left">左綴じ</option>
+      </select>
+    </label>
+
+    <label class="row">
       <span>段組み</span>
       <select id="columns">
         <option value="1">一段組み</option>
@@ -63,7 +71,7 @@
     <div class="grid2">
       <label class="row"><span>上（天）</span><input id="mTop" class="num" type="number" min="0" max="60" step="1"></label>
       <label class="row"><span>下（地）</span><input id="mBottom" class="num" type="number" min="0" max="60" step="1"></label>
-      <label class="row"><span>内（ノド）</span><input id="mInner" class="num" type="number" min="0" max="60" step="1"></label>
+      <label class="row"><span>内（ノド・とじしろ）</span><input id="mInner" class="num" type="number" min="0" max="60" step="1"></label>
       <label class="row"><span>外（小口）</span><input id="mOuter" class="num" type="number" min="0" max="60" step="1"></label>
     </div>
 
@@ -146,19 +154,19 @@
 <!-- ===== スクリプト（依存順） ===== -->
 <script src="js/lib/pdf-lib.min.js"></script>
 <script src="js/lib/fontkit.umd.min.js"></script>
-<script src="js/engine/units.js?v=20260728"></script>
-<script src="js/engine/preprocess.js?v=20260728"></script>
-<script src="js/engine/vglyph.js?v=20260728"></script>
-<script src="js/engine/vshape.js?v=20260728"></script>
-<script src="js/engine/kinsoku.js?v=20260728"></script>
-<script src="js/engine/typeset.js?v=20260728"></script>
-<script src="js/engine/render-canvas.js?v=20260728"></script>
-<script src="js/engine/subset.js?v=20260728"></script>
-<script src="js/engine/render-pdf.js?v=20260728"></script>
-<script src="js/engine/okuduke.js?v=20260728"></script>
-<script src="js/engine/toc.js?v=20260728"></script>
-<script src="js/presets.js?v=20260728"></script>
-<script src="js/fonts.js?v=20260728"></script>
-<script src="js/app.js?v=20260728"></script>
+<script src="js/engine/units.js?v=20260728b"></script>
+<script src="js/engine/preprocess.js?v=20260728b"></script>
+<script src="js/engine/vglyph.js?v=20260728b"></script>
+<script src="js/engine/vshape.js?v=20260728b"></script>
+<script src="js/engine/kinsoku.js?v=20260728b"></script>
+<script src="js/engine/typeset.js?v=20260728b"></script>
+<script src="js/engine/render-canvas.js?v=20260728b"></script>
+<script src="js/engine/subset.js?v=20260728b"></script>
+<script src="js/engine/render-pdf.js?v=20260728b"></script>
+<script src="js/engine/okuduke.js?v=20260728b"></script>
+<script src="js/engine/toc.js?v=20260728b"></script>
+<script src="js/presets.js?v=20260728b"></script>
+<script src="js/fonts.js?v=20260728b"></script>
+<script src="js/app.js?v=20260728b"></script>
 </body>
 </html>

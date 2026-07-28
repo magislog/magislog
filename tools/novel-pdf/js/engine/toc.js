@@ -11,7 +11,7 @@
 
   // chapters: [{title, page}]  page＝最終通し番号(数値)
   // startPageNo: 目次1ページ目の通し番号（1想定）
-  function build(chapters, s, bleed, startPageNo, showNombre) {
+  function build(chapters, s, bleed, startPageNo, showNombre, binding) {
     bleed = bleed || 0;
     startPageNo = startPageNo || 1;
     const cellMm = U.pt2mm(s.fontSizePt);
@@ -45,7 +45,8 @@
     let ci = 0, pno = startPageNo;
     while (ci < cols.length) {
       const isOdd = (pno % 2 === 1);
-      const rightEdge = isOdd ? (s.mOuter + blockW) : (s.trimW - s.mOuter);
+      const isLeftPage = (binding === 'left') ? !isOdd : isOdd;
+      const rightEdge = isLeftPage ? (s.mOuter + blockW) : (s.trimW - s.mOuter);
       const glyphs = [];
       for (let slot = 0; slot < slots && ci < cols.length; slot++, ci++) {
         const col = cols[ci];
@@ -65,7 +66,7 @@
           });
         });
       }
-      const nombre = showNombre ? RNK.typeset.makeNombre(pno, isOdd, s, bleed) : null;
+      const nombre = showNombre ? RNK.typeset.makeNombre(pno, isLeftPage, s, bleed) : null;
       pages.push({ index: -1, pageNo: pno, glyphs, nombre, isToc: true });
       pno++;
     }

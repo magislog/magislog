@@ -83,14 +83,16 @@
     $('paperThick').addEventListener('input', () => { updateSpine(); saveState(); });
     NUM_FIELDS.forEach((id) => $(id).addEventListener('input', onChange));
     $('nombreStart').addEventListener('input', onChange);
-    ['columns', 'font', 'optBangs', 'optNombre', 'optTrim', 'optRuby', 'optToc', 'optIndent', 'optHang', 'optHashira', 'optImpose', 'optTombo'].forEach((id) => $(id).addEventListener('change', onChange));
+    ['columns', 'font', 'bindDir', 'optBangs', 'optNombre', 'optTrim', 'optRuby', 'optToc', 'optIndent', 'optHang', 'optHashira', 'optImpose', 'optTombo'].forEach((id) => $(id).addEventListener('change', onChange));
     $('optSpread').addEventListener('change', drawCurrent);
     $('body').addEventListener('input', debounce(onChange, 180));
     ['metaTitle', 'metaAuthor', 'metaDate', 'metaCircle', 'metaPrinter', 'metaContact'].forEach((id) => $(id).addEventListener('input', debounce(onChange, 300)));
     $('optOkupu').addEventListener('change', () => { $('okupuFields').hidden = !$('optOkupu').checked; onChange(); });
     $('bleedGroup').querySelectorAll('.seg').forEach((b) => b.addEventListener('click', () => { setBleed(parseInt(b.dataset.bleed, 10)); onChange(); }));
-    $('prevPage').onclick = () => { gotoPage(state.page - ($('optSpread').checked ? 2 : 1)); };
-    $('nextPage').onclick = () => { gotoPage(state.page + ($('optSpread').checked ? 2 : 1)); };
+    // 綴じ方向で送り向きを変える。右綴じ:左◀=次/右▶=前　左綴じ:左◀=前/右▶=次
+    const turnStep = () => ($('optSpread').checked ? 2 : 1) * ($('bindDir').value === 'left' ? -1 : 1);
+    $('nextPage').onclick = () => { gotoPage(state.page + turnStep()); };   // 左◀ボタン
+    $('prevPage').onclick = () => { gotoPage(state.page - turnStep()); };   // 右▶ボタン
     $('btnExport').onclick = exportPDF;
     $('font').addEventListener('change', (e) => { state.fontId = e.target.value; initFont(); });
     $('btnSaveProj').addEventListener('click', saveProject);
@@ -214,6 +216,7 @@
         hashira: $('optHashira').checked,
         hashiraText: $('metaTitle').value.trim(),
         nombreStart: Math.max(1, Math.round(n('nombreStart') || 1)),
+        binding: $('bindDir').value,
         startParity: 'odd',
       },
     };
@@ -252,7 +255,7 @@
       const tocPageCount = Math.max(1, Math.ceil((doc.chapters.length + 1) / slots));
       doc = RNK.typeset.layout(text, withOffset(s, tocPageCount));  // 2回目：目次ぶんずらして本組み
       const chaptersWithPage = doc.chapters.map((c) => ({ title: c.title, page: tocPageCount + c.pageIdx + nombreStart }));
-      tocPages = RNK.toc.build(chaptersWithPage, s, s.bleed, nombreStart, s.options.showNombre);
+      tocPages = RNK.toc.build(chaptersWithPage, s, s.bleed, nombreStart, s.options.showNombre, s.options.binding);
       doc.pages = tocPages.concat(doc.pages);              // 目次を先頭へ
     }
 
@@ -301,12 +304,18 @@
     if (spread) {
       const ppm = fitScale(2);
       const P = state.page + 1;                       // 1-based
-      const leftNo = (P % 2 === 1) ? P : P + 1;       // 右綴じ: 奇数=左ページ
-      const rightNo = leftNo - 1;
+      const leftBind = $('bindDir').value === 'left';
+      let leftNo, rightNo;
+      if (leftBind) {                                 // 左綴じ: 左ページ=偶数(小)・右ページ=奇数(大)
+        leftNo = (P % 2 === 0) ? P : P - 1; rightNo = leftNo + 1;
+      } else {                                        // 右綴じ: 左ページ=奇数(大)・右ページ=偶数(小)
+        leftNo = (P % 2 === 1) ? P : P + 1; rightNo = leftNo - 1;
+      }
       cvL.style.display = '';
-      drawPageOrBlank(cvL, leftNo - 1, base, ppm);    // 左（大きい番号）
-      drawPageOrBlank(cvR, rightNo - 1, base, ppm);   // 右（小さい番号）
-      $('pageInfo').textContent = `${rightNo >= 1 ? rightNo : '–'}–${leftNo} / ${state.doc.pages.length}`;
+      drawPageOrBlank(cvL, leftNo - 1, base, ppm);    // 左ページ
+      drawPageOrBlank(cvR, rightNo - 1, base, ppm);   // 右ページ
+      const lo = Math.min(leftNo, rightNo), hi = Math.max(leftNo, rightNo);
+      $('pageInfo').textContent = `${lo >= 1 ? lo : '–'}–${hi} / ${state.doc.pages.length}`;
     } else {
       cvL.style.display = 'none';
       RNK.canvas.drawPage(cvR, state.doc, state.page, Object.assign({ pxPerMm: fitScale(1) }, base));
@@ -425,7 +434,7 @@
 
   /* ---------- プロジェクトの保存 / 読込（ファイル） ---------- */
   function collectOpts() {
-    return { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, toc: $('optToc').checked, indent: $('optIndent').checked, hang: $('optHang').checked, hashira: $('optHashira').checked, tombo: $('optTombo').checked, impose: $('optImpose').value, okupu: $('optOkupu').checked, nombreStart: parseInt($('nombreStart').value, 10) || 1 };
+    return { bangs: $('optBangs').checked, nombre: $('optNombre').checked, trim: $('optTrim').checked, ruby: $('optRuby').checked, toc: $('optToc').checked, indent: $('optIndent').checked, hang: $('optHang').checked, hashira: $('optHashira').checked, tombo: $('optTombo').checked, impose: $('optImpose').value, okupu: $('optOkupu').checked, nombreStart: parseInt($('nombreStart').value, 10) || 1, binding: $('bindDir').value };
   }
   function saveProject() {
     const data = { _type: 'rakunovel-kai-project', v: 1, preset: $('preset').value, settings: captureSettings(), body: $('body').value, opts: collectOpts(), meta: getMeta(), paperThick: $('paperThick').value };
@@ -451,6 +460,7 @@
         $('optHang').checked = o.hang !== false; $('optHashira').checked = !!o.hashira; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
         $('optOkupu').checked = !!o.okupu; $('okupuFields').hidden = !o.okupu;
         if (o.nombreStart != null) $('nombreStart').value = o.nombreStart;
+        if (o.binding) $('bindDir').value = o.binding;
         const m = d.meta || {};
         $('metaTitle').value = m.title || ''; $('metaAuthor').value = m.author || ''; $('metaDate').value = m.date || '';
         $('metaCircle').value = m.circle || ''; $('metaPrinter').value = m.printer || ''; $('metaContact').value = m.contact || '';
@@ -509,6 +519,7 @@
       $('optHang').checked = o.hang !== false; $('optHashira').checked = !!o.hashira; $('optTombo').checked = !!o.tombo; $('optImpose').value = o.impose || 'none';
       $('optSpread').checked = !!o.spread; $('optOkupu').checked = !!o.okupu; $('okupuFields').hidden = !o.okupu;
       if (o.nombreStart != null) $('nombreStart').value = o.nombreStart;
+      if (o.binding) $('bindDir').value = o.binding;
     }
     if (data.meta) { $('metaTitle').value = data.meta.title || ''; $('metaAuthor').value = data.meta.author || ''; $('metaDate').value = data.meta.date || ''; $('metaCircle').value = data.meta.circle || ''; $('metaPrinter').value = data.meta.printer || ''; $('metaContact').value = data.meta.contact || ''; }
     $('body').value = (data.body != null && data.body !== '') ? data.body : DEFAULT_TEXT;

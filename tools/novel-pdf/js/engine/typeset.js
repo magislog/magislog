@@ -191,21 +191,21 @@
   function furnitureSize(s) { return Math.max(6.5, Math.min(s.fontSizePt * 0.8, 8)); }
 
   // ノンブル1個ぶんを作る（本文/目次で共通・表裏で左右反転）
-  function makeNombre(displayNo, isOdd, s, bleed) {
+  function makeNombre(displayNo, isLeftPage, s, bleed) {
     const numSize = furnitureSize(s);
     const yTrim = s.trimH - Math.min(s.mBottom * 0.55, 7);
-    const nx = isOdd ? s.mInner * 0.6 + 3 : s.trimW - (s.mInner * 0.6 + 3);
-    return { text: String(displayNo), x: bleed + nx, y: bleed + yTrim, sizePt: numSize, align: isOdd ? 'left' : 'right' };
+    const nx = isLeftPage ? s.mInner * 0.6 + 3 : s.trimW - (s.mInner * 0.6 + 3);   // 小口(外)側へ
+    return { text: String(displayNo), x: bleed + nx, y: bleed + yTrim, sizePt: numSize, align: isLeftPage ? 'left' : 'right' };
   }
 
   // 柱（ランニングヘッド）＝ページ上部・小口側にタイトルを横並びで置く。
   // ノンブル（下・小口側）と左右をそろえ、天地対称の位置にする。
-  // 奇数=左ページ→左上そろえ / 偶数=右ページ→右上そろえ。
-  function makeHashira(title, isOdd, s, bleed) {
+  // 左ページ→左上そろえ / 右ページ→右上そろえ。
+  function makeHashira(title, isLeftPage, s, bleed) {
     const yTrim = Math.min(s.mTop * 0.55, 7);                                    // 天からの距離（ノンブルと対称）
-    const nx = isOdd ? s.mInner * 0.6 + 3 : s.trimW - (s.mInner * 0.6 + 3);      // ノンブルと同じx
+    const nx = isLeftPage ? s.mInner * 0.6 + 3 : s.trimW - (s.mInner * 0.6 + 3); // ノンブルと同じx（小口側）
     const maxWidthMm = Math.max(10, s.trimW - s.mInner - s.mOuter);              // 版面幅を超えたら描画側で…に詰める
-    return { text: title, x: bleed + nx, y: bleed + yTrim, sizePt: furnitureSize(s), align: isOdd ? 'left' : 'right', maxWidthMm };
+    return { text: title, x: bleed + nx, y: bleed + yTrim, sizePt: furnitureSize(s), align: isLeftPage ? 'left' : 'right', maxWidthMm };
   }
 
   /* --- メイン: テキスト+設定 → PageDoc --- */
@@ -221,6 +221,7 @@
       hashira: false,       // 柱(ランニングヘッド)を入れる
       hashiraText: '',      // 柱に出すタイトル
       nombreStart: 1,       // ノンブル開始番号（先頭ページの番号）
+      binding: 'right',     // 綴じ方向 right=右綴じ(縦書き標準) / left=左綴じ
     }, s.options || {});
 
     const norm = RNK.preprocess.normalize(text, { combineBangs: opt.combineBangs, autoIndent: opt.autoIndent });
@@ -286,10 +287,10 @@
     for (let pi = 0; pi < totalPages; pi++) {
       const displayNo = pi + pageOffset + (opt.nombreStart || 1);   // 通し番号(開始番号＋前付け)
       const isOdd = (opt.startParity === 'odd') ? (displayNo % 2 === 1) : (displayNo % 2 === 0);
-      // ノド/小口の左右（奇数=右起こし: ノド左・小口右）
-      // 右綴じ(縦組みの標準): 奇数=左ページ→小口は左 / 偶数=右ページ→小口は右。
-      // 版面は小口(外)側にそろえ、端数はノド(綴じ)側へ。→ 実サンプルと一致・見開きでノド対称。
-      const rightEdgeTrim = isOdd ? (s.mOuter + blockW) : (s.trimW - s.mOuter);  // 最右行の右端(仕上がり座標)
+      // そのページが「左ページ」か。右綴じ:奇数=左ページ / 左綴じ:奇数=右ページ（左右反転）。
+      const isLeftPage = (opt.binding === 'left') ? !isOdd : isOdd;
+      // 版面は小口(外)側にそろえ、端数はノド(綴じ)側へ。左ページ→小口左 / 右ページ→小口右。
+      const rightEdgeTrim = isLeftPage ? (s.mOuter + blockW) : (s.trimW - s.mOuter);  // 最右行の右端(仕上がり座標)
 
       const glyphs = [];
       for (let slot = 0; slot < slotsPerPage; slot++) {
@@ -326,10 +327,10 @@
       }
       addRuby(glyphs);                                      // 親グリフ配置後にルビを右へ添える
 
-      const nombre = opt.showNombre ? makeNombre(displayNo, isOdd, s, bleed) : null;
-      // 柱＝左ページ(奇数)のみ・中扉ページは除外（あやか指示「左ページの左上」準拠）
-      const hashira = (opt.hashira && opt.hashiraText && isOdd && !tobiraSet.has(pi))
-        ? makeHashira(opt.hashiraText, isOdd, s, bleed) : null;
+      const nombre = opt.showNombre ? makeNombre(displayNo, isLeftPage, s, bleed) : null;
+      // 柱＝左ページのみ・中扉ページは除外（利用者要望「左ページの左上」に準拠）
+      const hashira = (opt.hashira && opt.hashiraText && isLeftPage && !tobiraSet.has(pi))
+        ? makeHashira(opt.hashiraText, isLeftPage, s, bleed) : null;
       pages.push({ index: pi, pageNo: displayNo, glyphs, nombre, hashira });
     }
 
