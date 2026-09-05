@@ -1,0 +1,350 @@
+/* 囲碁β SPEC.md §6 準拠スタイル */
+
+:root {
+  --c-board: #e8c37a;
+  --c-line: #4a3218;
+  --c-star: #4a3218;
+  --c-black: #111111;
+  --c-white: #f4f4f4;
+  --c-white-edge: #8a8a8a;
+  --c-dot-on-black: #f4f4f4;
+  --c-dot-on-white: #111111;
+  --c-cursor: #ffd54f;
+  --c-ko: #e53935;
+  --c-hint: #42a5f5;
+  --c-terr-black: rgba(0, 0, 0, 0.55);
+  --c-terr-white: rgba(255, 255, 255, 0.85);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #15151a;
+  overflow: hidden;
+}
+
+#stage, #stage * {
+  box-sizing: border-box;
+}
+
+/* ---------- 6.1 ステージ ---------- */
+
+#stage {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  transform-origin: 0 0;
+  background: #2b2b33;
+  overflow: hidden;
+  font-family: "Segoe UI", Meiryo, sans-serif;
+  font-size: 16px;
+  color: #fff;
+}
+
+#stage > div {
+  position: absolute;
+}
+
+/* 共通パネル調（枠のあるもの以外） */
+#cpuPanel, #youPanel, #keys, #msg, #menu {
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 6px;
+}
+
+/* ---------- 6.2 部品の配置 ---------- */
+
+#cols {
+  left: 370px;
+  top: 8px;
+  width: 540px;
+  height: 20px;
+  display: flex;
+}
+#cols span {
+  width: 60px;
+  line-height: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+#board {
+  left: 370px;
+  top: 30px;
+  width: 540px;
+  height: 540px;
+  background: var(--c-board);
+}
+
+#rows {
+  left: 914px;
+  top: 30px;
+  width: 20px;
+  height: 540px;
+  display: flex;
+  flex-direction: column;
+}
+#rows span {
+  height: 60px;
+  line-height: 60px;
+  font-size: 14px;
+  text-align: center;
+}
+
+#cpuPanel {
+  left: 40px;
+  top: 30px;
+  width: 300px;
+  height: 250px;
+  padding: 12px;
+}
+
+#youPanel {
+  left: 940px;
+  top: 320px;
+  width: 300px;
+  height: 250px;
+  padding: 12px;
+}
+
+#keys {
+  left: 940px;
+  top: 580px;
+  width: 300px;
+  height: 60px;
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#msg {
+  left: 370px;
+  top: 574px;
+  width: 540px;
+  height: 24px;
+  padding: 2px 10px;
+  font-size: 16px;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+#band {
+  left: 190px;
+  top: 600px;
+  width: 900px;
+  height: 116px;
+  padding: 12px 20px;
+  background: rgba(20, 40, 90, 0.9);
+  border: 2px solid #7aa7ff;
+  border-radius: 6px;
+  font-size: 18px;
+  line-height: 1.4;
+}
+#band[hidden] {
+  display: none;
+}
+
+#menu {
+  left: 440px;
+  top: 200px;
+  width: 400px;
+  height: 240px;
+  padding: 12px 16px;
+}
+#menu h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: bold;
+}
+#menu .row {
+  height: 32px;
+  line-height: 32px;
+  font-size: 20px;
+  padding: 0 8px;
+}
+#menu .row.cursor {
+  background: rgba(255, 213, 79, 0.3);
+}
+
+#banner {
+  left: 0;
+  top: 290px;
+  width: 1280px;
+  height: 140px;
+  background: rgba(0, 0, 0, 0.75);
+  text-align: center;
+  padding-top: 20px;
+}
+#banner .line1 {
+  font-size: 44px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+#banner .line2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+#banner .line3 {
+  font-size: 16px;
+}
+
+#title {
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  background: rgba(0, 0, 0, 0.7);
+  text-align: center;
+}
+#title .ttl {
+  position: absolute;
+  left: 0;
+  top: 200px;
+  width: 100%;
+  font-size: 48px;
+  font-weight: bold;
+}
+#title .opt {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  font-size: 28px;
+}
+#title .opt-tutorial {
+  top: 330px;
+}
+#title .opt-free {
+  top: 390px;
+}
+#title .opt.cursor::before {
+  content: "▶ ";
+}
+#title .help {
+  position: absolute;
+  left: 0;
+  top: 470px;
+  width: 100%;
+  font-size: 16px;
+}
+
+/* ---------- 6.3 盤・交点・石・印 ---------- */
+/* 土台（line→star→ptの順にJSが1度だけ生成。ptを最前面にして重ねる） */
+
+.line {
+  position: absolute;
+  background: var(--c-line);
+  z-index: 1;
+}
+
+.star {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-star);
+  z-index: 2;
+}
+
+.pt {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  z-index: 3;
+}
+
+/* render() が毎回作り直す中身 */
+
+.stone {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+}
+.stone.black {
+  background: var(--c-black);
+}
+.stone.white {
+  background: var(--c-white);
+  border: 1px solid var(--c-white-edge);
+}
+
+/* 最後に打った石の点。stoneの上に重ねる（黒石の上=dotOnBlack、白石の上=dotOnWhite） */
+.dot {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.dot.on-black {
+  background: var(--c-dot-on-black);
+}
+.dot.on-white {
+  background: var(--c-dot-on-white);
+}
+
+/* コウ点。石は無い */
+.komark {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--c-ko);
+}
+
+/* 終局後の地の印。黒地=black、白地=white */
+.terr {
+  position: absolute;
+  left: 22px;
+  top: 22px;
+  width: 16px;
+  height: 16px;
+}
+.terr.black {
+  background: var(--c-terr-black);
+}
+.terr.white {
+  background: var(--c-terr-white);
+}
+
+/* 交点の強調（複数同時可） */
+.pt.cursor {
+  box-shadow: inset 0 0 0 3px var(--c-cursor);
+}
+.pt.hint {
+  outline: 3px dotted var(--c-hint);
+  outline-offset: -3px;
+}
+
+/* ---------- 6.4 パネル ---------- */
+/* 名前・手番・石数などの中身は game.js/ui.js が毎回組み立てるテキストのみ。専用クラスは無し */
+
+/* ---------- band の内訳（Tutorial.show が組み立てる） ---------- */
+
+#band .next {
+  position: absolute;
+  right: 20px;
+  bottom: 12px;
+  font-size: 14px;
+  color: var(--c-cursor);
+}
+#band .page {
+  position: absolute;
+  left: 20px;
+  bottom: 12px;
+  font-size: 14px;
+}
+
+/* hidden 属性は全要素で非表示にする。アニメーションは一切付けない */
+[hidden] {
+  display: none;
+}

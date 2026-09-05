@@ -1,0 +1,470 @@
+/* 麻雀3D — UI（§8） */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Segoe UI", Meiryo, sans-serif;
+  font-size: 16px;
+  color: #fff;
+}
+
+#three {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+#stage {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  z-index: 1;
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+
+/* 共通スタイル */
+.panel-base {
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  position: absolute;
+  pointer-events: auto;
+}
+
+/* 局・残り枚数（§8 #round） */
+#round {
+  position: absolute;
+  left: 20px;
+  top: 16px;
+  width: 260px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+/* ドラ表示（§8 #dora） */
+#dora {
+  position: absolute;
+  left: 20px;
+  top: 60px;
+  width: 140px;
+  height: 110px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+#dora .label {
+  font-size: 14px;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+#dora-img {
+  text-align: center;
+}
+
+#dora-img img {
+  width: 56px;
+  height: 78px;
+}
+
+/* プレイヤーパネル（共通） */
+.player-panel {
+  position: absolute;
+  width: 200px;
+  height: 64px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.player-name {
+  font-size: 16px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.wind-badge {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wind-badge.yellow {
+  background: #ffd54f;
+  color: #000;
+}
+
+.wind-badge.blue {
+  background: #42a5f5;
+  color: #fff;
+}
+
+.player-points {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#p0 {
+  left: 40px;
+  top: 560px;
+}
+
+#p1 {
+  left: 40px;
+  top: 300px;
+}
+
+#p2 {
+  left: 540px;
+  top: 60px;
+}
+
+#p3 {
+  left: 1040px;
+  top: 300px;
+}
+
+/* メッセージ（§8 #msg） */
+#msg {
+  position: absolute;
+  left: 340px;
+  top: 130px;
+  width: 600px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+/* 中央の点数盤（§8 #center） */
+#center {
+  position: absolute;
+  left: 540px;
+  top: 240px;
+  width: 200px;
+  height: 150px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.center-line {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.center-main {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* チュートリアル文（§8 #tut） */
+#tut {
+  position: absolute;
+  left: 40px;
+  top: 380px;
+  width: 400px;
+  height: 170px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 18px;
+  overflow: auto;
+}
+
+#tut.waiting::after {
+  content: "Z / Enter で次へ";
+  display: block;
+  margin-top: 12px;
+  color: #ffd54f;
+  font-size: 14px;
+}
+
+#tut[hidden] {
+  display: none !important;
+}
+
+/* 手牌（§8 #hand） */
+#hand {
+  position: absolute;
+  left: 250px;
+  top: 600px;
+  width: 900px;
+  height: 110px;
+  background: transparent;
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  pointer-events: auto;
+}
+
+.tile-slot {
+  width: 56px;
+  height: 78px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tile-slot.cursor {
+  border: 3px solid #ffd54f;
+  transform: translateY(-12px);
+}
+
+.tile-slot.disabled {
+  opacity: 0.35;
+}
+
+.tile-slot.empty {
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  background: transparent;
+}
+
+.tsumo-gap {
+  width: 16px;
+  height: 0;
+}
+
+/* アクションボタン（§8 #actions） */
+#actions {
+  position: absolute;
+  left: 860px;
+  top: 520px;
+  width: 400px;
+  height: 60px;
+  background: transparent;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  pointer-events: auto;
+}
+
+.action-btn {
+  width: 120px;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid #42a5f5;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: "Segoe UI", Meiryo, sans-serif;
+}
+
+.action-btn:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+.action-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* カットイン（§8 #cutin） */
+#cutin {
+  position: absolute;
+  left: 0;
+  top: 280px;
+  width: 1280px;
+  height: 160px;
+  background: rgba(200, 120, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  font-weight: bold;
+  transform: translateX(-1280px);
+  transition: transform 0.25s ease-out;
+}
+
+#cutin.show {
+  transform: translateX(0);
+  transition: transform 0.25s ease-out, opacity 0.25s ease-out 0.7s;
+}
+
+#cutin.hide {
+  opacity: 0;
+}
+
+/* 和了結果画面（§8 #result） */
+#result {
+  position: absolute;
+  left: 240px;
+  top: 100px;
+  width: 800px;
+  height: 500px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 16px;
+  overflow: auto;
+}
+
+#result[hidden] {
+  display: none !important;
+}
+
+.result-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.result-hand {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.result-hand img {
+  width: 56px;
+  height: 78px;
+}
+
+.result-hand img.ron-tile {
+  border: 3px solid #ffd54f;
+  margin-left: 16px;
+}
+
+.result-yaku {
+  font-size: 16px;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.result-points {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.result-payment {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.result-next {
+  font-size: 14px;
+  color: #ffd54f;
+  margin-top: 12px;
+}
+
+/* 終局画面（§8 #final） */
+#final {
+  position: absolute;
+  left: 240px;
+  top: 100px;
+  width: 800px;
+  height: 500px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 16px;
+  text-align: center;
+}
+
+#final[hidden] {
+  display: none !important;
+}
+
+.final-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 24px;
+  color: #ffd54f;
+}
+
+.final-rank {
+  font-size: 18px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.final-next {
+  font-size: 14px;
+  margin-top: 24px;
+}
+
+/* ヘルプ画面（§8 #help） */
+#help {
+  position: absolute;
+  left: 340px;
+  top: 120px;
+  width: 600px;
+  height: 480px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 16px;
+  overflow: auto;
+}
+
+#help[hidden] {
+  display: none !important;
+}
+
+.help-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.help-content {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* ヒント（§8 #hint） */
+#hint {
+  position: absolute;
+  left: 1080px;
+  top: 690px;
+  width: 180px;
+  height: 24px;
+  font-size: 14px;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 1280px) {
+  #stage {
+    transform: scale(0.75);
+  }
+}

@@ -1,0 +1,368 @@
+/* 将棋β SPEC.md §6 準拠スタイル */
+
+:root {
+  --c-board: #f0c060;
+  --c-line: #5a3a1a;
+  --c-piece: #f5deb3;
+  --c-piece-text: #111111;
+  --c-promoted: #c62828;
+  --c-cursor: #ffd54f;
+  --c-selected: rgba(255, 213, 79, 0.55);
+  --c-target: rgba(66, 165, 245, 0.45);
+  --c-last: rgba(255, 152, 0, 0.35);
+  --c-hint: #42a5f5;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #15151a;
+  overflow: hidden;
+}
+
+#stage, #stage * {
+  box-sizing: border-box;
+}
+
+/* ---------- 6.1 ステージ ---------- */
+
+#stage {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  transform-origin: 0 0;
+  background: #2b2b33;
+  overflow: hidden;
+  font-family: "Segoe UI", Meiryo, sans-serif;
+  font-size: 16px;
+  color: #fff;
+}
+
+#stage > div {
+  position: absolute;
+}
+
+/* 共通パネル調（枠のあるもの以外） */
+#gotePanel, #sentePanel, #keys, #msg, #promo, #menu {
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 6px;
+}
+
+/* ---------- 6.2 部品の配置 ---------- */
+
+#files {
+  left: 370px;
+  top: 8px;
+  width: 540px;
+  height: 20px;
+  display: flex;
+}
+#files span {
+  width: 60px;
+  line-height: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+#board {
+  left: 370px;
+  top: 30px;
+  width: 540px;
+  height: 540px;
+}
+
+#ranks {
+  left: 914px;
+  top: 30px;
+  width: 20px;
+  height: 540px;
+  display: flex;
+  flex-direction: column;
+}
+#ranks span {
+  height: 60px;
+  line-height: 60px;
+  font-size: 14px;
+  text-align: center;
+}
+
+#gotePanel {
+  left: 40px;
+  top: 30px;
+  width: 300px;
+  height: 250px;
+  padding: 12px;
+}
+
+#sentePanel {
+  left: 940px;
+  top: 320px;
+  width: 300px;
+  height: 250px;
+  padding: 12px;
+}
+
+#keys {
+  left: 940px;
+  top: 580px;
+  width: 300px;
+  height: 60px;
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#msg {
+  left: 370px;
+  top: 574px;
+  width: 540px;
+  height: 24px;
+  padding: 2px 10px;
+  font-size: 16px;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+#band {
+  left: 190px;
+  top: 604px;
+  width: 900px;
+  height: 100px;
+  padding: 12px 20px;
+  background: rgba(20, 40, 90, 0.9);
+  border: 2px solid #7aa7ff;
+  border-radius: 6px;
+  font-size: 18px;
+  line-height: 1.4;
+}
+#band[hidden] {
+  display: none;
+}
+
+#promo {
+  left: 490px;
+  top: 270px;
+  width: 300px;
+  height: 90px;
+  padding: 10px;
+  text-align: center;
+}
+#promo .ask {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+#promo .choices {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+/* ★ボタンは中身の幅で置く（横幅いっぱいに伸ばさない）／★色は必ず指定する */
+#promo button {
+  width: 120px;
+  height: 36px;
+  flex: none;
+  font-family: inherit;
+  font-size: 16px;
+  color: #ffffff;
+  background: #3a3a48;
+  border: 2px solid #6a6a7a;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#promo button.cursor {
+  border-color: var(--c-cursor);
+  box-shadow: inset 0 0 0 3px var(--c-cursor);
+}
+
+#menu {
+  left: 440px;
+  top: 200px;
+  width: 400px;
+  height: 240px;
+  padding: 12px 16px;
+}
+#menu h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: bold;
+}
+#menu .row {
+  height: 32px;
+  line-height: 32px;
+  font-size: 20px;
+  padding: 0 8px;
+}
+#menu .row.cursor {
+  background: rgba(255, 213, 79, 0.3);
+}
+
+#banner {
+  left: 0;
+  top: 290px;
+  width: 1280px;
+  height: 140px;
+  background: rgba(0, 0, 0, 0.75);
+  text-align: center;
+  padding-top: 20px;
+}
+#banner .line1 {
+  font-size: 44px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+#banner .line2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+#banner .line3 {
+  font-size: 16px;
+}
+
+#title {
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  background: rgba(0, 0, 0, 0.7);
+  text-align: center;
+}
+#title .ttl {
+  position: absolute;
+  left: 0;
+  top: 200px;
+  width: 100%;
+  font-size: 48px;
+  font-weight: bold;
+}
+#title .opt {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  font-size: 28px;
+}
+#title .opt-tutorial {
+  top: 330px;
+}
+#title .opt-free {
+  top: 390px;
+}
+#title .opt.cursor::before {
+  content: "▶ ";
+}
+#title .help {
+  position: absolute;
+  left: 0;
+  top: 470px;
+  width: 100%;
+  font-size: 16px;
+}
+
+/* ---------- 6.3 マスと駒 ---------- */
+
+.sq {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: var(--c-board);
+  border: 1px solid var(--c-line);
+}
+
+.piece {
+  position: absolute;
+  left: 7px;
+  top: 5px;
+  width: 46px;
+  height: 50px;
+  clip-path: polygon(50% 0%, 100% 22%, 88% 100%, 12% 100%, 0% 22%);
+  background: var(--c-piece);
+  color: var(--c-piece-text);
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 50px;
+  text-align: center;
+}
+.piece.promoted {
+  color: var(--c-promoted);
+}
+.piece.gote {
+  transform: rotate(180deg);
+}
+
+/* マスの強調（複数同時可） */
+.sq.cursor {
+  box-shadow: inset 0 0 0 3px var(--c-cursor);
+}
+.sq.selected {
+  background: var(--c-selected);
+}
+.sq.target {
+  background: var(--c-target);
+}
+.sq.last {
+  background: var(--c-last);
+}
+.sq.hint-from,
+.sq.hint-to {
+  border: 3px dotted var(--c-hint);
+}
+
+/* ---------- 6.4 パネルと駒台 ---------- */
+
+.chip {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 50px;
+  margin-right: 6px;
+  clip-path: polygon(50% 0%, 100% 22%, 88% 100%, 12% 100%, 0% 22%);
+  background: var(--c-piece);
+  color: var(--c-piece-text);
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 50px;
+  text-align: center;
+}
+.chip:last-child {
+  margin-right: 0;
+}
+.chip .count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 12px;
+  font-weight: normal;
+}
+.chip.cursor {
+  box-shadow: inset 0 0 0 3px var(--c-cursor);
+}
+.chip.selected {
+  background: var(--c-selected);
+}
+
+/* ---------- band の内訳（Tutorial.show が組み立てる） ---------- */
+
+#band .next {
+  position: absolute;
+  right: 20px;
+  bottom: 12px;
+  font-size: 14px;
+  color: var(--c-cursor);
+}
+#band .page {
+  position: absolute;
+  left: 20px;
+  bottom: 12px;
+  font-size: 14px;
+}
+
+/* hidden 属性は全要素で非表示にする。アニメーションは一切付けない */
+[hidden] {
+  display: none;
+}

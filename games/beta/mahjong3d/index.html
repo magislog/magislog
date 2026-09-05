@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>麻雀3D</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="three"></div>
+  <div id="stage">
+    <!-- §8: UI レイアウト -->
+    <div id="round">東1局 ／ 残り 70 枚</div>
+    <div id="dora">
+      <div class="label">ドラ表示</div>
+      <div id="dora-img"></div>
+    </div>
+    <div id="p2" class="player-panel">
+      <div class="player-name">そら<span class="wind-badge blue">南</span></div>
+      <div class="player-points">23700</div>
+    </div>
+    <div id="msg">メッセージ</div>
+    <div id="center">
+      <div class="center-line">そら 23700</div>
+      <div class="center-line">ひかり 23700 かなめ 23700</div>
+      <div class="center-main">東1局<br>残り 70<br>供託 0</div>
+      <div class="center-line">あなた 25000</div>
+    </div>
+    <div id="p3" class="player-panel">
+      <div class="player-name">ひかり<span class="wind-badge blue">西</span></div>
+      <div class="player-points">23700</div>
+    </div>
+    <div id="tut">チュートリアル文</div>
+    <div id="p1" class="player-panel">
+      <div class="player-name">かなめ<span class="wind-badge blue">北</span></div>
+      <div class="player-points">23700</div>
+    </div>
+    <div id="p0" class="player-panel">
+      <div class="player-name">あなた<span class="wind-badge yellow">東</span></div>
+      <div class="player-points">25000</div>
+    </div>
+    <div id="hand">
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tile-slot"></div>
+      <div class="tsumo-gap"></div>
+      <div class="tile-slot empty"></div>
+    </div>
+    <div id="actions">
+      <button class="action-btn" data-action="DISCARD">Z 切る</button>
+      <button class="action-btn" data-action="RIICHI">R リーチ</button>
+      <button class="action-btn" data-action="TSUMO">A ツモ</button>
+      <button class="action-btn" data-action="RON">A ロン</button>
+      <button class="action-btn" data-action="PASS">X パス</button>
+    </div>
+    <div id="cutin">リーチ</div>
+    <div id="result" hidden>
+      <div class="result-title">そらのロン（ひかりから）</div>
+      <div class="result-hand"></div>
+      <div class="result-yaku"></div>
+      <div class="result-points">30符 3翻 3900点</div>
+      <div class="result-payment">あなた -1300　かなめ -1300　そら +3900　ひかり -1300</div>
+      <div class="result-next">Z で次へ</div>
+    </div>
+    <div id="final" hidden>
+      <div class="final-title">終局</div>
+      <div class="final-rank">1位　あなた　37800（+12800）</div>
+      <div class="final-rank">2位　かなめ　22700（-2300）</div>
+      <div class="final-rank">3位　ひかり　22700（-2300）</div>
+      <div class="final-rank">4位　そら　16800（-7800）</div>
+      <div class="final-next">N: フリープレイ　T: チュートリアルを最初から</div>
+    </div>
+    <div id="help" hidden>
+      <div class="help-title">キー一覧と採用役</div>
+      <div class="help-content">操作キー...</div>
+    </div>
+    <div id="hint">H: キー一覧</div>
+  </div>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+
+  <!-- MJ module: config → tiles → win → score → scene → ai → game → ui → tutorial → main -->
+  <script src="js/config.js"></script>
+  <script src="js/tiles.js"></script>
+  <script src="js/win.js"></script>
+  <script src="js/score.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/tutorial.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

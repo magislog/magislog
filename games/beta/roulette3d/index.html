@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ルーレット3D（β版）</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="three"></div>
+  <div id="stage">
+    <!-- §8: 画面の UI（DOM オーバーレイ） -->
+    <div id="balance">残高 1,000</div>
+    <div id="totalbet">賭け合計 0</div>
+    <div id="lastwin">前回 +0</div>
+    <div id="round">準備中</div>
+    <div id="history"></div>
+
+    <div id="cursor">選択: —</div>
+    <div id="chip">チップ: 1 ／ 5 ／ [25] ／ 100　C/V で変更</div>
+
+    <div id="msg"></div>
+    <div id="bets">賭け無し</div>
+
+    <div id="tut" hidden></div>
+
+    <div id="keys">←→↑↓ 移動　Z 置く　X 取消　C/V チップ額　S 回す　H 配当表</div>
+
+    <div id="result" hidden></div>
+    <div id="cutin"></div>
+    <div id="complete" hidden></div>
+    <div id="gameover" hidden></div>
+    <div id="help" hidden></div>
+    <div id="hint">H: 配当表</div>
+  </div>
+
+  <!-- Three.js は1本だけ（追加ライブラリ禁止） -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+
+  <!-- RL module: three → config → bets → textures → scene → game → ui → tutorial → main -->
+  <script src="js/config.js"></script>
+  <script src="js/bets.js"></script>
+  <script src="js/textures.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/tutorial.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

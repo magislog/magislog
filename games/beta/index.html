@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="株式会社Magisが制作中のブラウザゲーム、7本のβ版です。">
+<title>ゲーム β版 | 株式会社Magis</title>
+<style>
+:root{--ink:#171a1d;--muted:#626b73;--line:#d9dee2;--soft:#f3f6f7;--cyan:#00a7c4;--white:#fff;--max:1180px}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);background:var(--white);
+  font-family:"Noto Sans JP","Yu Gothic",Meiryo,sans-serif;line-height:1.75}
+a{color:inherit}
+.wrap{max-width:var(--max);margin:auto;padding:0 24px}
+.head{border-bottom:1px solid var(--line);padding:28px 0}
+.head .back{font-size:13px;font-weight:700;text-decoration:none;color:var(--muted)}
+.head .back:hover{color:var(--cyan)}
+.head h1{margin:12px 0 6px;font-size:30px;letter-spacing:.02em}
+.head p{margin:0;color:var(--muted);font-size:14px}
+.note{background:var(--soft);border-left:4px solid var(--cyan);padding:16px 20px;margin:28px 0;font-size:14px}
+.note strong{display:block;margin-bottom:4px}
+.note ul{margin:8px 0 0;padding-left:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;padding:8px 0 56px}
+.card{display:block;text-decoration:none;border:1px solid var(--line);padding:22px;
+  transition:border-color .15s,transform .15s;background:var(--white)}
+.card:hover{border-color:var(--cyan);transform:translateY(-2px)}
+.state{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;
+  color:var(--cyan);border:1px solid var(--cyan);padding:2px 8px;margin-bottom:12px}
+.card h2{margin:0 0 8px;font-size:19px}
+.card p{margin:0 0 14px;font-size:13px;color:var(--muted);min-height:3.2em}
+.card .go{font-size:13px;font-weight:700;color:var(--cyan)}
+.keys{border-top:1px solid var(--line);padding:24px 0 60px;font-size:13px;color:var(--muted)}
+.keys h3{margin:0 0 10px;font-size:14px;color:var(--ink)}
+.keys table{border-collapse:collapse}
+.keys td{padding:3px 18px 3px 0}
+.keys kbd{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;
+  border-radius:3px;padding:1px 7px;font-family:inherit;font-size:12px;background:var(--soft)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="head">
+    <a class="back" href="../../index.html#products">← 株式会社Magis</a>
+    <h1>ゲーム β版</h1>
+    <p>ブラウザで遊べます。制作中のものを、その時点の姿のまま置いています。</p>
+  </div>
+
+  <div class="note">
+    <strong>β版です。ここで公開しているのは「遊べるところまで作った」段階のものです。</strong>
+    <ul>
+      <li>見た目はこれから直します。今は動くことを優先しています</li>
+      <li>操作はキーボードです。ゲームパッドは JoyToKey 経由を想定しています</li>
+      <li>音はありません。セーブもできません</li>
+    </ul>
+  </div>
+
+  <div class="grid">
+
+    <a class="card" href="poker3d/index.html">
+      <span class="state">BETA</span>
+      <h2>ポーカー</h2>
+      <p>テキサスホールデム。役の作り方と降りどきを学べます。</p>
+      <span class="go">遊ぶ →</span>
+    </a>
+
+    <a class="card" href="mahjong3d/index.html">
+      <span class="state">BETA</span>
+      <h2>麻雀</h2>
+      <p>四人打ち。東場を一周して順位まで出ます。</p>
+      <span class="go">遊ぶ →</span>
+    </a>
+
+    <a class="card" href="roulette3d/index.html">
+      <span class="state">BETA</span>
+      <h2>ルーレット</h2>
+      <p>ヨーロピアン37マス。10種類の賭け方と配当の仕組みが分かります。</p>
+      <span class="go">遊ぶ →</span>
+    </a>
+
+    <a class="card" href="shogi3d/index.html">
+      <span class="state">BETA</span>
+      <h2>将棋</h2>
+      <p>駒の動き・成り・持ち駒。詰みまで指せます。</p>
+      <span class="go">遊ぶ →</span>
+    </a>
+
+    <a class="card" href="igo3d/index.html">
+      <span class="state">BETA</span>
+      <h2>囲碁</h2>
+      <p>9路盤。石の取り方とコウ、終局の地の数え方まで。</p>
+      <span class="go">遊ぶ →</span>
+    </a>
+
+    <a class="card" href="farm3d/index.html">
+      <span class="state">BETA</span>
+      <h2>牧場</h2>
+      <p>畑を耕して作物を育て、にわとりを飼います。出荷してお金にします。</p>
+      <span class="go">遊ぶ →</span>
+    </a>
+
+    <a class="card" href="fund3d/index.html">
+      <span class="state">BETA</span>
+      <h2>投資ファンド経営</h2>
+      <p>6銘柄を30日間運用します。ニュースを読んで売買します。</p>
+      <span class="go">遊ぶ →</span>
+    </a>
+
+  </div>
+
+  <div class="keys">
+    <h3>共通の操作</h3>
+    <table>
+      <tr><td><kbd>Z</kbd></td><td>決定・進む</td></tr>
+      <tr><td><kbd>X</kbd></td><td>戻る・やめる</td></tr>
+      <tr><td><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></td><td>カーソル移動</td></tr>
+      <tr><td><kbd>S</kbd></td><td>メニュー（タイトルへ戻る・終了）</td></tr>
+    </table>
+    <p style="margin-top:14px">牧場は <kbd>1</kbd>〜<kbd>4</kbd> で道具、投資は <kbd>1</kbd>〜<kbd>9</kbd> で割合を選びます。</p>
+  </div>
+</div>
+
+</body>
+</html>

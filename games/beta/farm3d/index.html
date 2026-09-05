@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>牧場 β</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage">
+
+  <div id="map"></div>
+
+  <div id="dayPanel"></div>
+
+  <div id="tools"></div>
+
+  <div id="items"></div>
+
+  <div id="msg"></div>
+
+  <div id="task"></div>
+
+  <div id="keys">
+    <div>←↑→↓ 移動（進めない方向は向きだけ変わる）</div>
+    <div>Z 使う（黄色い枠のマス）</div>
+    <div>1〜4 道具　3 をもう一度: たねの種類</div>
+    <div>S メニュー（タイトルへ）</div>
+    <div>X 戻る（ダイアログ・メニューを閉じる）</div>
+  </div>
+
+  <div id="band" hidden></div>
+
+  <div id="menu" hidden>
+    <h2>メニュー</h2>
+  </div>
+
+  <div id="dialog" hidden></div>
+
+  <div id="banner" hidden></div>
+
+  <div id="title" hidden>
+    <div class="ttl">牧場 β</div>
+    <div class="sub">マインクラフト × 牧場物語（2D タイル）</div>
+    <div class="opt opt-tutorial">チュートリアル</div>
+    <div class="opt opt-free">フリープレイ</div>
+    <div class="help">↑↓ で選び Z で決定</div>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/world.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/tutorial.js"></script>
+<script src="js/input.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

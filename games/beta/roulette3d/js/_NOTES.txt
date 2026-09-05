@@ -1,0 +1,13 @@
+担当A（config.js/bets.js/textures.js）が実装中に見つけた設計の矛盾・解釈の記録（往復できないため、動く方＝§5.5自己テストと通る方に倒した）。
+
+1. moveCursor(UP/DOWN)のnull着地の救済: §5.2本文は「x−1,x+1,x−2,x+2,…の順に最初の非nullを探す」とあるが、同じ§5.2の検算例「moveCursor({x:24,y:0},'DOWN') → {24,2}（null の (24,1) を飛ばす）」はxでなくyを同方向にもう1歩進めて解決している（x探索だと(23,1)のsplitに飛んでしまい例と食い違う）。実装は「まず移動方向へyをもう1歩進めて再判定→それでも見つからなければx±1,±2,…探索」の順にし、§5.5の全例と一致することを確認した。
+2. rectOf()の「値はすべて0.004縮める」: w・hそれぞれから0.004を1回引く実装にした（内接矩形の各辺を0.004ずつ、の二重引きではない）。§5.5に対応テストが無く未検証。
+3. textures.js の canvasToTex(canvas) は SPEC 3行目「anisotropy = renderer.capabilities.getMaxAnisotropy()」用に RL.Scene.renderer を参照する想定で実装（scene.jsがWebGLRendererをここに置く前提）。RL.Scene.renderer が無い/形が違う場合は anisotropy 設定を黙ってスキップし、落ちないようにしてある。scene.js側の実際のプロパティ名が異なる場合はテクスチャの異方性フィルタだけが無効になり、見た目の劣化以外の実害は無い。
+
+担当C（game.js/ui.js/tutorial.js/main.js）が実装中に見つけた設計の矛盾・解釈の記録。
+4. TEXT.MSG.placed「{spot} に {v}」の{spot}/{v}: {spot}=Bets.label(spot)（§5.2の定義どおり）、{v}=今置いた1枚のチップ額(CHIP_VALUES[chipIdx])とした。emit('bet',{spot,amount,total})のdataにはそのマスの合計(amount)しか無く、placedの{v}は"今置いた分"の意味と読めるため合計ではなくチップ額を採用。
+5. #cursorの「（8:1）」表記はBET_TYPES[type].paysをそのまま使う（pays+1ではない）。§9本文が「スプリット17:1」「コーナー8:1」等をpays値そのままの慣用オッズ表記で書いているため合わせた。
+6. Tutorial.onEvent('round_end')の扱い: SCRIPT[0..5]のどの回転もround_endのstepを実際には持たない（§9本文どおり）。onEventはround_endイベントを受けたとき、先頭stepがround_end一致すれば通常どおり文を出してZ待ち(保険経路・未使用)、一致しなければ即advanceRound()で次回転(またはindex===5ならcomplete画面)へ進める。advanceRound内でstartRoundを呼ぶ経路はhold=trueをstartRound自身のround_startステップが立てるため、onEventの戻り値は'hold'を返さなくてよい(=complete分岐でholdを誤って立てないため)。
+7. UI.cutin(kind,text)はcss側の.show/.hide/.bigwinクラス方式(遅延0.7s固定)ではなく、RL.CONFIG.CUTIN_MS(900ms)をJS側のsetTimeoutで直接使う実装にした(§4.1「setTimeoutを書いてよいのはdelay()とUI.cutinの中だけ」に合わせ、CUTIN_MSをconfig駆動にするため)。要素へのinline style設定がcssのtransition/transformを上書きするので実害は無いが、cssの.show/.hide/.bigwinクラス自体は未使用。
+8. RL.Tutorial.onRoundStart()はSPEC§9の「関数名はonRoundStartとし§1に追記扱い」を実装したもの。Game.startRoundの冒頭(bets/cursor/chipIdxの初期化直後・emit('round_start')より前)でTutorial.active時のみ呼び、SCRIPT[T.index]のstepsをT.stepsへ積み直す。
+9. 【実機で発見・修正済み】完了画面／ゲームオーバー画面でTキー（チュートリアルを最初から）を押すと、Tutorial.start()は導入3ページの間newGame()を呼ばない設計のため、#complete/#gameoverパネルが導入文の裏に残ったまま消えなかった（麻雀3Dの「画面を消す口を作り忘れる事故」と同型。実機でhidden=falseのまま残ることを確認）。main.jsのT処理でRL.Tutorial.start()の直前にRL.Game.newGame()を呼ぶよう修正（newGame()がhideResult/hideComplete/hideGameoverを呼ぶ）。フリープレイ起点のN処理は元々newGame()を呼んでおり問題なかった。

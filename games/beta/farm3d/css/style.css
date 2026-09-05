@@ -1,0 +1,712 @@
+/* 牧場 β SPEC.md §6 準拠スタイル */
+
+:root {
+  --c-bg: #15151a;
+  --c-stage: #2b2b33;
+  --c-panel: rgba(0, 0, 0, 0.45);
+  --c-grass: #6abe4a;
+  --c-grass-dot: #4fa338;
+  --c-flower: #ff8fb3;
+  --c-pebble: #9a9a9a;
+  --c-soil: #8b5a2b;
+  --c-soil-wet: #5a381a;
+  --c-ridge: #6e4520;
+  --c-water: #3f8fd6;
+  --c-wave: #6fb1ea;
+  --c-path: #d9b46a;
+  --c-path-dot: #c39d55;
+  --c-fence: #8a5a2b;
+  --c-house: #c8a064;
+  --c-roof: #b03a2e;
+  --c-door: #5a3a1a;
+  --c-door-mark: #e53935;
+  --c-barn: #a0522d;
+  --c-barn-roof: #7a2f2a;
+  --c-ship: #7a4a1a;
+  --c-ship-lid: #a86f2f;
+  --c-ship-full: #ffd54f;
+  --c-shop: #c8a064;
+  --c-shop-sign: #ffd54f;
+  --c-player: #3b6bd6;
+  --c-skin: #f1c27d;
+  --c-legs: #5a3a1a;
+  --c-face: #222222;
+  --c-chicken: #ffffff;
+  --c-comb: #e53935;
+  --c-beak: #ff9800;
+  --c-eye: #222222;
+  --c-egg: #fff6e0;
+  --c-egg-edge: #999999;
+  --c-seed-dot: #3a2a1a;
+  --c-sprout: #3c9d3c;
+  --c-leaf: #2e8b3e;
+  --c-turnip: #f4f4f4;
+  --c-turnip-top: #3c9d3c;
+  --c-potato: #b07a3a;
+  --c-corn: #ffd54f;
+  --c-stalk: #3c9d3c;
+  --c-ripe: #ffd54f;
+  --c-target: #ffd54f;
+  --c-hint: #42a5f5;
+  --c-stamina: #4caf50;
+  --c-stamina-low: #e53935;
+  --c-select: rgba(255, 213, 79, 0.3);
+  --c-band: rgba(20, 40, 90, 0.9);
+  --c-band-edge: #7aa7ff;
+  --c-text: #ffffff;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--c-bg);
+  overflow: hidden;
+}
+
+#stage, #stage * {
+  box-sizing: border-box;
+}
+
+/* ---------- 6.1 ステージ ---------- */
+
+#stage {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  transform-origin: 0 0;
+  background: var(--c-stage);
+  overflow: hidden;
+  font-family: "Segoe UI", Meiryo, sans-serif;
+  font-size: 16px;
+  color: var(--c-text);
+}
+
+#stage > div {
+  position: absolute;
+}
+
+/* 共通パネル調（枠のあるもの以外） */
+#dayPanel, #tools, #items, #msg, #task, #keys, #menu, #dialog {
+  background: var(--c-panel);
+  border-radius: 6px;
+}
+
+/* ---------- 6.2 部品の配置 ---------- */
+
+#map {
+  left: 0;
+  top: 0;
+  width: 960px;
+  height: 720px;
+}
+
+#dayPanel {
+  left: 972px;
+  top: 12px;
+  width: 296px;
+  height: 88px;
+  padding: 8px 10px;
+}
+
+/* 体力バー（相対 8,62 に 260×14 の枠。名称は SPEC 未指定のため igo3d 系に合わせて命名） */
+#dayPanel .stamina-bar {
+  position: absolute;
+  left: 8px;
+  top: 62px;
+  width: 260px;
+  height: 14px;
+  background: #333;
+}
+#dayPanel .stamina-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 14px;
+  background: var(--c-stamina);
+}
+#dayPanel .stamina-fill.low {
+  background: var(--c-stamina-low);
+}
+
+#tools {
+  left: 972px;
+  top: 112px;
+  width: 296px;
+  height: 184px;
+  padding: 4px;
+}
+#tools > div {
+  height: 44px;
+  line-height: 44px;
+  font-size: 18px;
+  padding: 0 8px;
+}
+#tools > div.cursor {
+  background: var(--c-select);
+}
+#tools > div.cursor::before {
+  content: "▶ ";
+}
+
+#items {
+  left: 972px;
+  top: 306px;
+  width: 296px;
+  height: 160px;
+  padding: 8px 10px;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+#msg {
+  left: 972px;
+  top: 476px;
+  width: 296px;
+  height: 70px;
+  padding: 8px 10px;
+  font-size: 15px;
+  line-height: 18px;
+}
+
+#task {
+  left: 972px;
+  top: 552px;
+  width: 296px;
+  height: 40px;
+  padding: 6px 10px;
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--c-hint);
+}
+
+#keys {
+  left: 972px;
+  top: 600px;
+  width: 296px;
+  height: 108px;
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+#band {
+  left: 40px;
+  top: 560px;
+  width: 880px;
+  height: 144px;
+  padding: 12px 20px;
+  background: var(--c-band);
+  border: 2px solid var(--c-band-edge);
+  border-radius: 6px;
+  font-size: 18px;
+  line-height: 1.4;
+  z-index: 30;
+}
+#band[hidden] {
+  display: none;
+}
+#band .next {
+  position: absolute;
+  right: 20px;
+  bottom: 12px;
+  font-size: 14px;
+  color: var(--c-target);
+}
+#band .page {
+  position: absolute;
+  left: 20px;
+  bottom: 12px;
+  font-size: 14px;
+}
+
+#menu {
+  left: 330px;
+  top: 220px;
+  width: 300px;
+  height: 200px;
+  padding: 12px 16px;
+  z-index: 40;
+}
+#menu h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: bold;
+}
+#menu .row {
+  height: 32px;
+  line-height: 32px;
+  font-size: 20px;
+  padding: 0 8px;
+}
+#menu .row.cursor {
+  background: var(--c-select);
+}
+#menu .row.cursor::before {
+  content: "▶ ";
+}
+
+#dialog {
+  left: 260px;
+  top: 170px;
+  width: 440px;
+  height: 300px;
+  padding: 12px 16px;
+  z-index: 35;
+}
+#dialog h2 {
+  margin: 0 0 24px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: bold;
+}
+#dialog .row {
+  height: 36px;
+  line-height: 36px;
+  font-size: 20px;
+  padding: 0 8px;
+}
+#dialog .row.cursor {
+  background: var(--c-select);
+}
+#dialog .row.cursor::before {
+  content: "▶ ";
+}
+#dialog .foot {
+  position: absolute;
+  left: 16px;
+  top: 260px;
+  font-size: 14px;
+}
+
+#banner {
+  left: 0;
+  top: 280px;
+  width: 960px;
+  height: 160px;
+  background: rgba(0, 0, 0, 0.75);
+  text-align: center;
+  padding-top: 20px;
+  z-index: 20;
+}
+#banner .line1 {
+  font-size: 44px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+#banner .line2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+#banner .line3 {
+  font-size: 16px;
+}
+
+#title {
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  background: rgba(0, 0, 0, 0.7);
+  text-align: center;
+  z-index: 50;
+}
+#title .ttl {
+  position: absolute;
+  left: 0;
+  top: 200px;
+  width: 100%;
+  font-size: 48px;
+  font-weight: bold;
+}
+#title .sub {
+  position: absolute;
+  left: 0;
+  top: 262px;
+  width: 100%;
+  font-size: 18px;
+}
+#title .opt {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  font-size: 28px;
+}
+#title .opt-tutorial {
+  top: 318px;
+  height: 40px;
+  line-height: 40px;
+}
+#title .opt-free {
+  top: 378px;
+  height: 40px;
+  line-height: 40px;
+}
+#title .opt.cursor::before {
+  content: "▶ ";
+}
+#title .help {
+  position: absolute;
+  left: 0;
+  top: 470px;
+  width: 100%;
+  font-size: 16px;
+}
+
+/* ---------- 6.3 / 6.4 タイル・作物・人・にわとり・たまご・枠 ---------- */
+/* 土台（UI.init が 1 度だけ作る。位置は動かさず class と中身だけ差し替える） */
+
+.tile {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+#hint {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  outline: 3px dotted var(--c-hint);
+  outline-offset: -3px;
+  z-index: 3;
+}
+
+#target {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  box-shadow: inset 0 0 0 3px var(--c-target);
+  z-index: 7;
+}
+
+#eggs {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 4;
+}
+.egg {
+  position: absolute;
+  width: 14px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--c-egg);
+  border: 1px solid var(--c-egg-edge);
+}
+
+.chicken {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  z-index: 5;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--c-eye), var(--c-eye)),
+    linear-gradient(var(--c-beak), var(--c-beak)),
+    linear-gradient(var(--c-comb), var(--c-comb)),
+    radial-gradient(ellipse closest-side, var(--c-chicken) 100%, transparent 100%);
+  background-position: 28px 20px, 34px 22px, 22px 10px, 10px 16px;
+  background-size: 4px 4px, 8px 6px, 8px 6px, 28px 22px;
+}
+
+#player {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  z-index: 6;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--c-skin), var(--c-skin)),
+    linear-gradient(var(--c-player), var(--c-player)),
+    linear-gradient(var(--c-legs), var(--c-legs)),
+    linear-gradient(var(--c-legs), var(--c-legs));
+  background-position: 16px 6px, 12px 20px, 14px 40px, 26px 40px;
+  background-size: 16px 14px, 24px 20px, 8px 8px, 8px 8px;
+}
+/* 向きの印（data-dir で切替） */
+#player::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--c-face);
+}
+#player[data-dir="up"]::before { left: 19px; top: 0; }
+#player[data-dir="down"]::before { left: 19px; top: 38px; }
+#player[data-dir="left"]::before { left: 0; top: 19px; }
+#player[data-dir="right"]::before { left: 38px; top: 19px; }
+
+/* ----- タイル種類（render が毎回 class を差し替える） ----- */
+
+.tile.t-grass {
+  background-color: var(--c-grass);
+}
+/* 飾り（data-deco。grass だけ使う。0・1 は無地） */
+.tile.t-grass[data-deco="2"]::before {
+  content: "";
+  position: absolute;
+  left: 30px;
+  top: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-flower);
+}
+.tile.t-grass[data-deco="3"]::before,
+.tile.t-grass[data-deco="3"]::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 8px;
+  background: var(--c-grass-dot);
+}
+.tile.t-grass[data-deco="3"]::before { left: 14px; top: 26px; }
+.tile.t-grass[data-deco="3"]::after { left: 20px; top: 22px; }
+.tile.t-grass[data-deco="4"]::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 34px;
+  width: 6px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--c-pebble);
+}
+
+.tile.t-soil {
+  background-color: var(--c-soil);
+  background-image: repeating-linear-gradient(180deg, transparent 0 10px, var(--c-ridge) 10px 12px);
+}
+.tile.t-soil.wet {
+  background-color: var(--c-soil-wet);
+}
+
+.tile.t-water {
+  background-color: var(--c-water);
+  background-image: repeating-linear-gradient(45deg, transparent 0 10px, var(--c-wave) 10px 13px);
+}
+
+.tile.t-path {
+  background-color: var(--c-path);
+}
+.tile.t-path::before,
+.tile.t-path::after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--c-path-dot);
+}
+.tile.t-path::before { left: 12px; top: 16px; }
+.tile.t-path::after { left: 30px; top: 30px; }
+
+.tile.t-fence {
+  background-color: var(--c-grass);
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--c-fence), var(--c-fence)),
+    linear-gradient(var(--c-fence), var(--c-fence)),
+    linear-gradient(var(--c-fence), var(--c-fence));
+  background-position: 0 20px, 4px 11px, 36px 11px;
+  background-size: 48px 8px, 8px 26px, 8px 26px;
+}
+
+.tile.t-house {
+  background-color: var(--c-house);
+}
+.tile.t-house[data-r="1"] {
+  background-color: var(--c-roof);
+}
+.tile.t-house[data-r="2"]::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 18px;
+  width: 12px;
+  height: 12px;
+  background: #bfe3ff;
+}
+
+.tile.t-door {
+  background-color: var(--c-house);
+}
+.tile.t-door::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 14px;
+  width: 22px;
+  height: 34px;
+  background: var(--c-door);
+}
+.tile.t-door::after {
+  content: "";
+  position: absolute;
+  left: 29px;
+  top: 30px;
+  width: 4px;
+  height: 4px;
+  background: var(--c-door-mark);
+}
+
+.tile.t-barn {
+  background-color: var(--c-barn);
+}
+.tile.t-barn[data-r="1"] {
+  background-color: var(--c-barn-roof);
+}
+
+.tile.t-ship {
+  background-color: var(--c-grass);
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--c-ship-lid), var(--c-ship-lid)),
+    linear-gradient(var(--c-ship), var(--c-ship));
+  background-position: 2px 8px, 4px 12px;
+  background-size: 44px 8px, 40px 30px;
+}
+.tile.t-ship.full {
+  background-image:
+    radial-gradient(circle closest-side, var(--c-ship-full) 100%, transparent 100%),
+    linear-gradient(var(--c-ship-lid), var(--c-ship-lid)),
+    linear-gradient(var(--c-ship), var(--c-ship));
+  background-position: 19px 20px, 2px 8px, 4px 12px;
+  background-size: 10px 10px, 44px 8px, 40px 30px;
+}
+
+.tile.t-shop {
+  background-color: var(--c-grass);
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--c-shop-sign), var(--c-shop-sign)),
+    linear-gradient(var(--c-shop), var(--c-shop)),
+    linear-gradient(var(--c-ship), var(--c-ship));
+  background-position: 8px 6px, 4px 24px, 22px 18px;
+  background-size: 32px 14px, 40px 20px, 4px 10px;
+}
+
+/* ----- 作物（soil の中身。render が毎回作り直す） ----- */
+
+.crop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 48px;
+  height: 48px;
+}
+.crop.s-3 {
+  outline: 2px solid var(--c-ripe);
+  outline-offset: -2px;
+}
+
+/* s-0 たね（3 点） */
+.crop.s-0::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 22px;
+  width: 4px;
+  height: 4px;
+  background: var(--c-seed-dot);
+  box-shadow: 8px 0 0 var(--c-seed-dot), 16px 0 0 var(--c-seed-dot);
+}
+
+/* s-1 め */
+.crop.s-1::before {
+  content: "";
+  position: absolute;
+  left: 21px;
+  top: 18px;
+  width: 6px;
+  height: 12px;
+  background: var(--c-sprout);
+}
+
+/* s-2 わかい（葉 2 枚＋茎） */
+.crop.s-2::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 8px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--c-leaf);
+  box-shadow: 12px 0 0 var(--c-leaf);
+}
+.crop.s-2::after {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 26px;
+  width: 4px;
+  height: 12px;
+  background: var(--c-sprout);
+}
+
+/* s-3 みのり（種類ごとに形が違う） */
+.crop.s-3.k-turnip::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 20px;
+  width: 18px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--c-turnip);
+}
+.crop.s-3.k-turnip::after {
+  content: "";
+  position: absolute;
+  left: 19px;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  background: var(--c-turnip-top);
+}
+
+.crop.s-3.k-potato::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 26px;
+  width: 10px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-potato);
+  box-shadow: 12px -4px 0 var(--c-potato), 20px 4px 0 var(--c-potato);
+}
+
+.crop.s-3.k-corn::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 10px;
+  width: 4px;
+  height: 28px;
+  background: var(--c-stalk);
+}
+.crop.s-3.k-corn::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  width: 10px;
+  height: 22px;
+  background: var(--c-corn);
+}
+
+/* ---------- 6.5 描画の規則 ---------- */
+/* hidden 属性は全要素で非表示にする。アニメーション・transition は一切付けない */
+[hidden] {
+  display: none;
+}

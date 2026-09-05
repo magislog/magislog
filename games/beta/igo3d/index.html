@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>囲碁 β</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage">
+
+  <div id="cols">
+    <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>J</span>
+  </div>
+
+  <div id="board"></div>
+
+  <div id="rows">
+    <span>9</span><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
+  </div>
+
+  <div id="cpuPanel"></div>
+
+  <div id="youPanel"></div>
+
+  <div id="keys">
+    <div>←↑→↓ カーソル ／ Z 石を置く</div>
+    <div>S メニュー（パス・投了・タイトル）</div>
+    <div>X 戻る（メニューを閉じる）</div>
+  </div>
+
+  <div id="msg"></div>
+
+  <div id="band" hidden></div>
+
+  <div id="menu" hidden>
+    <h2>メニュー</h2>
+  </div>
+
+  <div id="banner" hidden></div>
+
+  <div id="title" hidden>
+    <div class="ttl">囲碁 β</div>
+    <div class="opt opt-tutorial">チュートリアル</div>
+    <div class="opt opt-free">フリープレイ</div>
+    <div class="help">↑↓ で選び Z で決定</div>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/tutorial.js"></script>
+<script src="js/input.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

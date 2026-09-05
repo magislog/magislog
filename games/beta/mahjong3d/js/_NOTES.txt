@@ -1,0 +1,6 @@
+[A] Score.calc の pay は §5.3 の文字面 pay:{seat:額} だと絶対座席番号が要るが ctx には winner の座席も他家の親情報も無いため、pay:{dealer:額, child:額}（ロール別）に倒した。game.js 側で state.dealer と winner seat から実座席へマップする想定。
+[A] Tiles.buildScriptedWall は §4.2 の説明が密で一意に読めなかったため、wall.pop() が「配牌52枚→draws→ランダム」の順で出る配列を組み、ドラ表示牌は wall.splice(5,0,doraEnt) で挿入して総数136枚を保つ実装にした（上書きだと1枚消える）。
+[A] 役名・翻数テーブルと上限額テーブル（満貫2000など）は §1 の MJ.CONFIG 必須キーに項目が無く config.js は分担B所有で編集できないため、score.js 内に直書きした。
+[C] §4.4 doDiscard の擬似コードは「emit('discard',...); if(hold) return」の直後で ronCandidates/turn/phase を計算する形だが、東2の台本(riichi:0 ステップ)のように discard より前の emit('riichi',...) でチュートリアルの hold が先に立つケースがあり、そこで打ち切ると turn/phase が進まないまま止まる。ronCandidates・turn・phase の同期計算は hold の有無に関わらず必ず最後まで進め、非同期の delay()/UI.showActions() 呼び出しの直前だけで hold を見る形に倒した。
+[C] §4.6 doWin/doExhaust の擬似コードは emit の直後の if(hold) return で setTimeout(showResult) をまとめて止める形だが、東1〜東3の win ステップの文が「Zで結果を閉じます」と結果画面の表示を前提にした案内をしており、hold中に止めると結果画面を開く手段が無く進行が止まる。setTimeout は hold の有無に関わらず必ず発火する形に倒した(結果画面とチュートリアル文が重なって見えるのは許容)。
+[C] scene.js の MJ.Scene.init() は buildTable/buildFloor/buildLamp/buildChair(1..3) までしか呼んでおらず、buildWalls()（§10 受入チェック2の牌山4本）と buildProps()（湯呑み）が呼ばれていない。scene.js は分担B所有のため直接は編集せず、main.js の起動処理から MJ.Scene.buildWalls() と MJ.Scene.buildProps(seat)×4 を呼んで補った。

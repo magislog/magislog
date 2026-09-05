@@ -1,0 +1,662 @@
+/* 投資ファンド β SPEC.md §6 準拠スタイル */
+
+:root {
+  --c-bg: #101318;
+  --c-stage: #1a1f27;
+  --c-panel: rgba(255, 255, 255, 0.05);
+  --c-panel-edge: #2c3440;
+  --c-text: #e8ecf1;
+  --c-dim: #8a94a3;
+  --c-up: #3ddc84;
+  --c-down: #ff5c5c;
+  --c-flat: #c0c6cf;
+  --c-select: rgba(255, 213, 79, 0.22);
+  --c-cursor: #ffd54f;
+  --c-hint: #42a5f5;
+  --c-band: rgba(20, 40, 90, 0.92);
+  --c-band-edge: #7aa7ff;
+  --c-chart-line: #7aa7ff;
+  --c-chart-dot: #ffd54f;
+  --c-chart-grid: #2c3440;
+  --c-news-boom: #3ddc84;
+  --c-news-bust: #ff5c5c;
+  --c-news-rumor: #ffb74d;
+  --c-news-macro: #64b5f6;
+  --c-news-calm: #8a94a3;
+  --c-button: #2f3a4a;
+  --c-button-edge: #4a5a70;
+  --c-next: #2e7d32;
+  --c-overlay: rgba(0, 0, 0, 0.75);
+  --c-sector-tech: #64b5f6;
+  --c-sector-food: #ffb74d;
+  --c-sector-energy: #ba68c8;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--c-bg);
+  overflow: hidden;
+}
+
+#stage, #stage * {
+  box-sizing: border-box;
+}
+
+/* ---------- 6.1 ステージ ---------- */
+
+#stage {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  transform-origin: 0 0;
+  background: var(--c-stage);
+  overflow: hidden;
+  font-family: "Segoe UI", Meiryo, sans-serif;
+  font-size: 15px;
+  color: var(--c-text);
+}
+
+#stage > div {
+  position: absolute;
+}
+
+/* 共通パネル調(枠のあるもの)。#nextBtn・#band・#dialog・#result・#title は個別の背景を持つため除く */
+#top, #table, #msg, #log, #news, #chart, #task, #keys, #menu {
+  background: var(--c-panel);
+  border: 1px solid var(--c-panel-edge);
+  border-radius: 6px;
+  z-index: 1;
+}
+
+/* 正負・状態の共通色 */
+.up { color: var(--c-up); }
+.down { color: var(--c-down); }
+.flat { color: var(--c-flat); }
+.dim { color: var(--c-dim); }
+
+/* 業種の色 */
+.sector-tech { color: var(--c-sector-tech); }
+.sector-food { color: var(--c-sector-food); }
+.sector-energy { color: var(--c-sector-energy); }
+
+/* ニュース種別の色 */
+.news-boom { color: var(--c-news-boom); }
+.news-bust { color: var(--c-news-bust); }
+.news-rumor { color: var(--c-news-rumor); }
+.news-macro { color: var(--c-news-macro); }
+.news-calm { color: var(--c-news-calm); }
+
+/* ---------- 6.2 部品の配置: #top 資産の帯 ---------- */
+
+#top {
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 64px;
+  z-index: 1;
+}
+#top .cell {
+  position: absolute;
+  top: 0;
+  width: 213px;
+  height: 64px;
+}
+#top .cell:nth-child(1) { left: 0px; }
+#top .cell:nth-child(2) { left: 213px; }
+#top .cell:nth-child(3) { left: 426px; }
+#top .cell:nth-child(4) { left: 639px; }
+#top .cell:nth-child(5) { left: 852px; }
+#top .cell:nth-child(6) { left: 1065px; width: 215px; }
+#top .cell .label {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 10px;
+  font-size: 12px;
+  color: var(--c-dim);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+}
+#top .cell .value {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 30px;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ---------- #table 銘柄の表(§6.3 列)---------- */
+
+#table {
+  left: 16px;
+  top: 80px;
+  width: 760px;
+  height: 296px;
+  overflow: hidden;
+}
+#table .thead {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  font-size: 13px;
+  color: var(--c-dim);
+}
+#table .row {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  font-size: 15px;
+}
+#table .row.cursor {
+  background: var(--c-select);
+}
+#table .col-cursor {
+  width: 16px;
+  flex: 0 0 auto;
+  text-align: center;
+}
+#table .row.cursor .col-cursor::before {
+  content: "▶";
+  color: var(--c-cursor);
+}
+#table .col-ticker {
+  width: 56px;
+  flex: 0 0 auto;
+  text-align: left;
+  font-weight: bold;
+  padding-right: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#table .col-name {
+  width: 132px;
+  flex: 0 0 auto;
+  text-align: left;
+  padding-right: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#table .col-sector {
+  width: 64px;
+  flex: 0 0 auto;
+  text-align: left;
+  padding-right: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#table .col-price {
+  width: 96px;
+  flex: 0 0 auto;
+  text-align: right;
+  padding-right: 4px;
+}
+#table .col-day {
+  width: 132px;
+  flex: 0 0 auto;
+  text-align: right;
+  padding-right: 4px;
+}
+#table .col-shares {
+  width: 72px;
+  flex: 0 0 auto;
+  text-align: right;
+  padding-right: 4px;
+}
+#table .col-value {
+  width: 100px;
+  flex: 0 0 auto;
+  text-align: right;
+  padding-right: 4px;
+}
+#table .col-pl {
+  width: 92px;
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+/* ---------- #nextBtn 次の日へ ---------- */
+
+#nextBtn {
+  left: 16px;
+  top: 388px;
+  width: 760px;
+  height: 44px;
+  background: var(--c-next);
+  border: 3px solid transparent;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 38px;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 1;
+}
+#nextBtn[hidden] {
+  display: none;
+}
+#nextBtn.cursor {
+  border-color: var(--c-cursor);
+}
+#nextBtn.cursor::before {
+  content: "▶ ";
+}
+
+/* ---------- #msg / #log / #news / #chart / #task / #keys ---------- */
+
+#msg {
+  left: 16px;
+  top: 444px;
+  width: 760px;
+  height: 52px;
+  padding: 8px 12px;
+  font-size: 15px;
+  line-height: 18px;
+}
+
+#log {
+  left: 16px;
+  top: 508px;
+  width: 760px;
+  height: 196px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 22px;
+  overflow: hidden;
+}
+
+#news {
+  left: 792px;
+  top: 80px;
+  width: 472px;
+  height: 132px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+#chart {
+  left: 792px;
+  top: 224px;
+  width: 472px;
+  height: 232px;
+}
+#chart .c-title {
+  position: absolute;
+  left: 12px;
+  top: 8px;
+  font-size: 14px;
+}
+#chart .c-hi {
+  position: absolute;
+  left: 24px;
+  top: 30px;
+  font-size: 11px;
+  color: var(--c-dim);
+}
+#chart .c-lo {
+  position: absolute;
+  left: 24px;
+  top: 212px;
+  font-size: 11px;
+  color: var(--c-dim);
+}
+#plot {
+  position: absolute;
+  left: 24px;
+  top: 48px;
+  width: 440px;
+  height: 160px;
+  overflow: hidden;
+}
+#plot .grid {
+  position: absolute;
+  left: 0;
+  width: 440px;
+  height: 1px;
+  background: var(--c-chart-grid);
+}
+#plot .seg {
+  position: absolute;
+  height: 2px;
+  background: var(--c-chart-line);
+  transform-origin: 0 50%;
+}
+#plot .dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-chart-line);
+}
+#plot .dot.today {
+  width: 8px;
+  height: 8px;
+  background: var(--c-chart-dot);
+}
+
+#task {
+  left: 792px;
+  top: 468px;
+  width: 472px;
+  height: 44px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--c-hint);
+}
+
+#keys {
+  left: 792px;
+  top: 520px;
+  width: 472px;
+  height: 184px;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 26px;
+}
+
+/* ---------- #band 案内帯 ---------- */
+
+#band {
+  left: 40px;
+  top: 556px;
+  width: 1200px;
+  height: 148px;
+  padding: 12px 20px;
+  background: var(--c-band);
+  border: 2px solid var(--c-band-edge);
+  border-radius: 6px;
+  font-size: 18px;
+  line-height: 1.4;
+  z-index: 30;
+}
+#band .next {
+  position: absolute;
+  right: 20px;
+  bottom: 12px;
+  font-size: 14px;
+  color: var(--c-cursor);
+}
+#band .page {
+  position: absolute;
+  left: 20px;
+  bottom: 12px;
+  font-size: 14px;
+}
+
+/* ---------- #hint ヒント枠(§6.6。JS が #stage 直下に 1 個だけ作る) ---------- */
+
+#hint {
+  position: absolute;
+  outline: 3px dotted var(--c-hint);
+  outline-offset: -3px;
+  z-index: 36;
+}
+
+/* ---------- #dialog 売買ダイアログ(§6.5) ---------- */
+
+#dialog {
+  left: 340px;
+  top: 120px;
+  width: 600px;
+  height: 440px;
+  background: var(--c-stage);
+  border: 2px solid var(--c-button-edge);
+  border-radius: 6px;
+  z-index: 35;
+}
+#dialog .d-title {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  font-size: 22px;
+  font-weight: bold;
+}
+#dialog .d-price {
+  position: absolute;
+  left: 16px;
+  top: 48px;
+  font-size: 16px;
+}
+#dialog .d-hold {
+  position: absolute;
+  left: 16px;
+  top: 74px;
+  font-size: 16px;
+}
+#dialog .pct-label {
+  position: absolute;
+  left: 40px;
+  top: 104px;
+  height: 36px;
+  line-height: 36px;
+  font-size: 20px;
+}
+#dialog .pct-btn {
+  position: absolute;
+  top: 104px;
+  width: 44px;
+  height: 36px;
+  line-height: 34px;
+  font-size: 18px;
+  text-align: center;
+  background: var(--c-button);
+  border: 1px solid var(--c-button-edge);
+  border-radius: 4px;
+}
+#dialog #pctMinus { left: 140px; }
+#dialog #pctPlus { left: 408px; }
+#dialog .pct-value {
+  position: absolute;
+  left: 196px;
+  top: 104px;
+  width: 200px;
+  height: 36px;
+  line-height: 36px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+}
+#dialog .pct-hint {
+  position: absolute;
+  left: 470px;
+  top: 112px;
+  font-size: 14px;
+  color: var(--c-dim);
+}
+#dialog .d-row {
+  position: absolute;
+  left: 16px;
+  width: 568px;
+  height: 64px;
+}
+#dialog .d-row.row-buy { top: 160px; }
+#dialog .d-row.row-sell { top: 224px; }
+#dialog .d-row.row-close { top: 288px; }
+#dialog .d-row.cursor {
+  background: var(--c-select);
+}
+#dialog .d-row .line1 {
+  padding-top: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+#dialog .d-row.cursor .line1::before {
+  content: "▶ ";
+}
+#dialog .d-row .line2 {
+  margin-top: 4px;
+  font-size: 14px;
+}
+#dialog .d-foot {
+  position: absolute;
+  left: 16px;
+  top: 380px;
+  font-size: 14px;
+  color: var(--c-dim);
+}
+
+/* ---------- #menu メニュー ---------- */
+
+#menu {
+  left: 490px;
+  top: 260px;
+  width: 300px;
+  height: 160px;
+  padding: 12px 16px;
+  z-index: 48;
+}
+#menu h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: bold;
+}
+#menu .row {
+  height: 32px;
+  line-height: 32px;
+  font-size: 20px;
+  padding: 0 8px;
+}
+#menu .row.cursor {
+  background: var(--c-select);
+}
+#menu .row.cursor::before {
+  content: "▶ ";
+}
+
+/* ---------- #result 最終結果 ---------- */
+
+#result {
+  left: 0px;
+  top: 0px;
+  width: 1280px;
+  height: 720px;
+  background: var(--c-overlay);
+  z-index: 45;
+}
+#result .box {
+  position: absolute;
+  left: 240px;
+  top: 180px;
+  width: 800px;
+  height: 360px;
+  background: var(--c-stage);
+  border: 2px solid var(--c-cursor);
+  border-radius: 6px;
+  text-align: center;
+}
+#result .r-title {
+  position: absolute;
+  left: 0;
+  top: 20px;
+  width: 100%;
+  font-size: 36px;
+  font-weight: bold;
+}
+#result .r-summary {
+  position: absolute;
+  left: 0;
+  top: 90px;
+  width: 100%;
+  font-size: 26px;
+}
+#result .r-change {
+  position: absolute;
+  left: 0;
+  top: 130px;
+  width: 100%;
+  font-size: 26px;
+  font-weight: bold;
+}
+#result .r-detail1 {
+  position: absolute;
+  left: 0;
+  top: 190px;
+  width: 100%;
+  font-size: 18px;
+}
+#result .r-detail2 {
+  position: absolute;
+  left: 0;
+  top: 224px;
+  width: 100%;
+  font-size: 18px;
+}
+#result .r-foot {
+  position: absolute;
+  left: 0;
+  top: 290px;
+  width: 100%;
+  font-size: 16px;
+  color: var(--c-dim);
+}
+
+/* ---------- #title タイトル画面 ---------- */
+
+#title {
+  left: 0px;
+  top: 0px;
+  width: 1280px;
+  height: 720px;
+  background: var(--c-overlay);
+  text-align: center;
+  z-index: 50;
+}
+#title .ttl {
+  position: absolute;
+  left: 0;
+  top: 200px;
+  width: 100%;
+  font-size: 48px;
+  font-weight: bold;
+}
+#title .sub {
+  position: absolute;
+  left: 0;
+  top: 262px;
+  width: 100%;
+  font-size: 18px;
+}
+#title .opt {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  font-size: 28px;
+}
+#title .opt-tutorial {
+  top: 318px;
+  height: 40px;
+  line-height: 40px;
+}
+#title .opt-free {
+  top: 378px;
+  height: 40px;
+  line-height: 40px;
+}
+#title .opt.cursor::before {
+  content: "▶ ";
+}
+#title .help {
+  position: absolute;
+  left: 0;
+  top: 470px;
+  width: 100%;
+  font-size: 16px;
+}
+
+/* ---------- 6.6 描画の規則 ---------- */
+/* hidden 属性は全要素で非表示にする。アニメーション・transition は一切付けない */
+[hidden] {
+  display: none;
+}
