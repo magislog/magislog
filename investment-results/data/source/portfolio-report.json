@@ -10,12 +10,12 @@
       "grok": null,
       "astra": null,
       "agy": null,
-      "ruka": "2026-10-20"
+      "ruka": "2026-10-21"
     },
     "ruka_unsettled_pending": [],
     "incomplete_fund_accounts": [],
     "unresolved_fund_actions": {},
-    "processed_through": "2026-10-20",
+    "processed_through": "2026-10-21",
     "close_basis": null
   },
   "comparison": {
@@ -63,7 +63,7 @@
         "estimated_net_income_status": "no_trade_history",
         "annual_income": null,
         "annual_income_status": "未設定／未確認",
-        "as_of": "2026-10-20",
+        "as_of": "2026-10-21",
         "as_of_consistent": true,
         "strategy_ai_rank": 3,
         "strategy_ai_rank_status": "ranked_same_as_of",
@@ -110,7 +110,7 @@
         "estimated_net_income_status": "no_trade_history",
         "annual_income": null,
         "annual_income_status": "未設定／未確認",
-        "as_of": "2026-10-20",
+        "as_of": "2026-10-21",
         "as_of_consistent": true,
         "strategy_ai_rank": 4,
         "strategy_ai_rank_status": "ranked_same_as_of",
@@ -157,7 +157,7 @@
         "estimated_net_income_status": "no_trade_history",
         "annual_income": null,
         "annual_income_status": "未設定／未確認",
-        "as_of": "2026-10-20",
+        "as_of": "2026-10-21",
         "as_of_consistent": true,
         "strategy_ai_rank": 2,
         "strategy_ai_rank_status": "ranked_same_as_of",
@@ -204,7 +204,7 @@
         "estimated_net_income_status": "no_trade_history",
         "annual_income": null,
         "annual_income_status": "未設定／未確認",
-        "as_of": "2026-10-20",
+        "as_of": "2026-10-21",
         "as_of_consistent": true,
         "strategy_ai_rank": 1,
         "strategy_ai_rank_status": "ranked_same_as_of",
@@ -216,7 +216,7 @@
       "id": "ruka",
       "name": "るか（オルカン）",
       "kind": "benchmark",
-      "total_assets": 999999.0,
+      "total_assets": 999972.0,
       "cash": 3.0,
       "stock_value": 0.0,
       "fund_value": null,
@@ -228,7 +228,7 @@
       "realized_gain_status": "未確認",
       "benefit_value_status": "未確認",
       "annual_income_status": "未設定／未確認",
-      "as_of": "2026-10-20",
+      "as_of": "2026-10-21",
       "data_status": "提供された評価済みスナップショット",
       "strategy_ai_rank": null,
       "asset_rank": 5,
@@ -307,14 +307,14 @@
     },
     "ruka": {
       "name": "るか（オルカン）",
-      "value": 999999,
+      "value": 999972,
       "cash": 3,
       "settled_dates": [
-        "2026-10-20"
+        "2026-10-21"
       ],
       "contributions": 1000000,
       "units": 264137,
-      "securities_value": 999996,
+      "securities_value": 999969,
       "pending": {
         "initial": {
           "date": "2026-10-19",
@@ -325,25 +325,25 @@
           "settled_bucket": "nisa_growth"
         }
       },
-      "as_of": "2026-10-20",
-      "settled_through": "2026-10-20",
+      "as_of": "2026-10-21",
+      "settled_through": "2026-10-21",
       "valuation_source": {
         "source": "[LOCAL_PATH_REDACTED]",
-        "reference_date": "2026-10-20",
-        "sha256": "2d04016a495dc258e468790740a6826111a9b617700034b4fa84149f88996925",
+        "reference_date": "2026-10-21",
+        "sha256": "a1940715afabfdc971ad75df37ff348b092fe7d5f20201e3012d168fcd12f327",
         "nav_unit": "JPY_per_10000_units",
         "source_kind": "explicit_ruka_nav_file",
         "source_url": "https://fs.bk.mufg.jp/webasp/mufg/fund/detail/chart/csv/m00355920.csv",
-        "retrieved_at": "2026-10-21T00:42:51+00:00"
+        "retrieved_at": "2026-10-21T15:01:52+00:00"
       },
-      "nav_reference_date": "2026-10-20",
-      "nav_value": 37859.0,
+      "nav_reference_date": "2026-10-21",
+      "nav_value": 37858.0,
       "pending_deposit_amount": 0,
       "pending_initial_amount": 0,
       "pending_purchase_label": "",
       "comparison_eligible": true,
       "asset_value_status": "evaluated",
-      "known_settled_value": 999999
+      "known_settled_value": 999972
     }
   },
   "provenance": {

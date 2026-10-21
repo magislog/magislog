@@ -4,12 +4,12 @@
   "notice": "仮想運用の記録です。注文・推奨ではありません。",
   "report": {
     "as_of": "2026-10-21",
-    "processed_through": "2026-10-20",
+    "processed_through": "2026-10-21",
     "period": "2026-10",
     "period_end": "2026-10-31",
     "status": "preview_unclosed",
-    "source_artifact_id": "report-2026-10",
-    "source_sha256": "5ed21cb057cb1d0d312640720f2a1ad5b91ad4b4111c3eb888e12974030d9f7b"
+    "source_artifact_id": "portfolio-report",
+    "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
   },
   "portfolios": [
     {
@@ -49,12 +49,12 @@
             "value": null
           }
         },
-        "source_artifact_id": "answer-2694-fable",
+        "source_artifact_id": "answer-2694-fable-63755b22",
         "source_sha256": "6b5e0ffadbe08f4469019069c8fabde5b66dcb87b35d4f8e92259a0a48475ef6",
         "status": "imported_answer"
       },
-      "source_artifact_id": "report-2026-10",
-      "source_sha256": "5ed21cb057cb1d0d312640720f2a1ad5b91ad4b4111c3eb888e12974030d9f7b"
+      "source_artifact_id": "portfolio-report",
+      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
     },
     {
       "id": "grok",
@@ -93,12 +93,12 @@
             "value": null
           }
         },
-        "source_artifact_id": "answer-2694-grok",
+        "source_artifact_id": "answer-2694-grok-69e96183",
         "source_sha256": "2ab7548d22d1775ed021a5d5d896a8595e55bcdb0bebd824cf2e90c0c4ec4c79",
         "status": "imported_answer"
       },
-      "source_artifact_id": "report-2026-10",
-      "source_sha256": "5ed21cb057cb1d0d312640720f2a1ad5b91ad4b4111c3eb888e12974030d9f7b"
+      "source_artifact_id": "portfolio-report",
+      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
     },
     {
       "id": "astra",
@@ -137,12 +137,12 @@
             "value": null
           }
         },
-        "source_artifact_id": "answer-2694-astra",
+        "source_artifact_id": "answer-2694-astra-a621a604",
         "source_sha256": "4f3a044f64b431e368a62e30acdedd788e3689bdafb862f2e8be9d05e8a6ec67",
         "status": "imported_answer"
       },
-      "source_artifact_id": "report-2026-10",
-      "source_sha256": "5ed21cb057cb1d0d312640720f2a1ad5b91ad4b4111c3eb888e12974030d9f7b"
+      "source_artifact_id": "portfolio-report",
+      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
     },
     {
       "id": "agy",
@@ -181,29 +181,29 @@
             "value": null
           }
         },
-        "source_artifact_id": "answer-2694-agy",
+        "source_artifact_id": "answer-2694-agy-77484faa",
         "source_sha256": "94f8a4b12e56229c64db6b4e4a2cd57873bb59782837b9ffa8d7600384da8a46",
         "status": "imported_answer"
       },
-      "source_artifact_id": "report-2026-10",
-      "source_sha256": "5ed21cb057cb1d0d312640720f2a1ad5b91ad4b4111c3eb888e12974030d9f7b"
+      "source_artifact_id": "portfolio-report",
+      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
     },
     {
       "id": "ruka",
       "name": "るか（オルカン）",
       "role": "benchmark_only",
-      "assets": 999999,
-      "as_of": "2026-10-20",
-      "settled_through": "2026-10-20",
-      "value": 999999,
+      "assets": 999972,
+      "as_of": "2026-10-21",
+      "settled_through": "2026-10-21",
+      "value": 999972,
       "cash": 3,
       "units": 264137,
-      "securities_value": 999996,
-      "nav_reference_date": "2026-10-20",
-      "nav_value": 37859.0,
+      "securities_value": 999969,
+      "nav_reference_date": "2026-10-21",
+      "nav_value": 37858.0,
       "holdings_status": "settled_virtual_fund_holding",
-      "source_artifact_id": "report-2026-10",
-      "source_sha256": "5ed21cb057cb1d0d312640720f2a1ad5b91ad4b4111c3eb888e12974030d9f7b"
+      "source_artifact_id": "portfolio-report",
+      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
     }
   ],
   "history": [
@@ -235,7 +235,7 @@
           "value": null
         }
       },
-      "source_artifact_id": "answer-8267-grok",
+      "source_artifact_id": "answer-8267-grok-20c9cb9c",
       "source_sha256": "2cdbf8e8b38151eda3e6c908200b5dccfe8b86bf538a581d83124d10b94cb39b",
       "status": "imported_answer"
     },
@@ -267,7 +267,7 @@
           "value": null
         }
       },
-      "source_artifact_id": "answer-8267-agy",
+      "source_artifact_id": "answer-8267-agy-31e3b9b7",
       "source_sha256": "9132b4ee120fd80df7c86598d0ff5e03b55a6c6c3dbb0078bb98534b0562e9f5",
       "status": "imported_answer"
     },
@@ -299,40 +299,8 @@
           "value": null
         }
       },
-      "source_artifact_id": "answer-8267-fable",
+      "source_artifact_id": "answer-8267-fable-3cadda3c",
       "source_sha256": "0d048d88daf27f3d8a20e1f7b12ed2475bbd8cdaae90669e3ea8f25f47771c04",
-      "status": "imported_answer"
-    },
-    {
-      "request_id": "af5e7916b89ec36df75fd3cd205882507cb3e1b666ba987a25535d6acb425e8c",
-      "ai_id": "astra",
-      "name": "かなめ",
-      "code": "8267",
-      "as_of": "2026-10-19",
-      "effective_from": "2026-10-20",
-      "decision": {
-        "note": "かなめ本人（守り・財務重視）の判断：8267は新規購入しない。会社の2026年10月13日中間決算短信1頁を直接確認し、自己資本比率7.9%、金融除く参考値14.3%が本人の50%以上条件をいずれも下回るため不合格。現金100万円を維持し、保有なしのため売却なし。任意積立は今回0%。他の未検証指標を合格とせず、手動表のFCF/財務CF混同・配当総額差・株式分割前後の比較窓は未解消と記録。提供資料の全項目を独立照合済みとは主張しない。拒否判定は確認済みの財務条件単独で成立。根拠：https://post.tokyoipo.com/tdnet/20261013/202610131530/20261008548098/140120261008548098.pdf（発行者イオン株式会社、2027年2月期中間決算、自己資本比率欄）。",
-        "orders": [],
-        "cancellations": [],
-        "fund_plan": [],
-        "fund_moves": [],
-        "fund_actions": [],
-        "has_order_instruction": false,
-        "buy_line": {
-          "status": "not_answered_or_unstructured",
-          "value": null
-        },
-        "sell_line": {
-          "status": "not_answered_or_unstructured",
-          "value": null
-        },
-        "scenarios": {
-          "status": "not_answered_or_unstructured",
-          "value": null
-        }
-      },
-      "source_artifact_id": "answer-8267-astra",
-      "source_sha256": "36f28c09229b80ad69ffdb896c4ceacab987f910f3870552b98165a32ca75b54",
       "status": "imported_answer"
     },
     {
@@ -363,7 +331,7 @@
           "value": null
         }
       },
-      "source_artifact_id": "answer-2694-fable",
+      "source_artifact_id": "answer-2694-fable-63755b22",
       "source_sha256": "6b5e0ffadbe08f4469019069c8fabde5b66dcb87b35d4f8e92259a0a48475ef6",
       "status": "imported_answer"
     },
@@ -395,40 +363,8 @@
           "value": null
         }
       },
-      "source_artifact_id": "answer-2694-grok",
+      "source_artifact_id": "answer-2694-grok-69e96183",
       "source_sha256": "2ab7548d22d1775ed021a5d5d896a8595e55bcdb0bebd824cf2e90c0c4ec4c79",
-      "status": "imported_answer"
-    },
-    {
-      "request_id": "a621a604f1c1841841d48026822695a86c7676fff7d5e5ea564c01a247397fcd",
-      "ai_id": "astra",
-      "name": "かなめ",
-      "code": "2694",
-      "as_of": "2026-10-21",
-      "effective_from": "2026-10-22",
-      "decision": {
-        "note": "かなめ本人判断：2694は今回は新規購入を見送り、2026-10-22から有効となる注文・取消はともに0件とします。入力は現金1,000,000円、株式・投信の保有なし、未約定注文なしです。この判断による資金移動はなく、現金1,000,000円を保留します。\n確認事実：会社一次資料では、2027年3月期第1四半期は売上6,027百万円、営業利益82百万円、親会社株主に帰属する純利益40百万円へ改善しています。通期会社予想は純利益107百万円・EPS0.45円で、期末配当は未定です。2026年3月期の営業CF555.228百万円と投資CFマイナス1,625.411百万円の合計はマイナス1,070.183百万円です（本人計算）。投資CFには有形固定資産取得1,276.066百万円、親会社への貸付700百万円と回収430百万円が含まれ、全額を維持投資や恒常的損失とは扱いません。2026年6月末の現金及び預金は4,505.885百万円、短期・長期借入金合計は6,939.340百万円（リース債務別、本人集計）で、返済と再投資の両方を負担します。\n評価：69円は10月21日10:18取得の参考値で、実際の価格バー時刻は未確認です。確定終値・約定価格にはしません。仮に69円で取得する場合、会社予想EPSに対する参考PERは約153倍です。これは正常EPSによる価値評価や固定倍率の合否判定ではありません。四半期の改善は認めますが、反復する減損等、税負担、維持更新投資、親会社向け資金配分を調整した持続可能な株主CFから、69円を上回る保守価値V_Lを支持できません。01の第3部3.3・3.6・3.8に従い、取得費用込み価格がV_Lを下回る入口条件を満たせないため購入0株とします。調査保有の少額枠も入口条件を省略する例外には使いません。ROE3.16%・配当性向49.9%は2024年3月期の値なので現在の収益性・配当余力へ流用せず、RSI24や52週安値への接近も買付根拠にしません。旧採点・固定閾値は使用しません。\n未確認・再評価：維持投資と成長投資の定量的な区分、正常利益・CFの持続範囲、将来の借換条件は未確認です。会社IR・ニュース一覧も検索確認し、資料内news=[]を無材料とは扱いません。次の中間期決算又はそれ以前の資金調達・資本配分・業績に関する重要開示で、投資後CF、返済原資、保守価値と取得条件を再評価します。中間期決算の具体的な公表日は今回確認できていません。\n共通ルール・投信：株数単位はsettings.lot=1、費用は選択済みの100株ブロック無料・元注文の端数部分0.22%を前提とします。投信の月16,500円は上限であり買付義務ではありません。今回の本人判断では投信積立も0円とし、売却・乗換・枠移動も行いません。本人ルールの現行対象は上場普通株で、投信を採用する条件は設けていません。また注文用fund_nav_snapshotは空であり、10月20日の参考NAVを注文用の価格へ流用しません。実口座・設定は変更しません。",
-        "orders": [],
-        "cancellations": [],
-        "fund_plan": [],
-        "fund_moves": [],
-        "fund_actions": [],
-        "has_order_instruction": false,
-        "buy_line": {
-          "status": "not_answered_or_unstructured",
-          "value": null
-        },
-        "sell_line": {
-          "status": "not_answered_or_unstructured",
-          "value": null
-        },
-        "scenarios": {
-          "status": "not_answered_or_unstructured",
-          "value": null
-        }
-      },
-      "source_artifact_id": "answer-2694-astra",
-      "source_sha256": "4f3a044f64b431e368a62e30acdedd788e3689bdafb862f2e8be9d05e8a6ec67",
       "status": "imported_answer"
     },
     {
@@ -459,8 +395,72 @@
           "value": null
         }
       },
-      "source_artifact_id": "answer-2694-agy",
+      "source_artifact_id": "answer-2694-agy-77484faa",
       "source_sha256": "94f8a4b12e56229c64db6b4e4a2cd57873bb59782837b9ffa8d7600384da8a46",
+      "status": "imported_answer"
+    },
+    {
+      "request_id": "a621a604f1c1841841d48026822695a86c7676fff7d5e5ea564c01a247397fcd",
+      "ai_id": "astra",
+      "name": "かなめ",
+      "code": "2694",
+      "as_of": "2026-10-21",
+      "effective_from": "2026-10-22",
+      "decision": {
+        "note": "かなめ本人判断：2694は今回は新規購入を見送り、2026-10-22から有効となる注文・取消はともに0件とします。入力は現金1,000,000円、株式・投信の保有なし、未約定注文なしです。この判断による資金移動はなく、現金1,000,000円を保留します。\n確認事実：会社一次資料では、2027年3月期第1四半期は売上6,027百万円、営業利益82百万円、親会社株主に帰属する純利益40百万円へ改善しています。通期会社予想は純利益107百万円・EPS0.45円で、期末配当は未定です。2026年3月期の営業CF555.228百万円と投資CFマイナス1,625.411百万円の合計はマイナス1,070.183百万円です（本人計算）。投資CFには有形固定資産取得1,276.066百万円、親会社への貸付700百万円と回収430百万円が含まれ、全額を維持投資や恒常的損失とは扱いません。2026年6月末の現金及び預金は4,505.885百万円、短期・長期借入金合計は6,939.340百万円（リース債務別、本人集計）で、返済と再投資の両方を負担します。\n評価：69円は10月21日10:18取得の参考値で、実際の価格バー時刻は未確認です。確定終値・約定価格にはしません。仮に69円で取得する場合、会社予想EPSに対する参考PERは約153倍です。これは正常EPSによる価値評価や固定倍率の合否判定ではありません。四半期の改善は認めますが、反復する減損等、税負担、維持更新投資、親会社向け資金配分を調整した持続可能な株主CFから、69円を上回る保守価値V_Lを支持できません。01の第3部3.3・3.6・3.8に従い、取得費用込み価格がV_Lを下回る入口条件を満たせないため購入0株とします。調査保有の少額枠も入口条件を省略する例外には使いません。ROE3.16%・配当性向49.9%は2024年3月期の値なので現在の収益性・配当余力へ流用せず、RSI24や52週安値への接近も買付根拠にしません。旧採点・固定閾値は使用しません。\n未確認・再評価：維持投資と成長投資の定量的な区分、正常利益・CFの持続範囲、将来の借換条件は未確認です。会社IR・ニュース一覧も検索確認し、資料内news=[]を無材料とは扱いません。次の中間期決算又はそれ以前の資金調達・資本配分・業績に関する重要開示で、投資後CF、返済原資、保守価値と取得条件を再評価します。中間期決算の具体的な公表日は今回確認できていません。\n共通ルール・投信：株数単位はsettings.lot=1、費用は選択済みの100株ブロック無料・元注文の端数部分0.22%を前提とします。投信の月16,500円は上限であり買付義務ではありません。今回の本人判断では投信積立も0円とし、売却・乗換・枠移動も行いません。本人ルールの現行対象は上場普通株で、投信を採用する条件は設けていません。また注文用fund_nav_snapshotは空であり、10月20日の参考NAVを注文用の価格へ流用しません。実口座・設定は変更しません。",
+        "orders": [],
+        "cancellations": [],
+        "fund_plan": [],
+        "fund_moves": [],
+        "fund_actions": [],
+        "has_order_instruction": false,
+        "buy_line": {
+          "status": "not_answered_or_unstructured",
+          "value": null
+        },
+        "sell_line": {
+          "status": "not_answered_or_unstructured",
+          "value": null
+        },
+        "scenarios": {
+          "status": "not_answered_or_unstructured",
+          "value": null
+        }
+      },
+      "source_artifact_id": "answer-2694-astra-a621a604",
+      "source_sha256": "4f3a044f64b431e368a62e30acdedd788e3689bdafb862f2e8be9d05e8a6ec67",
+      "status": "imported_answer"
+    },
+    {
+      "request_id": "af5e7916b89ec36df75fd3cd205882507cb3e1b666ba987a25535d6acb425e8c",
+      "ai_id": "astra",
+      "name": "かなめ",
+      "code": "8267",
+      "as_of": "2026-10-19",
+      "effective_from": "2026-10-20",
+      "decision": {
+        "note": "かなめ本人（守り・財務重視）の判断：8267は新規購入しない。会社の2026年10月13日中間決算短信1頁を直接確認し、自己資本比率7.9%、金融除く参考値14.3%が本人の50%以上条件をいずれも下回るため不合格。現金100万円を維持し、保有なしのため売却なし。任意積立は今回0%。他の未検証指標を合格とせず、手動表のFCF/財務CF混同・配当総額差・株式分割前後の比較窓は未解消と記録。提供資料の全項目を独立照合済みとは主張しない。拒否判定は確認済みの財務条件単独で成立。根拠：https://post.tokyoipo.com/tdnet/20261013/202610131530/20261008548098/140120261008548098.pdf（発行者イオン株式会社、2027年2月期中間決算、自己資本比率欄）。",
+        "orders": [],
+        "cancellations": [],
+        "fund_plan": [],
+        "fund_moves": [],
+        "fund_actions": [],
+        "has_order_instruction": false,
+        "buy_line": {
+          "status": "not_answered_or_unstructured",
+          "value": null
+        },
+        "sell_line": {
+          "status": "not_answered_or_unstructured",
+          "value": null
+        },
+        "scenarios": {
+          "status": "not_answered_or_unstructured",
+          "value": null
+        }
+      },
+      "source_artifact_id": "answer-8267-astra-af5e7916",
+      "source_sha256": "36f28c09229b80ad69ffdb896c4ceacab987f910f3870552b98165a32ca75b54",
       "status": "imported_answer"
     }
   ],
@@ -3708,7 +3708,7 @@
     "judgment_ref": "judgment-2338-ruka",
     "current_comparison": {
       "text": "1. 同時参照の可否と、実際に読めた範囲\r\n\r\n01相当の添付と、今回貼付された02〜06は、今、同時に参照できます。参照状況は次のとおりです。\r\n\r\n資料\t今回直接読めた範囲\t確認していないもの\r\n01相当・25区画本文\t添付として表示された03_2694_Zi-Liao-Ben-Wen.txtを読み込み、PACK SECTION 1/25〜25/25の全区画を抽出・JSONとして解析。比較に必要な価格来歴、業績、CF、配当、四半期、開示、派生入力を照合。\t各区画の全主張の正しさ、リンク先の会社原文、取得処理の実装まで全面検証したわけではない。\r\n02〜05・4人の回答\tこのメッセージに貼付された各JSONを、noteと全注文・投信関連配列を含めて直接参照。\t添付不能とされた場所にある元ファイル自体。提示SHA-256を元ファイルから独立再計算してはいない。\r\n06・既存比較レポート\t今回貼付された全文。月次状態、各人資産、順位、台帳スナップショット、るか評価、provenanceを参照。\tレポート生成元の台帳・NAV原本・実行ログ。\r\nrequest・H12監査\t今回のご説明にある入力制限と未完了状態を参照。\trequest原本4件、H12監査記録全文・完了証跡は今回未提示。\r\n\r\n添付の実測値は166178バイト、SHA-256は以下でした。ご提示のc27a017f6a7e0cde…と一致します。\r\n03_2694_Zi-Liao-Ben-Wen.txt\r\n\r\ntext\r\nc27a017f6a7e0cde758e934f39a3ae9c0e815b61603f1dafb05719e38e69b0b7\r\n\r\nしたがって、今回読めなかったのは、02〜06の「貼付内容」ではなく、その元ファイルや、参照先の一次資料・request・監査記録の原本です。\r\n\r\n2. 比較の結論：行動は共通、判断理由は異なる\r\n\r\n4人とも2694の新規購入を見送り、現金100万円を維持する判断です。orders・cancel・fund_plan・fund_moves・fund_actionsは全員空配列です。ただし、これは判断一致であり、共通の投資基準や、判断の採用・当日工程完了を意味しません。（貼付02〜05）\r\n\r\n本人\t見送りに影響した根拠\t他の人と異なる点\r\nうい\t2期連続の最終赤字、実績EPSの赤字による配当性向の不適合、低い配当利回り、3期累計FCFと配当支払の関係。\t普通配当の現金収入を中心に判定。本人の説明では実績と会社予想の「悪い方」を使うため、予想EPSが黒字でも入口条件を回復しない。\r\nそら\tQ1の増収・営業利益改善を認めつつ、通期利益率、最終赤字、FCF、負債負担から持続的な成長の質を支持できない。\t改善した四半期数値だけでは成長健全としない。配分・現金条件が満たされても、成長条件の不成立を優先。\r\nかなめ\tQ1改善を認めたうえで、減損・税・維持更新投資・親会社向け資金配分・返済を調整した株主CFから、69円を上回る保守価値を支持できない。\t赤字・FCFの符号だけの機械判定ではなく、資金使途と価値を評価。少額の調査保有枠でも入口条件を省略しない。\r\nひかり\t本人記載の予想普通配当利回り2%以上、FCF規律、利益・増配実績等のANDスクリーニングに複数抵触。\t複数の明示条件への不適合を中心に判定。ただし、予想配当0.5円の根拠は下記の留意事項が残る。\r\n\r\n短い引用で差を示すと、ういのnote（2）は「直近実績と会社予想のうち悪い方で判定」、かなめのnote「確認事実」は投資CFを「全額を維持投資や恒常的損失とは扱いません」としています。どちらかを他方の基準へ置き換えません。\r\n\r\n3. 01と回答を照合して確認できること\r\n業績：通期の弱さとQ1改善は両立する\r\n\r\n01の通期系列では、2025年3月期の最終損益−614百万円、2026年3月期−419百万円、直近EPS−1.78円を確認できます。一方、2027年3月期Q1累計は売上6027百万円、前年同期比＋5.05%、営業利益82百万円、前年同期6百万円です。\r\n03_2694_Zi-Liao-Ben-Wen.txt\r\n\r\nしたがって、「直近Q1が改善」と「通期実績・持続性に懸念」は相互矛盾ではありません。4人の差は、改善を認めた後、何を追加で満たせば購入対象になるかにあります。\r\n\r\nCF：負のFCFと、営業CF赤字を混同しない\r\n\r\n01の2026年3月期営業CFは＋555百万円、投資CFは−1625百万円で、合計FCFは約−1070百万円です。営業CFまで赤字という資料ではありません。また、2024〜2026年3月期のFCFは、負・正・負であり、3期すべて赤字ではありません。\r\n03_2694_Zi-Liao-Ben-Wen.txt\r\n\r\nうい・ひかりは3期累計と配当支払の比較、そらは成長・財務負担、かなめは投資CFの内訳と株主CFへの接続に使っています。これらの用途は区別できます。\r\n\r\nただし、かなめが示した有形固定資産取得、親会社への貸付・回収、6月末の現預金・借入集計の詳細は、今回の01にある丸められた年次CF・財務表だけでは独立に再現できません。「かなめが会社一次資料で確認したと回答している値」として扱い、るか自身の原文確認済み値にはしません。\r\n\r\n配当：0.5円の実績と、今期予想の確定は別\r\n\r\n01では2024〜2026年3月期の年間DPS0.5円と据置を確認できます。一方、trends.dps_m.forecastはnullで、snapshotの配当関連値は保持値です。\r\n03_2694_Zi-Liao-Ben-Wen.txt\r\n\r\nここに比較上の重要な未解消点があります。\r\n\r\nういは0.5円を推定普通配当として扱い、普通・記念の内訳未確認も明記。\r\n\r\nひかりは「会社予想年間配当0.5円」と記載。\r\n\r\nかなめは「期末配当は未定」と記載。\r\n\r\n現在の会社予想を確定した0.5円と読めるかについて、記載に差があります。今回直接確認した資料だけでは解消できないため、ひかりの予想配当利回り判定を、るかが確定事実として追認することはしません。ういの市場平均利回りとの比較も、本人が未取得とした平均値に対する条件付き説明です。\r\n\r\nただし、各人はそれ以外の見送り理由も記しています。この一点を理由に、るかが本人の結論を買い・保留へ書き換えることはしません。\r\n\r\n価格・派生指標：参考値と対象期を維持する\r\n\r\n01の69円は10/21 10:18:48頃の取得値ですが、実際の価格バー時刻はnull、選択intervalも未確定です。prev_close=70もprovider由来の比較値で、日次の確定終値と同義とは保証されていません。\r\n03_2694_Zi-Liao-Ben-Wen.txt\r\n\r\nまた、snapshotのEPS−1.52円と通期実績EPS−1.78円は別フィールドです。ROE3.16%・配当性向49.9%は2024年3月期の値であり、現在の収益性・配当余力へ流用できません。かなめはこの異時点問題を明示的に避けています。\r\n03_2694_Zi-Liao-Ben-Wen.txt\r\n\r\nういの「価格やテクニカル指標は判断に使っていない」は、利回り計算には69円を使っているため、価格を一切不使用という字義ではなく、価格下落・テクニカルを単独の売買条件にしない趣旨として区別して読みます。\r\n\r\n4. 投信：本人の不採用判断と、注文用入力の不足を分ける\r\n\r\n今回のrequest状況は、ご提示の事実として次のように扱います。\r\n\r\n項目\t状態\t比較上の意味\r\nfund_nav_snapshot\t4人とも空\t注文用NAVの提供なし。\r\nfund_catalog\t各10件\t候補情報はあるが、当日注文用価格の充足とは別。\r\nrequired_reference_date\t2026-10-21\t必要な基準日。\r\nカタログのreference_date\t2026-10-20\t必要日とは不一致。\r\n利用状態\tunavailable_for_reference_business_day\t10/20値を10/21注文用の利用可能価格へ転用しない。\r\n\r\n4人の投信0円の理由も同一ではありません。\r\n\r\nうい：普通配当収入を得る候補としてインデックス投信を採用しない。\r\n\r\nそら：条件付き検討対象だが、今回は個別成長仮説を優先。\r\n\r\nかなめ：現行の本人対象は上場普通株で、投信採用条件を設けていない。注文用NAV不足も明記。\r\n\r\nひかり：市場・基準価額状況と個別株待機方針を理由に実施しない。\r\n\r\nこれは本人の選択と、実行に必要な入力制限の二層です。「NAVがあれば必ず買った」「4人とも投信を恒久禁止した」とは補いません。また、この4人の不実施を、るか自身のオルカン購入意思へ転用しません。\r\n\r\n5. 06の資産比較・順位と、H12の工程状態\r\n06は月次確定成績ではない\r\n\r\n貼付06はpreview_unclosed、processed_through=2026-10-20、close_basis=nullです。各人の資産評価日も10/20であり、10/21の回答と、10/22からの判断登録は別の時点です。\r\n\r\n4人の総資産は全員100万円なのに、順位はひかり1、かなめ2、うい3、そら4と分かれています。同額時の順位差の根拠は貼付本文に示されていません。したがって、この順位を投資判断の優劣や実績差として採用しません。\r\n\r\nまた、実現損益・受取配当等のnullとno_trade_historyを、確認済みの利益0円へ一括変換しません。\r\n\r\nるかの10/20評価と、10/21注文価格は別\r\n\r\n06には、るかの10/20評価として総資産999999円、現金3円、264137口、NAV37859円／1万口が記録されています。これは提供された評価済みスナップショットの記載であり、今回るかが元NAVファイル・約定処理を再検証したものではありません。\r\n\r\nこの10/20評価の参照は可能でも、10/21の注文用NAVとして流用はしません。4人との差額1円や順位5を、そのまま戦略の優劣とすることもできません。\r\n\r\nH12未完了を、回答受領で完了へ変えない\r\n\r\n今回のご説明に基づき、H12と当日工程全体は未完了のまま扱います。区別する状態は以下です。\r\n\r\n4人の実回答全文は受領・参照できた。\r\n\r\n4人の回答は注文等を0件としている。\r\n\r\nrequestには当日投信注文用価格の入力制限がある。\r\n\r\n既存レポートは前日までの未締めプレビューである。\r\n\r\nH12・当日工程の完了証跡、採用・登録・処理の全面整合は今回未確認。\r\n\r\n06のprovider_called=falseやsynthetic_fills_added=falseも、レポートに記録された状態として読み、当日全工程の成功を示すものにはしません。\r\n\r\n6. るかの比較意見\r\n\r\n今回の比較で重要なのは、4人とも買わないことではなく、同じQ1改善・通期赤字・CF負担を、それぞれの収益源と入口条件へどう接続したかです。\r\n\r\nうい・ひかりは配当・利益・CFの条件を重視するが、利回り基準や判定方式まで同じではない。\r\n\r\nそらは足元の改善より、持続的成長と財務負担を重く見ている。\r\n\r\nかなめは改善を認めつつ、資本配分後の株主CFと保守価値を支持できないと判断している。\r\n\r\n現時点の重点留保は、今期配当予想の確定範囲、追加一次資料の独立照合、前日評価と当日注文入力の分離、同額資産への順位差の根拠です。\r\n\r\n以上は比較意見です。本人の未記載条件を追加せず、4人の基準を統一せず、採用・約定・ルール変更を決定していません。注文・取消・投信購入・NAV・設定・台帳の変更も行っていません。",
-      "source_artifact_id": "ruka-2694-current-comparison",
+      "source_artifact_id": "comparison-2694-2026-10-21",
       "source_sha256": "d665ebba13cc5a167141bc9e20b701fef0bbf7645341d9bd52bef8484ea6710e",
       "as_of": "2026-10-21",
       "stock_code": "2694",
@@ -3719,23 +3719,23 @@
   },
   "artifacts": [
     {
-      "id": "report-2026-10",
+      "id": "portfolio-report",
       "kind": "portfolio_report",
-      "path": "source/report-2026-10.json",
-      "source_sha256": "5ed21cb057cb1d0d312640720f2a1ad5b91ad4b4111c3eb888e12974030d9f7b",
-      "display_copy_sha256": "00dd74a0f2e2ee9f5e11795c417f89a9f404a4f6487e497f9d7de0d6b893b2ea",
+      "path": "source/portfolio-report.json",
+      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e",
+      "display_copy_sha256": "2828463ea2c430faa694ec8b3ad1ce784ca8b13a027b679940ba28967747aeaf",
       "copy_mode": "sanitized_display_copy",
       "transformations": [
+        "private_virtual_salary_setting_removed",
         "local_absolute_path_redaction",
-        "json_reserialization_after_redaction",
-        "private_virtual_salary_setting_removed"
+        "json_reserialization_after_redaction"
       ],
-      "change_summary": "ローカル絶対パスと非公開の仮想給与設定を除去した表示用コピー"
+      "change_summary": "非公開フィールド・ローカル絶対パスを除去した表示用コピー"
     },
     {
-      "id": "ruka-2694-current-comparison",
+      "id": "comparison-2694-2026-10-21",
       "kind": "current_instrument_comparison",
-      "path": "source/ruka-2694-current-comparison.txt",
+      "path": "source/comparison-2694-2026-10-21.txt",
       "source_sha256": "d665ebba13cc5a167141bc9e20b701fef0bbf7645341d9bd52bef8484ea6710e",
       "display_copy_sha256": "d665ebba13cc5a167141bc9e20b701fef0bbf7645341d9bd52bef8484ea6710e",
       "copy_mode": "exact_bytes",
@@ -3743,9 +3743,9 @@
       "change_summary": "原本bytesをそのままコピー"
     },
     {
-      "id": "answer-8267-grok",
+      "id": "answer-8267-grok-20c9cb9c",
       "kind": "canonical_answer",
-      "path": "source/answer-8267-grok.json",
+      "path": "source/answer-8267-grok-20c9cb9c.json",
       "source_sha256": "2cdbf8e8b38151eda3e6c908200b5dccfe8b86bf538a581d83124d10b94cb39b",
       "display_copy_sha256": "2cdbf8e8b38151eda3e6c908200b5dccfe8b86bf538a581d83124d10b94cb39b",
       "copy_mode": "exact_bytes",
@@ -3753,9 +3753,9 @@
       "change_summary": "原本bytesをそのままコピー"
     },
     {
-      "id": "answer-8267-agy",
+      "id": "answer-8267-agy-31e3b9b7",
       "kind": "canonical_answer",
-      "path": "source/answer-8267-agy.json",
+      "path": "source/answer-8267-agy-31e3b9b7.json",
       "source_sha256": "9132b4ee120fd80df7c86598d0ff5e03b55a6c6c3dbb0078bb98534b0562e9f5",
       "display_copy_sha256": "9132b4ee120fd80df7c86598d0ff5e03b55a6c6c3dbb0078bb98534b0562e9f5",
       "copy_mode": "exact_bytes",
@@ -3763,9 +3763,9 @@
       "change_summary": "原本bytesをそのままコピー"
     },
     {
-      "id": "answer-8267-fable",
+      "id": "answer-8267-fable-3cadda3c",
       "kind": "canonical_answer",
-      "path": "source/answer-8267-fable.json",
+      "path": "source/answer-8267-fable-3cadda3c.json",
       "source_sha256": "0d048d88daf27f3d8a20e1f7b12ed2475bbd8cdaae90669e3ea8f25f47771c04",
       "display_copy_sha256": "0d048d88daf27f3d8a20e1f7b12ed2475bbd8cdaae90669e3ea8f25f47771c04",
       "copy_mode": "exact_bytes",
@@ -3773,19 +3773,9 @@
       "change_summary": "原本bytesをそのままコピー"
     },
     {
-      "id": "answer-8267-astra",
+      "id": "answer-2694-fable-63755b22",
       "kind": "canonical_answer",
-      "path": "source/answer-8267-astra.json",
-      "source_sha256": "36f28c09229b80ad69ffdb896c4ceacab987f910f3870552b98165a32ca75b54",
-      "display_copy_sha256": "36f28c09229b80ad69ffdb896c4ceacab987f910f3870552b98165a32ca75b54",
-      "copy_mode": "exact_bytes",
-      "transformations": [],
-      "change_summary": "原本bytesをそのままコピー"
-    },
-    {
-      "id": "answer-2694-fable",
-      "kind": "canonical_answer",
-      "path": "source/answer-2694-fable.json",
+      "path": "source/answer-2694-fable-63755b22.json",
       "source_sha256": "6b5e0ffadbe08f4469019069c8fabde5b66dcb87b35d4f8e92259a0a48475ef6",
       "display_copy_sha256": "6b5e0ffadbe08f4469019069c8fabde5b66dcb87b35d4f8e92259a0a48475ef6",
       "copy_mode": "exact_bytes",
@@ -3793,9 +3783,9 @@
       "change_summary": "原本bytesをそのままコピー"
     },
     {
-      "id": "answer-2694-grok",
+      "id": "answer-2694-grok-69e96183",
       "kind": "canonical_answer",
-      "path": "source/answer-2694-grok.json",
+      "path": "source/answer-2694-grok-69e96183.json",
       "source_sha256": "2ab7548d22d1775ed021a5d5d896a8595e55bcdb0bebd824cf2e90c0c4ec4c79",
       "display_copy_sha256": "2ab7548d22d1775ed021a5d5d896a8595e55bcdb0bebd824cf2e90c0c4ec4c79",
       "copy_mode": "exact_bytes",
@@ -3803,9 +3793,19 @@
       "change_summary": "原本bytesをそのままコピー"
     },
     {
-      "id": "answer-2694-astra",
+      "id": "answer-2694-agy-77484faa",
       "kind": "canonical_answer",
-      "path": "source/answer-2694-astra.json",
+      "path": "source/answer-2694-agy-77484faa.json",
+      "source_sha256": "94f8a4b12e56229c64db6b4e4a2cd57873bb59782837b9ffa8d7600384da8a46",
+      "display_copy_sha256": "94f8a4b12e56229c64db6b4e4a2cd57873bb59782837b9ffa8d7600384da8a46",
+      "copy_mode": "exact_bytes",
+      "transformations": [],
+      "change_summary": "原本bytesをそのままコピー"
+    },
+    {
+      "id": "answer-2694-astra-a621a604",
+      "kind": "canonical_answer",
+      "path": "source/answer-2694-astra-a621a604.json",
       "source_sha256": "4f3a044f64b431e368a62e30acdedd788e3689bdafb862f2e8be9d05e8a6ec67",
       "display_copy_sha256": "4f3a044f64b431e368a62e30acdedd788e3689bdafb862f2e8be9d05e8a6ec67",
       "copy_mode": "exact_bytes",
@@ -3813,11 +3813,11 @@
       "change_summary": "原本bytesをそのままコピー"
     },
     {
-      "id": "answer-2694-agy",
+      "id": "answer-8267-astra-af5e7916",
       "kind": "canonical_answer",
-      "path": "source/answer-2694-agy.json",
-      "source_sha256": "94f8a4b12e56229c64db6b4e4a2cd57873bb59782837b9ffa8d7600384da8a46",
-      "display_copy_sha256": "94f8a4b12e56229c64db6b4e4a2cd57873bb59782837b9ffa8d7600384da8a46",
+      "path": "source/answer-8267-astra-af5e7916.json",
+      "source_sha256": "36f28c09229b80ad69ffdb896c4ceacab987f910f3870552b98165a32ca75b54",
+      "display_copy_sha256": "36f28c09229b80ad69ffdb896c4ceacab987f910f3870552b98165a32ca75b54",
       "copy_mode": "exact_bytes",
       "transformations": [],
       "change_summary": "原本bytesをそのままコピー"
@@ -3833,7 +3833,7 @@
         "local_absolute_path_redaction",
         "json_reserialization_after_redaction"
       ],
-      "change_summary": "ローカル絶対パス文字列を除去した表示用コピー"
+      "change_summary": "非公開フィールド・ローカル絶対パスを除去した表示用コピー"
     },
     {
       "id": "judgment-2338-sora",
@@ -3857,7 +3857,7 @@
         "json_reserialization_after_redaction",
         "fenced_json_normalization"
       ],
-      "change_summary": "ローカル絶対パス文字列を除去した表示用コピー"
+      "change_summary": "非公開フィールド・ローカル絶対パスを除去した表示用コピー"
     },
     {
       "id": "judgment-2338-kaname",

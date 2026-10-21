@@ -1,0 +1,2 @@
+# Preserve byte hashes of published investment data and source artifacts.
+/investment-results/data/** -text
