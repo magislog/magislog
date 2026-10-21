@@ -1,0 +1,354 @@
+/* Homepage content only. Shared header/footer and existing route styles stay owned by home.css. */
+#main.home-content .home-intro,
+#main.home-content .home-entry-section {
+  max-width: 1180px;
+}
+
+#main.home-content .home-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(240px, 0.85fr);
+  align-items: end;
+  column-gap: clamp(28px, 6vw, 84px);
+  row-gap: 13px;
+  padding-block: clamp(30px, 4.1vw, 54px) clamp(25px, 3.2vw, 40px);
+  border-bottom: 1px solid var(--line);
+}
+
+#main.home-content .home-intro > .eyebrow {
+  grid-column: 1 / -1;
+  color: var(--orange);
+  letter-spacing: .14em;
+}
+
+#main.home-content .home-intro h1 {
+  grid-column: 1;
+  max-width: 13ch;
+  margin: 0;
+  font-size: clamp(34px, 4.2vw, 58px);
+  line-height: 1.16;
+  letter-spacing: -.07em;
+}
+
+#main.home-content .home-intro h1 span {
+  white-space: normal;
+}
+
+#main.home-content .home-intro p {
+  grid-column: 2;
+  max-width: 36rem;
+  margin: 0 0 5px;
+  color: var(--muted);
+  font-size: clamp(12px, 1.05vw, 14px);
+  line-height: 1.9;
+}
+
+#main.home-content .home-intro .text-link,
+#main.home-content .home-intro .button {
+  grid-column: 2;
+  justify-self: start;
+  margin-top: 2px;
+}
+
+#main.home-content .home-entry-section {
+  padding-block: clamp(23px, 3vw, 38px) clamp(32px, 4vw, 52px);
+}
+
+#main.home-content .home-entry-section > .section-head {
+  justify-content: flex-start;
+  gap: 10px 24px;
+  margin-bottom: 17px;
+}
+
+#main.home-content .home-entry-section > .section-head h2,
+#main.home-content .home-entry-section > h2 {
+  font-size: clamp(21px, 2.2vw, 27px);
+  line-height: 1.25;
+}
+
+#main.home-content .home-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+  align-items: stretch;
+}
+
+#main.home-content .home-entry-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  color: var(--ink);
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+#main.home-content .home-entry-card__image {
+  display: grid;
+  height: clamp(158px, 17.5vw, 218px);
+  place-items: center;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+
+/* Keep the complete supplied artwork visible; each image keeps its own proportions. */
+#main.home-content .home-entry-card__image img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+#main.home-content .home-entry-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 13px 1px 0;
+}
+
+#main.home-content .home-entry-card__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .13em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+#main.home-content .home-entry-card__label::before {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  content: "";
+}
+
+#main.home-content .home-entry-card__title {
+  margin-top: 7px;
+  font-size: clamp(17px, 1.55vw, 21px);
+  line-height: 1.38;
+  letter-spacing: -.045em;
+}
+
+#main.home-content .home-entry-card__description {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+#main.home-content .home-entry-card__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+#main.home-content .home-entry-card__action::after {
+  color: var(--orange);
+  content: "↗";
+  font-size: 14px;
+  transition: transform .18s ease;
+}
+
+#main.home-content .home-entry-card:hover .home-entry-card__action::after {
+  transform: translate(2px, -2px);
+}
+
+#main.home-content .home-entry-card:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 5px;
+}
+
+@media (min-width: 641px) and (max-width: 920px) {
+  #main.home-content .home-entry-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #main.home-content .home-entry-card--investment {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: 20px;
+  }
+
+  #main.home-content .home-entry-card--investment .home-entry-card__image {
+    height: 170px;
+  }
+
+  #main.home-content .home-entry-card--investment .home-entry-card__body {
+    padding: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  #main.home-content .home-intro,
+  #main.home-content .home-entry-section {
+    max-width: none;
+  }
+
+  #main.home-content .home-intro {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 10px;
+    padding-block: 22px 20px;
+  }
+
+  #main.home-content .home-intro > .eyebrow,
+  #main.home-content .home-intro h1,
+  #main.home-content .home-intro p,
+  #main.home-content .home-intro .text-link,
+  #main.home-content .home-intro .button {
+    grid-column: 1;
+  }
+
+  #main.home-content .home-intro h1 {
+    max-width: 16ch;
+    font-size: clamp(29px, 8vw, 36px);
+    line-height: 1.2;
+  }
+
+  #main.home-content .home-intro p {
+    max-width: 34rem;
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.7;
+  }
+
+  #main.home-content .home-entry-section {
+    padding-block: 20px 30px;
+  }
+
+  #main.home-content .home-entry-section > .section-head {
+    align-items: baseline;
+    gap: 6px 12px;
+    margin-bottom: 11px;
+  }
+
+  #main.home-content .home-entry-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  #main.home-content .home-entry-card,
+  #main.home-content .home-entry-card--investment {
+    display: grid;
+    grid-column: auto;
+    grid-template-columns: minmax(104px, .82fr) minmax(0, 1.3fr);
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  #main.home-content .home-entry-card__image,
+  #main.home-content .home-entry-card--investment .home-entry-card__image {
+    height: 94px;
+    min-height: 0;
+  }
+
+  #main.home-content .home-entry-card__body,
+  #main.home-content .home-entry-card--investment .home-entry-card__body {
+    min-width: 0;
+    padding: 0;
+  }
+
+  #main.home-content .home-entry-card__label {
+    font-size: 8px;
+  }
+
+  #main.home-content .home-entry-card__title {
+    margin-top: 5px;
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  #main.home-content .home-entry-card__description {
+    margin-top: 3px;
+    font-size: 10px;
+    line-height: 1.55;
+  }
+
+  #main.home-content .home-entry-card__action {
+    padding-top: 5px;
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #main.home-content .home-entry-card__action::after {
+    transition: none;
+  }
+}
+
+/* Text-only diagram for the virtual-investment entry; it is not a screenshot or data UI. */
+#main.home-content .home-entry-card__image--diagram {
+  padding: 12px;
+  background: var(--paper);
+}
+
+#main.home-content .investment-map {
+  display: flex;
+  width: min(100%, 260px);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+#main.home-content .investment-map__item {
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  line-height: 1.35;
+}
+
+#main.home-content .investment-map__item::before {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  content: "";
+}
+
+@media (max-width: 640px) {
+  #main.home-content .home-entry-card__image--diagram {
+    padding: 5px;
+  }
+
+  #main.home-content .investment-map {
+    gap: 3px;
+  }
+
+  #main.home-content .investment-map__item {
+    min-height: 0;
+    gap: 5px;
+    padding: 3px 4px;
+    font-size: 9px;
+  }
+
+  #main.home-content .investment-map__item::before {
+    width: 5px;
+    height: 5px;
+    flex-basis: 5px;
+  }
+}

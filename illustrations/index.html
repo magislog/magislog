@@ -4,49 +4,69 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4f3ee">
-  <meta name="description" content="Magisのホームページで公開中のイラストを一覧できます。">
+  <meta name="description" content="Magisのホームに掲載中のイラスト。">
   <title>イラスト — Magis</title>
   <link rel="stylesheet" href="../home.css">
-  <link rel="stylesheet" href="illustrations.css">
-  <script src="illustrations.js" defer></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#artwork">本文へ</a>
   <header class="header">
     <a class="brand" href="../" aria-label="Magis ホーム"><img src="../img/logo.jpg" alt=""><span>Magis</span></a>
-    <span class="header-note">ILLUSTRATION ARCHIVE</span>
-    <nav aria-label="ページ移動"><a href="../">ホームへ戻る <span aria-hidden="true">↗</span></a></nav>
+    <span class="header-note">ILLUSTRATIONS</span>
+    <nav class="gallery-nav" aria-label="ページ移動"><a href="../">ホームへ戻る <span aria-hidden="true">↗</span></a></nav>
   </header>
   <main id="artwork" class="illustrations wrap">
     <div class="gallery-heading">
       <div><span class="eyebrow">ILLUSTRATIONS</span><h1>イラスト</h1></div>
-      <p>ホームに掲載中のイラスト <span>06</span></p>
+      <p>ホームに掲載中の作品</p>
     </div>
-    <div class="gallery-grid" aria-label="イラスト一覧">
-      <button class="art-card art-card--hero" type="button" data-art="0" aria-label="拡大して表示：トップページのイラスト">
-        <span class="art-image art-image--hero"><img src="../assets/hero-ui.png" alt="ノートパソコンで制作する、ういのイラスト" width="1216" height="832"></span>
-        <span class="art-caption"><span class="art-source">HOME</span><span class="art-title">トップページ</span></span>
-      </button>
-      <button class="art-card" type="button" data-art="1" aria-label="拡大して表示：うい">
-        <span class="art-image art-image--portrait"><img src="../img/members/ui.png" alt="ういの全身イラスト" width="832" height="1216" loading="lazy"></span>
-        <span class="art-caption"><span class="art-source">MEMBER</span><span class="art-title">うい</span></span>
-      </button>
-      <button class="art-card" type="button" data-art="2" aria-label="拡大して表示：かなめ">
-        <span class="art-image art-image--portrait"><img src="../img/members/kaname.png" alt="かなめの全身イラスト" width="832" height="1216" loading="lazy"></span>
-        <span class="art-caption"><span class="art-source">MEMBER</span><span class="art-title">かなめ</span></span>
-      </button>
-      <button class="art-card" type="button" data-art="3" aria-label="拡大して表示：ひかり">
-        <span class="art-image art-image--portrait"><img src="../img/members/hikari.png" alt="ひかりの全身イラスト" width="832" height="1216" loading="lazy"></span>
-        <span class="art-caption"><span class="art-source">MEMBER</span><span class="art-title">ひかり</span></span>
-      </button>
-      <button class="art-card" type="button" data-art="4" aria-label="拡大して表示：るか">
-        <span class="art-image art-image--portrait"><img src="../img/members/ruka.png" alt="るかの全身イラスト" width="832" height="1216" loading="lazy"></span>
-        <span class="art-caption"><span class="art-source">MEMBER</span><span class="art-title">るか</span></span>
-      </button>
-      <button class="art-card" type="button" data-art="5" aria-label="拡大して表示：そら">
-        <span class="art-image art-image--portrait"><img src="../img/members/sora.png" alt="そらの全身イラスト" width="832" height="1216" loading="lazy"></span>
-        <span class="art-caption"><span class="art-source">MEMBER</span><span class="art-title">そら</span></span>
-      </button>
+    <div class="gallery-toolbar">
+      <div class="gallery-filters" role="group" aria-label="イラストの絞り込み">
+        <button type="button" data-filter="all" aria-pressed="true">すべて <span data-total="all">6</span></button>
+        <button type="button" data-filter="home" aria-pressed="false">トップ <span data-total="home">1</span></button>
+        <button type="button" data-filter="member" aria-pressed="false">メンバー <span data-total="member">5</span></button>
+      </div>
+      <p class="gallery-count" id="gallery-count" aria-live="polite">6件</p>
+    </div>
+    <div class="gallery-grid" aria-label="公開中のイラスト">
+      <article class="gallery-card" data-category="home">
+        <button class="gallery-open" type="button" data-art="0" aria-label="トップページのういのイラストを拡大して表示">
+          <span class="gallery-image gallery-image--wide"><img src="../assets/hero-ui.png" alt="ノートパソコンで制作する、ういのイラスト" width="1216" height="832"></span>
+        </button>
+        <div class="gallery-caption"><div><span class="gallery-source">HOME</span><h2>ういのイラスト</h2></div></div>
+      </article>
+      <article class="gallery-card" data-category="member">
+        <button class="gallery-open" type="button" data-art="1" aria-label="拡大して表示：ういのイラスト">
+          <span class="gallery-image gallery-image--portrait"><img src="../img/members/ui.png" alt="うい" width="832" height="1216" loading="lazy"></span>
+        </button>
+        <div class="gallery-caption"><div><span class="gallery-source">MEMBER</span><h2>うい</h2></div><a href="../#members">メンバー紹介 <span aria-hidden="true">↗</span></a></div>
+      </article>
+      <article class="gallery-card" data-category="member">
+        <button class="gallery-open" type="button" data-art="2" aria-label="拡大して表示：かなめのイラスト">
+          <span class="gallery-image gallery-image--portrait"><img src="../img/members/kaname.png" alt="かなめ" width="832" height="1216" loading="lazy"></span>
+        </button>
+        <div class="gallery-caption"><div><span class="gallery-source">MEMBER</span><h2>かなめ</h2></div><a href="../#members">メンバー紹介 <span aria-hidden="true">↗</span></a></div>
+      </article>
+      <article class="gallery-card" data-category="member">
+        <button class="gallery-open" type="button" data-art="3" aria-label="拡大して表示：ひかりのイラスト">
+          <span class="gallery-image gallery-image--portrait"><img src="../img/members/hikari.png" alt="ひかり" width="832" height="1216" loading="lazy"></span>
+        </button>
+        <div class="gallery-caption"><div><span class="gallery-source">MEMBER</span><h2>ひかり</h2></div><a href="../#members">メンバー紹介 <span aria-hidden="true">↗</span></a></div>
+      </article>
+      <article class="gallery-card" data-category="member">
+        <button class="gallery-open" type="button" data-art="4" aria-label="拡大して表示：るかのイラスト">
+          <span class="gallery-image gallery-image--portrait"><img src="../img/members/ruka.png" alt="るか" width="832" height="1216" loading="lazy"></span>
+        </button>
+        <div class="gallery-caption"><div><span class="gallery-source">MEMBER</span><h2>るか</h2></div><a href="../#members">メンバー紹介 <span aria-hidden="true">↗</span></a></div>
+      </article>
+      <article class="gallery-card" data-category="member">
+        <button class="gallery-open" type="button" data-art="5" aria-label="拡大して表示：そらのイラスト">
+          <span class="gallery-image gallery-image--portrait"><img src="../img/members/sora.png" alt="そら" width="832" height="1216" loading="lazy"></span>
+        </button>
+        <div class="gallery-caption"><div><span class="gallery-source">MEMBER</span><h2>そら</h2></div><a href="../#members">メンバー紹介 <span aria-hidden="true">↗</span></a></div>
+      </article>
     </div>
     <a class="gallery-home-link" href="../">Magis ホームへ戻る <span aria-hidden="true">↗</span></a>
   </main>

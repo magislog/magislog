@@ -7,7 +7,7 @@
     code: "銘柄コード", request_id: "依頼ID", as_of: "判断基準日", effective_from: "有効日", processed_through: "評価データ最終日",
     period: "対象期間", status: "状態", orders: "注文", cancellations: "取消", cancels: "取消", fund_plan: "投信計画", fund_moves: "投信移動", fund_actions: "投信操作", source_sha256: "原票SHA-256", display_copy_sha256: "表示用コピーSHA-256",
     source_artifact_id: "出典ID", raw_artifact_id: "原票ID", buy_line: "買いライン", take_profit_sell_line: "利確売りライン",
-    withdrawal: "撤退方針", position_limits: "最大保有量・上限", averaging_down: "ナンピン", news_scenarios: "ニュースシナリオ",
+    withdrawal: "撤退方針", position_limits: "最大保有量・上限", averaging_down: "ナンピン", news_scenarios: "ニュースシナリオ", scenarios: "シナリオ",
     overall_review: "総合判断", reevaluation: "再評価条件", realtime_items: "時点確認項目", data_missing: "不足情報",
     confidence: "確信度", stance_consistency: "判断の一貫性", judgment_id: "判断ID", persona: "本人", role: "役割",
     stock: "対象銘柄", id: "識別子", name: "表示名", kind: "区分", request: "依頼", findings: "所見", note: "本人回答",
@@ -80,6 +80,10 @@
   const sourceLine = (sha, artifactId) => [sha ? `SHA-256 ${sha}` : "", artifactId ? `出典ID ${artifactId}` : ""].filter(Boolean).join(" · ");
   function valueNode(value, status) {
     const el = make("div", "field-value");
+    if (Array.isArray(value) && value.length === 0) {
+      el.textContent = "0件（回答の空配列）";
+      return el;
+    }
     if (missingStatuses.has(status) || value === null || value === undefined || value === "") {
       el.classList.add("missing");
       el.textContent = "未回答／未構造化";
@@ -98,7 +102,6 @@
       return el;
     }
     if (Array.isArray(value)) {
-      if (!value.length) { el.textContent = "回答内に項目なし"; return el; }
       const list = make("ol", "scenario-list");
       value.forEach(item => {
         const li = make("li");
@@ -187,6 +190,73 @@
     if (portfolioSource) addSourceDisclosure(card, "口座データの出典", [portfolioSource]);
     return card;
   }
+  function renderCurrentDecision(row, artifacts) {
+    const d = row.decision || {};
+    const card = make("article", "current-decision-card");
+    card.dataset.aiId = row.ai_id || "";
+    card.dataset.sourceArtifactId = row.source_artifact_id || "";
+    card.dataset.sourceSha256 = row.source_sha256 || "";
+    card.dataset.asOf = row.as_of || "";
+    card.dataset.effectiveFrom = row.effective_from || "";
+    const head = make("div", "current-decision-head");
+    head.append(make("h3", "current-decision-name", row.name || row.ai_id || "本人名未確認"));
+    const status = ({imported_answer:"本人回答受領"}[row.status] || row.status || "本人回答");
+    head.append(make("span", "state-tag", status));
+    card.append(head);
+
+    const dates = make("div", "current-decision-dates");
+    dates.append(dateChip("判断基準日", row.as_of), dateChip("適用日（依頼指定）", row.effective_from));
+    card.append(dates);
+
+    const noteSection = make("section", "current-decision-note");
+    noteSection.append(make("h4", "current-decision-label", "本人回答のnote欄（回答原文から）"));
+    noteSection.dataset.sourceKey = "decision.note";
+    if (typeof d.note === "string" && d.note.length) {
+      const note = longTextNode(d.note, 230);
+      note.dataset.sourceKey = "decision.note";
+      const excerpt = note.querySelector(".text-excerpt");
+      if (excerpt) excerpt.dataset.sourceKey = "decision.note";
+      noteSection.append(note);
+    } else {
+      noteSection.append(make("p", "missing current-decision-missing", "note欄の記録なし"));
+    }
+    card.append(noteSection);
+
+    const fields = make("section", "current-decision-fields");
+    fields.append(make("h4", "current-decision-label", "注文指示・買いライン・売りライン・シナリオ（原データ）"));
+    const order = make("div", "current-order-state");
+    order.dataset.sourceKey = "decision.has_order_instruction";
+    order.append(make("span", "field-label", "注文指示あり／なし（原データ）"));
+    const orderValue = d.has_order_instruction === true ? "あり" : d.has_order_instruction === false ? "なし" : "原文で確認（構造化値なし）";
+    order.append(make("span", "current-order-value", orderValue));
+    fields.append(order);
+    const orderCount = Object.prototype.hasOwnProperty.call(d, "orders") && Array.isArray(d.orders)
+      ? `注文${d.orders.length}件（原データ）`
+      : "注文件数は原データで未確認";
+    const orderCountNode = make("p", "current-order-count", orderCount);
+    orderCountNode.dataset.sourceKey = "decision.orders";
+    fields.append(orderCountNode);
+    const present = {};
+    ["orders", "cancellations", "fund_plan", "fund_moves", "fund_actions", "buy_line", "sell_line", "scenarios"].forEach(key => {
+      present[key] = Object.prototype.hasOwnProperty.call(d, key) ? d[key] : null;
+    });
+    const details = make("details", "current-decision-details compact-details");
+    details.append(make("summary", "", "注文・条件の詳細"));
+    const structured = renderFields(present);
+    structured.classList.add("current-decision-structured");
+    Object.keys(present).forEach(key => {
+      const rows = structured.querySelectorAll(".field");
+      rows.forEach(rowNode => {
+        if (rowNode.querySelector(".field-label")?.textContent === formatLabel(key)) rowNode.dataset.sourceKey = `decision.${key}`;
+      });
+    });
+    details.append(structured);
+    fields.append(details);
+    card.append(fields);
+    addRawDetails(card, row.source_artifact_id, artifacts, "本人回答の表示コピーを開く");
+    return card;
+  }
+
   async function renderHistory(row, artifacts) {
     const card = make("article", "history-card");
     const head = make("div", "history-head");
@@ -311,6 +381,11 @@
       if(data.notice) document.querySelector(".notice").textContent=data.notice;
       const report=data.report||{};
       set("portfolio-dates",`レポート日 ${report.as_of||"未確認"} · 評価・日次反映 ${report.processed_through||"未確認"} · ${statusLabel(report.status)}`);
+      const artifacts=artifactMap(data);
+      const currentDecisions=document.getElementById("current-decision-grid");currentDecisions.replaceChildren();
+      const daily2694=(data.history||[]).filter(row=>String(row.code)==="2694");
+      daily2694.forEach(row=>currentDecisions.append(renderCurrentDecision(row,artifacts)));
+      if(!currentDecisions.childElementCount) currentDecisions.append(make("p","empty-state","2694の日次判断は未着です。"));
       const grid=document.getElementById("portfolio-grid");grid.replaceChildren();
       const portfolios=[...(data.portfolios||[])];
       portfolios.forEach(p=>grid.append(renderPortfolio(p)));
@@ -320,7 +395,6 @@
       const h2694 = latestByCode("2694"), h8267 = latestByCode("8267");
       dates.append(dateChip("レポート日 / 評価・日次反映",`${report.as_of||"未確認"} / ${report.processed_through||"未確認"}`),dateChip("2694 判断 / 有効", `${h2694?.as_of||"未確認"} / ${h2694?.effective_from||"未確認"}`),dateChip("8267 判断 / 有効", `${h8267?.as_of||"未確認"} / ${h8267?.effective_from||"未確認"}`));
       document.getElementById("history-list").before(dates);
-      const artifacts=artifactMap(data);
       const benchmarkCard=await renderBenchmarkComparison(data.benchmark,artifacts);
       if (benchmarkCard) grid.append(benchmarkCard);
       const history=document.getElementById("history-list");history.replaceChildren();
@@ -336,7 +410,7 @@
     } catch(error) {
       set("load-status","候補データを読み込めません");
       const box=document.getElementById("load-error");box.hidden=false;box.textContent=`${error.message} data/data.json の提供後に表示されます。`;
-      ["portfolio-grid","history-list","case-list","supplement-list"].forEach(id=>document.getElementById(id).replaceChildren(make("p","empty-state","データ未着")));
+      ["current-decision-grid","portfolio-grid","history-list","case-list","supplement-list"].forEach(id=>document.getElementById(id).replaceChildren(make("p","empty-state","データ未着")));
     }
   }
   function initNavigation() {

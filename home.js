@@ -1,6 +1,49 @@
-const works=[['tool','縦組み入稿PDFメーカー','小説を縦書きの入稿PDFに。','tools/novel-pdf/'],['article','仮想投資の結果','本人判断・売買ライン・シナリオの記録。','investment-results/'],['gallery','イラストを見る','ホーム掲載中のイラストを一覧で。','illustrations/']];
-const catalog=document.querySelector('#contentsGrid');works.forEach(([type,name,desc,href],i)=>{const a=document.createElement('a');a.className='catalog-item';a.href=href;a.dataset.type=type;const n=document.createElement('small');n.textContent=String(i+1).padStart(2,'0');const d=document.createElement('div');const h=document.createElement('h3');h.textContent=name;const p=document.createElement('p');p.textContent=desc;d.append(h,p);const arrow=document.createElement('span');arrow.setAttribute('aria-hidden','true');arrow.textContent='↗';a.append(n,d,arrow);catalog.append(a)});
-document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===btn)));document.querySelectorAll('.catalog-item').forEach(x=>x.hidden=btn.dataset.filter!=='all'&&x.dataset.type!==btn.dataset.filter)}));
-const toggle=document.querySelector('.menu-toggle'),nav=document.querySelector('#main-nav');function closeMenu(){toggle.setAttribute('aria-expanded','false');nav.classList.remove('open');toggle.querySelector('span:last-child').textContent='＋'}toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);toggle.querySelector('span:last-child').textContent=open?'−':'＋'});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&nav.classList.contains('open')){closeMenu();toggle.focus()}});document.querySelector('#request-form').addEventListener('submit',e=>e.preventDefault());
-// Preserve the existing about/member/request anchors inside the compact disclosure.
-const moreInfo=document.querySelector('#more-info');function revealTarget(hash){if(['#about','#members','#request'].includes(hash))moreInfo.open=true}document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(a)revealTarget(a.getAttribute('href'))});window.addEventListener('hashchange',()=>revealTarget(location.hash));revealTarget(location.hash);
+// Keep the current header behavior without requiring any particular home-content markup.
+const toggle = document.querySelector('.menu-toggle');
+const nav = document.querySelector('#main-nav');
+const moreInfo = document.querySelector('#more-info');
+const requestForm = document.querySelector('#request-form');
+
+function closeMenu() {
+  if (!toggle || !nav) return;
+  toggle.setAttribute('aria-expanded', 'false');
+  nav.classList.remove('open');
+  const symbol = toggle.querySelector('span:last-child');
+  if (symbol) symbol.textContent = '＋';
+}
+
+if (toggle && nav) {
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    nav.classList.toggle('open', open);
+    const symbol = toggle.querySelector('span:last-child');
+    if (symbol) symbol.textContent = open ? '−' : '＋';
+  });
+  nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && nav.classList.contains('open')) {
+      closeMenu();
+      toggle.focus();
+    }
+  });
+}
+
+if (requestForm) requestForm.addEventListener('submit', (event) => event.preventDefault());
+
+// Preserve legacy section links and open the compact disclosure for its targets.
+function revealTarget(hash) {
+  if (moreInfo && ['#about', '#members', '#request'].includes(hash)) moreInfo.open = true;
+}
+
+document.addEventListener('click', (event) => {
+  const target = event.target;
+  if (!(target instanceof Element)) return;
+  const link = target.closest('a[href^="#"]');
+  if (link) revealTarget(link.getAttribute('href'));
+});
+window.addEventListener('hashchange', () => revealTarget(window.location.hash));
+revealTarget(window.location.hash);
+
+// #contents and #featured remain HTML-owned legacy navigation targets.
+// The new guidance_sources cards are static HTML; no runtime catalog/filter is needed.
