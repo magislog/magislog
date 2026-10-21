@@ -54,13 +54,13 @@
   const esc = (value) => String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
   const formatLabel = key => labels[key] || key.replace(/_/g," ");
   const statusLabel = value => ({preview_unclosed:"月次未確定",closed:"確定",open:"月次未確定"}[value] || value || "状態未確認");
-  function longTextNode(value) {
+  function longTextNode(value, excerptLength = 140) {
     const text = String(value);
-    if (text.length <= 360) return make("div", "field-text", text);
+    if (text.length <= excerptLength) return make("div", "field-text", text);
     const wrap = make("div", "long-text");
-    wrap.append(make("p", "text-excerpt", text.slice(0, 360) + "…"));
+    wrap.append(make("p", "text-excerpt", text.slice(0, excerptLength) + "…"));
     const details = make("details", "text-details");
-    details.append(make("summary", "", "全文を表示"), make("pre", "text-full", text));
+    details.append(make("summary", "", "全文を表示（原文）"), make("pre", "text-full", text));
     wrap.append(details);
     return wrap;
   }
@@ -134,6 +134,13 @@
     if (!list.childElementCount) list.append(make("p", "empty-state", "該当項目はありません。"));
     return list;
   }
+  function addSourceDisclosure(container, label, lines) {
+    const visible = lines.filter(Boolean);
+    if (!visible.length) return;
+    const details = make("details", "source-hash-details");
+    details.append(make("summary", "", label), make("p", "raw-meta mono", visible.join(" · ")));
+    container.append(details);
+  }
   function renderPortfolio(p) {
     const card = make("article", "portfolio-card");
     const top = make("div", "card-top");
@@ -158,9 +165,14 @@
       const d = p.decision;
       if (d.code || d.as_of || d.effective_from) foot.append(make("p", "", `直近判断：${d.code || "銘柄未確認"} · 判断 ${d.as_of || "未確認"} · 有効 ${d.effective_from || "未確認"}`));
       const judgment = d.decision || d;
-      if (judgment.note || d.summary) foot.append(make("p", "", `本人判断：${judgment.note || d.summary}`));
+      if (judgment.note || d.summary) {
+        const note = judgment.note || d.summary;
+        const summary = make("div", "portfolio-judgment");
+        summary.append(make("span", "metric-label", "本人判断"), longTextNode(note, 72));
+        foot.append(summary);
+      }
       const source = sourceLine(d.source_sha256, d.source_artifact_id);
-      if (source) foot.append(make("p", "mono", source));
+      if (source) addSourceDisclosure(card, "本人判断の出典", [source]);
     }
     card.append(foot);
     if (p.positions !== undefined && p.positions !== null) {
@@ -172,7 +184,7 @@
       details.append(renderFields({open_orders:p.open_orders})); card.append(details);
     }
     const portfolioSource = sourceLine(p.source_sha256, p.source_artifact_id);
-    if (portfolioSource) card.append(make("p", "raw-meta mono", portfolioSource));
+    if (portfolioSource) addSourceDisclosure(card, "口座データの出典", [portfolioSource]);
     return card;
   }
   async function renderHistory(row, artifacts) {
@@ -182,7 +194,7 @@
     const code = row.code ? `銘柄 ${row.code}` : "銘柄未確認";
     left.append(make("h3", "history-title", `${row.name || row.ai_id || "本人名未確認"} · ${code}`));
     const meta = make("div", "history-meta");
-    [["判断基準日",row.as_of],["注文有効日",row.effective_from],["依頼ID",row.request_id]].forEach(([k,v])=>{ if(v) meta.append(make("span","",`${k}: ${v}`)); });
+    [["判断基準日",row.as_of],["注文有効日",row.effective_from]].forEach(([k,v])=>{ if(v) meta.append(make("span","",`${k}: ${v}`)); });
     left.append(meta); head.append(left);
     const status = ({imported_answer:"本人回答受領"}[row.status] || row.status || "本人回答");
     head.append(make("span", "state-tag", status)); card.append(head);
@@ -192,8 +204,7 @@
       if (Object.keys(other).length) { const details=make("details","compact-details");details.append(make("summary","","判断・注文の記録"),renderFields(other));card.append(details); }
     }
     const artifact = artifacts.get(row.source_artifact_id);
-    if (artifact) card.append(make("p", "raw-meta", `${copyEvidence(artifact)} · 表示コピーSHA-256 ${artifact.display_copy_sha256 || "未記録"}`));
-    if (row.request_sha256) card.append(make("p", "raw-meta mono", `依頼SHA-256 ${row.request_sha256}`));
+    addSourceDisclosure(card, "依頼ID・SHA-256", [row.request_id ? `依頼ID ${row.request_id}` : "", row.request_sha256 ? `依頼SHA-256 ${row.request_sha256}` : ""]);
     await addRawDetails(card, row.source_artifact_id, artifacts);
     return card;
   }
@@ -242,7 +253,7 @@
     card.append(make("p", "history-meta", "比較役の所見 · 日次判断や口座保有と区別"));
     if (typeof comparison.text === "string" && comparison.text) card.append(longTextNode(comparison.text));
     const artifactId = comparison.source_artifact_id || comparison.artifact_id;
-    if (comparison.as_of || comparison.source_sha256) card.append(make("p", "raw-meta mono", [comparison.as_of ? `基準日 ${comparison.as_of}` : "", comparison.source_sha256 ? `SHA-256 ${comparison.source_sha256}` : ""].filter(Boolean).join(" · ")));
+    if (comparison.as_of) card.append(make("p", "raw-meta", `基準日 ${comparison.as_of}`));
     await addRawDetails(card, artifactId, artifacts, "比較役の比較所見を開く");
     return card;
   }
@@ -253,9 +264,7 @@
     const header=make("div","case-person-head"); const title=make("div");
     title.append(make("h3","",name));
     title.append(make("p","",`${roleTag(person.role)} · 2338 ${person.period || "試験"}`)); header.append(title);
-    const artifact=artifacts.get(person.raw_artifact_id);
-    const meta = [artifact ? copyEvidence(artifact) : person.raw_status || "出典コピー未確認", artifact?.display_copy_sha256 ? `表示コピーSHA-256 ${artifact.display_copy_sha256}` : ""].filter(Boolean).join(" · ");
-    if (meta) header.append(make("p","mono",meta)); card.append(header);
+    card.append(header);
     const body=make("div","case-body");
     [["case_a","A：未保有","未保有ケース"],["case_b","B：仮保有","仮保有ケース"]].forEach(([key,label,sub])=>{
       const box=make("section","case-card"); const h=make("h4","",label); h.append(make("span","",sub)); box.append(h);
@@ -288,7 +297,6 @@
     card.append(make("h3", "history-title", `${item.person || "本人名未確認"} · 追補資料`));
     const artifact=artifacts.get(item.raw_artifact_id);
     card.append(make("p", "history-meta", `${item.kind || "種別未確認"} · ${item.period || "時点未確認"} · ${artifact ? copyEvidence(artifact) : item.raw_status || "出典コピー未確認"}`));
-    card.append(make("p", "raw-meta mono", `表示コピーSHA-256 ${artifact?.display_copy_sha256 || "未記録"}`));
     await addRawDetails(card, item.raw_artifact_id, artifacts);
     return card;
   }
@@ -324,14 +332,28 @@
       const supplements=document.getElementById("supplement-list");supplements.replaceChildren();
       for(const item of data.supplements_2338||[]) supplements.append(await renderSupplement(item,artifacts));
       if(!supplements.childElementCount) supplements.append(make("p","empty-state","追補資料は未着です。"));
-      if(report.source_artifact_id || report.source_sha256) document.querySelector(".page-footer").before(make("p","raw-meta mono",sourceLine(report.source_sha256,report.source_artifact_id)));
+      if(report.source_artifact_id || report.source_sha256) addSourceDisclosure(document.querySelector(".page-footer"), "月次レポートの出典", [sourceLine(report.source_sha256,report.source_artifact_id)]);
     } catch(error) {
       set("load-status","候補データを読み込めません");
       const box=document.getElementById("load-error");box.hidden=false;box.textContent=`${error.message} data/data.json の提供後に表示されます。`;
       ["portfolio-grid","history-list","case-list","supplement-list"].forEach(id=>document.getElementById(id).replaceChildren(make("p","empty-state","データ未着")));
     }
   }
-  document.addEventListener("DOMContentLoaded",init);
+  function initNavigation() {
+    const toggle = document.querySelector(".menu-toggle");
+    const nav = document.getElementById("main-nav");
+    if (!toggle || !nav) return;
+    toggle.addEventListener("click", () => {
+      const expanded = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", String(!expanded));
+      nav.classList.toggle("open", !expanded);
+    });
+    nav.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
+      toggle.setAttribute("aria-expanded", "false");
+      nav.classList.remove("open");
+    }));
+  }
+  document.addEventListener("DOMContentLoaded", () => { initNavigation(); init(); });
 })();
 
 
