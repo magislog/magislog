@@ -1,0 +1,595 @@
+{
+  "schema": "persona-final-judgment/v1.2",
+  "judgment_id": "S137-4-2338-hikari-20261020",
+  "persona": "ひかり",
+  "role": "stock_persona",
+  "stock": {
+    "company_name": "クオンタムソリューションズ株式会社",
+    "code": "2338",
+    "market": "東証スタンダード",
+    "share_class": "普通株式"
+  },
+  "as_of": {
+    "date": "2026-10-20",
+    "price_status": "unconfirmed",
+    "price": 101.0,
+    "currency": "JPY",
+    "source_url": "https://finance.yahoo.co.jp/quote/2338.T",
+    "observed_at": "2026-10-20T13:53:19.265799+09:00",
+    "price_type": "quote",
+    "delay_status": "delayed",
+    "unconfirmed_reason": "提示値101.0円は2026-10-20 13:53頃のstock_fetcher/yfinance経由の日中進行中参考気配値であり、当日大引け確定終値ではないため。"
+  },
+  "case_a": {
+    "holding": false,
+    "conclusion": "skip",
+    "reason": "管理側追加供給の2027/02期Q2中間決算短信（2026-10-13公表）において営業損失-354百万円、営業CF-375百万円、自己資本比率-6.6%（自己資本-228百万円で債務超過継続）、年間配当予想0.00円（無配）が確認され、本人スクリーニング条件（第2部(1)全項目AND：営業CF黒字、過去3期営業赤字なし、自己資本比率>=min(同業中央値,35%)等）に明白に抵触するため買付見送りと決定。",
+    "initial_shares": 0,
+    "initial_amount_yen": 0.0,
+    "order_condition": "発注なし（買付見送り）",
+    "buy_line": {
+      "mode": "conditional",
+      "reason": "無配であり、本業営業CFおよびFCFがマイナス、かつ自己資本が負（債務超過）のため、配当利回り基準価格Pdivおよび適正価値価格Pvalが定義不能（非正値）となり買付上限価格Pmaxを算定できないため。",
+      "persona_rule_basis": "第2部(2) 買付上限価格(Pmax)の算定式",
+      "condition": "営業CFおよびFCFの黒字化、自己資本の正化、安定配当の開始によりPmaxが正の実数として算定可能となること"
+    }
+  },
+  "case_b": {
+    "holding": true,
+    "hypothetical": true,
+    "acquisition_date": "2026-10-19",
+    "acquisition_price_yen": 100.0,
+    "shares": 100,
+    "conclusion": "sell",
+    "reason": "取得単価100.0円・当日参考値101.0円（Rtotal=+1.0%）で金額損切り（-15%）は未到達。全社営業損益は赤字継続（Q2累計-354百万円）。しかし、管理側追加供給の2027/02期Q2短信13頁において『継続企業の前提に関する重要な疑義を生じさせる事象及び重要な不確実性』の注記が正式に確認されたため、第4部条文7(2)3および第16部項目103（継続企業の前提に関する疑義の発生）に基づき即座に全株売却が自動発動。前営業日終値（100.0円）による100株の売却指値注文を発行し、目標残株数0株とする売却方針を決定（現時点は未注文/未約定の保有状態）。",
+    "continuation_conditions": [],
+    "add_limit_shares": 0
+  },
+  "overall_review": "管理側から追加供給された2027年2月期第2四半期（中間期）決算短信（2026-10-13公表）を精査した結果、当中間期の連結営業損失は354百万円（前年同期は240百万円の営業損失）、中間純損失は146百万円、営業CFはマイナス375百万円の流出超過であった。8月24日の第三者割当増資（資本金・準備金計485百万円増）により純資産合計は辛うじて2百万円（2,975千円）のプラスを計上したものの、新株予約権230百万円を除いた自己資本はマイナス228百万円（自己資本比率マイナス6.6%）であり、実質的な債務超過状態が継続している。さらに同短信13頁において『継続企業の前提に関する重要な疑義を生じさせる事象又は状況』及び『重要な不確実性』が明記された。これにより、新規買付（ケースA）はスクリーニング全項目不適合として完全に見送り（skip）。仮定保有（ケースB）については、第4部条文7(2)3及び第16部項目103（継続企業の前提に関する疑義）の自動撤退トリガーに直接該当するため、即座に前営業日終値100.0円による100株全株の売却指値注文を発行し、完全撤退（sell）とする。",
+  "buy_line": {
+    "mode": "conditional",
+    "reason": "債務超過継続、FCF大幅赤字、無配のため、客観的算定式に基づく買付上限価格Pmaxが算出不能。",
+    "persona_rule_basis": "第2部(2) 買付上限価格Pmax=min(Pdiv, Pval)および第16部 項目106",
+    "condition": "営業CF黒字、自己資本の正化、安定配当の開始によりPmaxが正値として算出可能となること"
+  },
+  "take_profit_sell_line": {
+    "mode": "not_applicable",
+    "reason": "継続企業の前提に関する疑義による全株売却対象銘柄であり、利益確定ラインを設定する前提が存在しない。",
+    "persona_rule_basis": "第16部 項目108（Pval×1.15）および第4部 条文6"
+  },
+  "withdrawal": {
+    "price_based": {
+      "mode": "conditional",
+      "reason": "本人規律の金額損切りは『当該銘柄の現保有ロット帰属配当込み損益率 Rtotal = ((Pnow - Pacq) * S + Dholding) / (Pacq * S) * 100 <= -15.0%』で全株売却を発動する（第4部 条文7(1)）。今回のケースB（取得単価100.0円、100株、受領配当0円）では現在参考値101.0円時点で Rtotal = +1.0% であり未到達（損切り価格は85.0円）。固定値幅損切り（ATR等）は本人方針として不採用。",
+      "persona_rule_basis": "第4部 条文7(1) 金額損切りルール（Rtotal <= -15.0%）、第13部 ATR固定値幅損切り不使用の原則",
+      "condition": "当該銘柄の配当込み損益率 Rtotal が -15.0% 以下（本ケースでは株価85.0円以下）に達した場合"
+    },
+    "thesis_based": {
+      "mode": "fixed",
+      "value": "継続企業の前提に関する疑義注記による全株売却指値発注",
+      "reason": "2027/02期Q2決算短信13頁において継続企業の前提に関する重要な疑義を生じさせる事象及び重要な不確実性が公式に注記開示されたことを確認したため。",
+      "persona_rule_basis": "第4部 条文7(2)3（重大な不正会計、粉飾、上場廃止基準への抵触）、第16部 項目103（継続企業の前提に関する疑義、重大な不正会計、粉飾、上場廃止基準抵触は即座に全株売却指値を発注）"
+    },
+    "max_loss_yen": 1500.0,
+    "action": "前日終値（100.0円）にて100株の売却指値注文を発注し、約定後の残株数0株を目指す（成行注文は不可、出来高制限1%遵守）。"
+  },
+  "position_limits": {
+    "mode": "fixed",
+    "upper_yen": 0.0,
+    "reason": "投資不適格銘柄（継続企業の前提に重要な疑義あり）であるため、今回の判断における投資枠はゼロ円（通常25%、小額枠10%の適用外）。",
+    "persona_rule_basis": "第2部 投資規律、第7部 投資上限訂正（通常25%、小額枠10%上限）"
+  },
+  "averaging_down": {
+    "mode": "conditional",
+    "value": false,
+    "reason": "一般本人規則では『Rtotalが-8.0%〜-14.0%の範囲にあり、かつ財務健全性条件を満たす場合に追加買付1回を認める（条文4）』と規定されているが、今回の銘柄は財務健全性条件を著しく欠き疑義注記が存在するため、追加上限株数は0株としナンピン買増しは行わない。",
+    "persona_rule_basis": "第4部 条文4 ナンピン・追加買付規律",
+    "condition": "当該銘柄の財務健全性条件が完全に充足され、疑義注記が解消し、かつRtotalが-8.0%〜-14.0%の範囲にあること"
+  },
+  "news_scenarios": [
+    {
+      "event": "減配",
+      "trigger": "会社より普通配当の減配、または配当予想「未定」への下方修正が開示された場合",
+      "action_case_a": "買付不可を維持",
+      "action_case_b": "条文7(2)1に基づき前営業日終値で全株即時売却指値を発注",
+      "deadline": "開示検知後の翌営業日寄付前まで",
+      "reassess_condition": "本業営業CFの黒字化および増配転換の確認"
+    },
+    {
+      "event": "下方修正",
+      "trigger": "会社公表の業績予想において、営業損益または最終損益の赤字転落、あるいは赤字幅の拡大が開示された場合",
+      "action_case_a": "買付不可を維持",
+      "action_case_b": "黒字からの赤字転落時は条文7(2)2、赤字幅拡大等の悪化時は条文7(3)定性判断により全株売却方針を維持",
+      "deadline": "開示検知後の翌営業日寄付前まで",
+      "reassess_condition": "黒字転換およびFCF創出力の持続的回復"
+    },
+    {
+      "event": "上方修正",
+      "trigger": "大幅な黒字転換および通期営業利益の増額修正が開示された場合",
+      "action_case_a": "一時的な上方修正には飛びつかず、短信開示による営業CFおよび純資産の確認を待つ",
+      "action_case_b": "一時的反発があっても債務超過及び疑義注記が解消されるまでは売却約定の機会として売却方針を維持",
+      "deadline": "次回本決算開示まで",
+      "reassess_condition": "確定決算短信での営業CF黒字および自己資本比率>=min(同業中央値,35%)の達成"
+    },
+    {
+      "event": "増配",
+      "trigger": "復配または普通配当の増配が開示された場合",
+      "action_case_a": "配当原資が営業CFおよびFCFに裏付けられているか点検し、Pmax算出可能か再審査",
+      "action_case_b": "形式的復配であっても、財務健全性が一般規則（自己資本比率>=min(同業中央値,35%)）を満たさない限り売却方針を維持",
+      "deadline": "配当基準日まで",
+      "reassess_condition": "FCF配当カバレッジの充足および自己資本比率の基準充足"
+    },
+    {
+      "event": "TOB",
+      "trigger": "外部主体による公開買付（TOB）の開示がなされた場合",
+      "action_case_a": "TOBサヤ取りは本人投資方針外のため新規買付は行わない",
+      "action_case_b": "指値厳守規則に従い成行や価格追従は用いず、前営業日終値（または条文で指定した単一の計算指値）による全株売却指値方針を厳格に保持",
+      "deadline": "TOB買付期間終了の3営業日前まで",
+      "reassess_condition": "TOBの成立・条件変更または撤回の公式公表"
+    },
+    {
+      "event": "不祥事/監査問題",
+      "trigger": "重大な不正会計、粉飾、継続企業の前提に関する注記（疑義）、上場廃止基準への抵触が開示された場合",
+      "action_case_a": "スクリーニング不適合として新規買付を厳格に見送り（今回の銘柄判断）",
+      "action_case_b": "条文7(2)3および項目103に基づき前営業日終値で全株即時売却指値を発注",
+      "deadline": "開示検知直後の注文受付開始時",
+      "reassess_condition": "なし（当該銘柄からの完全撤退）"
+    },
+    {
+      "event": "自社株買い",
+      "trigger": "自己株式取得に係る取締役会決議が開示された場合",
+      "action_case_a": "債務超過状態での実施は蓋然性が極めて低く静観",
+      "action_case_b": "市場需給の一時的改善が生じた場合は売却注文の好機と捉え売却方針を継続",
+      "deadline": "自己株式取得期間中",
+      "reassess_condition": "財務構造の抜本的改善および剰余金の正化"
+    }
+  ],
+  "reevaluation": {
+    "mode": "event_only",
+    "event_triggers": [
+      "四半期決算短信（第3四半期等）または本決算短信の公式開示",
+      "上場維持基準（純資産基準）への適合状況・解除に関する公式発表",
+      "新株予約権・増資・減資等の資本政策の適時開示",
+      "継続企業の前提に関する疑義注記の解消に関する公式開示"
+    ],
+    "stale_action": "保有玉は売却指値方針を継続、未保有は買付見送りを継続"
+  },
+  "realtime_items": [
+    {
+      "id": 27,
+      "name": "投資CF・設備投資に関する情報",
+      "adoption": "adopted",
+      "reason": "管理側追加供給のQ2中間期短信12頁にて投資CF +1,132百万円（暗号資産売却収入 1,486百万円等、設備投資取得支出 2百万円）を確認。",
+      "period_checked": "2027/02期 中間期（累計）",
+      "observed_at": null,
+      "impact_if_missing": "FCF創出能力を直接計算できなくなる。",
+      "value_or_observation": {
+        "investing_cf_yen": 1132655000.0,
+        "crypto_sales_income_yen": 1486007000.0,
+        "capex_yen": 2030000.0
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2累計"
+    },
+    {
+      "id": 31,
+      "name": "特別利益・特別損失に関する情報",
+      "adoption": "adopted",
+      "reason": "管理側追加供給のQ2中間期短信10頁にて自己新株予約権消却益 32百万円の計上、特別損失なしを確認。",
+      "period_checked": "2027/02期 中間期（累計）",
+      "observed_at": null,
+      "impact_if_missing": "本業利益と純損益の乖離要因の分解精度が低下する。",
+      "value_or_observation": {
+        "extraordinary_income_yen": 32887000,
+        "extraordinary_loss_yen": 0
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2累計"
+    },
+    {
+      "id": 62,
+      "name": "臨時報告書・公開買付・重要開示に関する情報",
+      "adoption": "adopted",
+      "reason": "Q2短信16〜17頁重要な後発事象にて、Blackwell Cloudからの借入（USD2.6M）及びGPUサーバー売買契約合意解除（USD8.3M返還完了）を確認。",
+      "period_checked": "2026年9月（後発事象）",
+      "observed_at": null,
+      "impact_if_missing": "主力事業の前提崩壊や資金動態の検知漏れにつながる。",
+      "value_or_observation": "GPUサーバー取得契約合意解除（2026-09-18解除、9-24返還確認）、Blackwell CloudからのUSD2.6M借入（2026-09-10実行）",
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2026-09"
+    },
+    {
+      "id": 63,
+      "name": "開示日前後の株価反応に関する情報",
+      "adoption": "not_adopted",
+      "reason": "短期イベントドリブンや株価反応を直接の売買根拠としない本人方針のため不採用。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "中長期の財務・事業性評価に基づく判断に影響なし。"
+    },
+    {
+      "id": 70,
+      "name": "ニュース見出し・媒体に関する情報",
+      "adoption": "not_adopted",
+      "reason": "D15セクションがpack内で未取得であり、外部確定開示情報及び会社一次資料（issuer_q2.pdf）をもって客観的事実の確認に代えるため不採用（ニュースが存在しないことと同義ではない）。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "公式開示資料で主要事実は把握可能なため判断への影響は限定的。"
+    },
+    {
+      "id": 72,
+      "name": "会計基準・連結区分に関する情報",
+      "adoption": "adopted",
+      "reason": "Q2中間期短信1頁にて日本基準（J-GAAP）、連結決算であることを確認。",
+      "period_checked": "2027/02期 中間期",
+      "observed_at": null,
+      "impact_if_missing": "営業損益やのれん償却等の会計処理基準の前提が不確実になる。",
+      "value_or_observation": {
+        "accounting_standard": "日本基準",
+        "is_consolidated": true
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2"
+    },
+    {
+      "id": 73,
+      "name": "営業CFと純利益の関係",
+      "adoption": "adopted",
+      "reason": "Q2中間期において営業CF -375百万円、中間純損益 -146百万円であり、本業キャッシュフローの赤字流出が継続していることを確認。",
+      "period_checked": "2027/02期 中間期（累計）",
+      "observed_at": null,
+      "impact_if_missing": "本業キャッシュ創出力の毀損度合いを正確に把握できなくなる。",
+      "value_or_observation": {
+        "operating_cf_yen": -375577000.0,
+        "net_loss_yen": -146153000.0
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2累計"
+    },
+    {
+      "id": 74,
+      "name": "営業CFと投資CF（設備投資）の関係",
+      "adoption": "adopted",
+      "reason": "Q2中間期において営業CFは-375百万円と赤字である一方、暗号資産の売却収入（14.86億円）により投資CFがプラスとなり中間期末現金残高は17.99億円となった事実を確認。",
+      "period_checked": "2027/02期 中間期（累計）",
+      "observed_at": null,
+      "impact_if_missing": "資金流出超過の規模および外部資本調達依存度を判断できなくなる。",
+      "value_or_observation": {
+        "operating_cf_yen": -375577000.0,
+        "investing_cf_yen": 1132655000.0,
+        "cash_ending_yen": 1799379000.0
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2累計"
+    },
+    {
+      "id": 76,
+      "name": "配当性向とフリーCFの関係",
+      "adoption": "adopted",
+      "reason": "Q2短信1頁にて年間配当予想0.00円（無配）であり、本業営業CFがマイナスであるため配当支払余力なしと確認。",
+      "period_checked": "2027/02期 通期予想",
+      "observed_at": null,
+      "impact_if_missing": "配当の持続性評価が不能となる。",
+      "value_or_observation": {
+        "dps_forecast_yen": 0.0,
+        "operating_cf_q2_yen": -375577000.0
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2"
+    },
+    {
+      "id": 78,
+      "name": "PBRとROEの関係",
+      "adoption": "not_adopted",
+      "reason": "自己資本がマイナス228百万円（債務超過）であり、計算上の指標が経済的実態を反映しないため除外。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "自己資本の負値および疑義注記そのもので評価するため分析に影響なし。"
+    },
+    {
+      "id": 79,
+      "name": "ROEと自己資本比率の関係",
+      "adoption": "adopted",
+      "reason": "本人規則『自己資本比率 >= min(同業中央値, 35.0%)』の判定に使用。Q2短信1頁にて自己資本比率 △6.6%（自己資本 △228百万円）であり、基準35.0%に大幅未達（債務超過継続）を確認。",
+      "period_checked": "2027/02期 第2四半期末（2026年8月31日）",
+      "observed_at": null,
+      "impact_if_missing": "財務安全性の必須境界条件が判定不能となる。",
+      "value_or_observation": {
+        "equity_ratio_pct": -6.6,
+        "equity_amount_million": -228,
+        "applied_threshold_pct": 35.0
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2026-08-31"
+    },
+    {
+      "id": 80,
+      "name": "信用買残・株価推移・出来高の関係",
+      "adoption": "adopted",
+      "reason": "第15部項目80に基づき固定判定タグは用いず、需給バランスの参考観察として点検（2026-10-02時点買残24,600株、当日出来高比0.34）。",
+      "period_checked": "2026-10-02（残高報告日）",
+      "observed_at": null,
+      "impact_if_missing": "板の需給しこりの参考観察ができないが、売買判断の主因ではないため影響軽微。",
+      "value_or_observation": {
+        "buy_balance_shares": 24600,
+        "margin_date": "2026-10-02",
+        "volume_sma25_ratio": 0.34
+      },
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "2026-10-02"
+    },
+    {
+      "id": 81,
+      "name": "業績予想修正と株価反応の関係",
+      "adoption": "not_adopted",
+      "reason": "短期の株価反応は判定対象外。会社予想の有無と中長期トレンドのみを重視するため不採用。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "長期投資スタンスにおいて影響なし。"
+    },
+    {
+      "id": 82,
+      "name": "自社株買い・総還元性向・PBRの関係",
+      "adoption": "not_adopted",
+      "reason": "自己資本マイナスかつ疑義注記下で自社株買いは実施されておらず不採用。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "還元余力皆無であることが明白なため影響なし。"
+    },
+    {
+      "id": 84,
+      "name": "連続増配と配当性向推移の関係",
+      "adoption": "adopted",
+      "reason": "Q2短信1頁にて年間配当予想0.00円（無配継続）を確認。過去3期増配実績要件を満たさないことを確定。",
+      "period_checked": "2027/02期 中間期",
+      "observed_at": null,
+      "impact_if_missing": "株主還元規律の適合性を直接確認できなくなる。",
+      "value_or_observation": {
+        "dps_q2_yen": 0.0,
+        "dps_forecast_yen": 0.0,
+        "dividend_change": "無配継続"
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2"
+    },
+    {
+      "id": 86,
+      "name": "通期進捗と予想修正の関係",
+      "adoption": "not_adopted",
+      "reason": "Q2短信1頁にて通期連結業績予想が『適正かつ合理的な数値の算出が困難であるため非開示』と明記されており、進捗率算定不可のため不採用。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "会社予想非開示の事実をもって保守的に判断するため影響なし。"
+    },
+    {
+      "id": 87,
+      "name": "5年PER・セクター対比・業績推移の関係",
+      "adoption": "not_adopted",
+      "reason": "中間純損失かつ通期予想非開示のため実績・予想PERが算出不能であり不採用。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "赤字継続の事実自体がスクリーニング足切りとなるため影響なし。"
+    },
+    {
+      "id": 88,
+      "name": "営業CFと総還元の関係",
+      "adoption": "adopted",
+      "reason": "Q2中間期営業CF -375百万円であり、本業キャッシュ創出による還元原資は皆無と判定。",
+      "period_checked": "2027/02期 中間期（累計）",
+      "observed_at": null,
+      "impact_if_missing": "持続可能な株主還元能力の判定精度が下がる。",
+      "value_or_observation": {
+        "operating_cf_q2_yen": -375577000.0,
+        "total_return_yen": 0.0
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2累計"
+    },
+    {
+      "id": 89,
+      "name": "配当利回り・配当性向・フリーCFの関係",
+      "adoption": "adopted",
+      "reason": "通期配当予想0.00円（利回り0%）、中間期営業CF -375百万円でありスクリーニング基準完全不適合を確認。",
+      "period_checked": "2027/02期 中間期",
+      "observed_at": null,
+      "impact_if_missing": "買付上限価格Pmaxの算定根拠が失われる。",
+      "value_or_observation": {
+        "yield_forecast": 0.0,
+        "operating_cf_q2_yen": -375577000.0
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2"
+    },
+    {
+      "id": 90,
+      "name": "52週位置・バリュエーション・業績推移の関係",
+      "adoption": "adopted",
+      "reason": "52週高安値（高値668円/787円、安値91円）に対する現在値位置（101円）がレンジ底値圏（高値668円系列で約1.73%、787円系列で約1.44%）にあることを確認。",
+      "period_checked": "2026-10-20時点",
+      "observed_at": null,
+      "impact_if_missing": "株価の長期低迷度合いと財務悪化の客観的連動性を把握できなくなる。",
+      "value_or_observation": {
+        "w52_high_668": 668.0,
+        "w52_high_787": 787.0,
+        "w52_low": 91.0,
+        "calc_pos_pct_668": 1.73,
+        "calc_pos_pct_787": 1.44
+      },
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "2026-10-20"
+    },
+    {
+      "id": 91,
+      "name": "売上成長・総資産・営業CF成長の関係",
+      "adoption": "adopted",
+      "reason": "Q2中間期売上高 109百万円（前年同期比 -20.3%減）、営業CF -375百万円（流出超過拡大）であり成長性基準を満たさないことを確認。",
+      "period_checked": "2027/02期 中間期（累計）",
+      "observed_at": null,
+      "impact_if_missing": "売上成長規律の適合性を直接判定できなくなる。",
+      "value_or_observation": {
+        "sales_q2_million": 109,
+        "sales_yoy_pct": -20.3,
+        "operating_cf_q2_million": -375
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2累計"
+    },
+    {
+      "id": 92,
+      "name": "セグメント・連結CF・ROEの関係",
+      "adoption": "adopted",
+      "reason": "Q2短信15頁にてAIソリューション事業売上 36百万円（前年同期比 -43.6%）、セグメント損失 200百万円（赤字拡大）を確認。",
+      "period_checked": "2027/02期 中間期（累計）",
+      "observed_at": null,
+      "impact_if_missing": "どの事業部門が全社キャッシュ流出と赤字を招いているか特定できなくなる。",
+      "value_or_observation": {
+        "ai_sales_thousand": 36113,
+        "ai_loss_thousand": -200497,
+        "wellness_sales_thousand": 73405,
+        "wellness_loss_thousand": -3558
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2累計"
+    },
+    {
+      "id": 93,
+      "name": "為替・海外売上・予想の関係",
+      "adoption": "not_adopted",
+      "reason": "Q2中間期においても海外売上比率の単独開示はなく、国内・全社での本業営業損失が主たる悪化因であるため不採用。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "外為感応度の詳細分析は欠くが、投資判断に影響なし。"
+    },
+    {
+      "id": 100,
+      "name": "事業の景気感応度に関する旧分類項目",
+      "adoption": "not_adopted",
+      "reason": "旧来の定型分類スコアリング体系は本人ルールとして完全廃止されているため不採用。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "財務・開示直接評価を行うため影響なし。"
+    },
+    {
+      "id": 101,
+      "name": "決算外材料の上方向に関する情報対象",
+      "adoption": "adopted",
+      "reason": "Q2短信1頁にて通期業績予想が非開示、配当予想が無配（0.00円）であることを確認し、業績改善材料が存在しないことを参考点検。",
+      "period_checked": "2027/02期 中間期",
+      "observed_at": null,
+      "impact_if_missing": "直近の急激な業績改善開示の有無の確認精度が下がる。",
+      "value_or_observation": {
+        "guidance_status": "非開示",
+        "dividend_status": "無配予想"
+      },
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2"
+    },
+    {
+      "id": 102,
+      "name": "決算外材料の下方向に関する情報対象",
+      "adoption": "adopted",
+      "reason": "Q2短信16〜17頁重要な後発事象にて、GPUサーバー取得契約の合意解除事実（2026-09-18解除、9-24返還確認）を公式一次資料で再確認。",
+      "period_checked": "2026-09-18",
+      "observed_at": null,
+      "impact_if_missing": "主力事業の進捗遅延・計画変更リスクの見落としにつながる。",
+      "value_or_observation": "GPUサーバー及び関連機器取得契約の合意解除及び支払金返還の事実",
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2026-09"
+    },
+    {
+      "id": 103,
+      "name": "継続性・重大不正等の重要リスク情報",
+      "adoption": "adopted",
+      "reason": "Q2短信13頁に『継続企業の前提に関する重要な疑義を生じさせる事象又は状況』及び『重要な不確実性』が明記された事実を確認。第16部項目103及び条文7(2)3に基づく即時売却トリガーとして採用。",
+      "period_checked": "2026-10-13公表",
+      "observed_at": null,
+      "impact_if_missing": "重大な破綻リスク及び自動撤退トリガーの発動見落としにつながる。",
+      "value_or_observation": "継続企業の前提に関する注記（重要な疑義及び重要な不確実性）が存在",
+      "source_path": "issuer_q2.pdf (管理側追加供給の会社一次資料)",
+      "source_hash": "f17bdf0f175aa895dd93e6804425b29c9d202028f16953613a033b434cd516e3",
+      "source_period": "2027/02 Q2"
+    },
+    {
+      "id": 104,
+      "name": "特別好材料に関する情報対象",
+      "adoption": "not_adopted",
+      "reason": "旧来の加点スコア枠組みは廃止されており、客観的な特別好材料の発生も確認されないため不採用。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "財務規律および開示事実で直接判断するため影響なし。"
+    },
+    {
+      "id": 105,
+      "name": "既決算材料の重複扱いに関する情報対象",
+      "adoption": "not_adopted",
+      "reason": "旧来の重複評価排除メカニズムであり、現行のANDスクリーニング・撤退条項に直接適用しないため不採用。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "直接の財務・開示事実照合により判断するため影響なし。"
+    }
+  ],
+  "data_missing": [
+    {
+      "field": "会社IR一次資料（2026-10-13公表 Q2中間決算短信）の本人検索",
+      "searched": false,
+      "search_details": "本人検索は外部Web接続制限のため失敗（検索不能）。ただし、管理側より追加供給されたPDF（issuer_q2.pdf）を直接閲覧して確定財務数値を照合・確認した。",
+      "substitute_assumption_sensitivity": "一次資料を直接確認できたため不確実性は完全に解消。Q2短信に基づく判断感度は極めて高い。",
+      "persona_decision": "管理側追加供給の一次資料に記載された確定事実（営業赤字拡大、自己資本比率-6.6%、継続企業の前提に関する疑義注記）に基づき判断を確定。",
+      "status": "proceed_with_uncertainty"
+    },
+    {
+      "field": "D15 ニュース見出し",
+      "searched": false,
+      "search_details": "pack内D15セクションが未取得（取得経路なし）であり、外部Web検索も通信制限のため未実施。",
+      "substitute_assumption_sensitivity": "ニュース見出しが未取得であっても無材料とは断定せず、公式一次資料（issuer_q2.pdf）および適時開示情報（D6）をもって代替。判断への感度は極めて低い。",
+      "persona_decision": "公式一次資料により十分に定量・定性判断が下せるため、手続をそのまま進行。",
+      "status": "proceed_with_uncertainty"
+    },
+    {
+      "field": "通期業績予想・コンセンサス",
+      "searched": false,
+      "search_details": "Q2中間期短信1頁にて通期業績予想が公式に『非開示』とされていることを確認。",
+      "substitute_assumption_sensitivity": "会社公表予想が存在しない事実が確定したため、今期増益予想要件を満たさないことが確定。",
+      "persona_decision": "会社公表の非開示事実に基づきスクリーニング不適合と判定。",
+      "status": "proceed_with_uncertainty"
+    },
+    {
+      "field": "2026-10-20 当日確定終値",
+      "searched": true,
+      "search_details": "提供株価101.0円は13:53頃のstock_fetcher/yfinance経由の日中進行中参考気配であり、大引け確定値ではない。",
+      "substitute_assumption_sensitivity": "ケースBの売却指値注文は前日10/19の実終値（100.0円）を基準とするため、当日確定終値の数円の変動に対する感度は極めて低い。",
+      "persona_decision": "前営業日実終値100.0円を基準に指値発注を設定し、進行中データであることを明記して処理。",
+      "status": "proceed_with_uncertainty"
+    }
+  ],
+  "confidence": {
+    "score": 0.98,
+    "basis": "管理側追加供給の会社公式一次資料（2027/02期Q2決算短信）により、直近中間期の営業赤字（-354百万円）、営業CF赤字（-375百万円）、自己資本比率-6.6%（債務超過継続）、および継続企業の前提に関する注記（疑義及び不確実性）の存在が一次証拠として完全に確定したため。"
+  },
+  "stance_consistency": {
+    "consistent": true,
+    "note": "スクリーニング4条件（営業CF黒字、過去3期営業赤字なし、自己資本比率基準等）の不適合によるケースA買付見送り、および継続企業の前提に関する疑義注記に基づく条文7(2)3・項目103によるケースB自動即時売却方針は、本人の規律体系において完全に一貫している。",
+    "evidence": [
+      "第2部(1) スクリーニング条件（営業CF黒字、過去3期営業赤字なし、自己資本比率>=min(同業中央値,35%)）の不適合（Q2中間期短信にて再確認）",
+      "第4部 条文7(1) 金額損切りルール（Rtotal <= -15.0%）の未到達（該当せず）の確認",
+      "第4部 条文7(2)3および第16部 項目103（継続企業の前提に関する疑義）の自動撤退トリガーの発動"
+    ]
+  }
+}

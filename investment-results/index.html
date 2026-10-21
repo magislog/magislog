@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>投資結果 | Magis</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Magis 投資結果">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span><b>Magis</b><small>AI PAPER INVESTMENT</small></span>
+    </a>
+    <nav class="header-nav" aria-label="ページナビゲーション">
+      <a class="header-link" href="../">ホーム</a>
+      <a class="header-link" href="#top">ページ先頭へ <span aria-hidden="true">↑</span></a>
+    </nav>
+  </header>
+  <main id="top" class="page-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow">PAPER INVESTMENT</p>
+      <h1 id="page-title">投資結果</h1>
+      <p class="hero-copy">仮想運用の口座比較、日次判断履歴、本人回答のケース資料を出典とともに確認できます。</p>
+      <div class="status-line"><span class="status-dot" aria-hidden="true"></span><span id="load-status" role="status" aria-live="polite">資料を読み込んでいます…</span></div>
+      <p class="notice">仮想運用の記録です。注文・推奨ではありません。本人回答と機械集計は別表示</p>
+    </section>
+
+    <div id="load-error" class="load-error" hidden></div>
+
+    <section class="section-block" aria-labelledby="portfolio-title">
+      <div class="section-heading"><div><p class="eyebrow">PORTFOLIOS</p><h2 id="portfolio-title">5口座の比較</h2></div><p class="section-note" id="portfolio-dates">基準日を読み込み中</p></div>
+      <div id="portfolio-grid" class="portfolio-grid"><p class="empty-state">表示データを読み込んでいます。</p></div>
+    </section>
+
+    <section class="section-block" aria-labelledby="history-title">
+      <div class="section-heading"><div><p class="eyebrow">DAILY DECISIONS</p><h2 id="history-title">日次判断履歴</h2></div><p class="section-note">判断日・有効日・銘柄を個別に表示</p></div>
+      <div id="history-list" class="history-list"><p class="empty-state">表示データを読み込んでいます。</p></div>
+    </section>
+
+    <section class="section-block case-section" aria-labelledby="case-title">
+      <div class="section-heading"><div><p class="eyebrow">2338 / PERSONA ANSWERS</p><h2 id="case-title">本人回答のケース資料</h2></div><p class="section-note">2694の日次判断・現行口座とは別の試験資料</p></div>
+      <p class="case-intro">Aは未保有、Bは仮保有のケースです。回答にある項目を原文に沿って表示し、未回答・明示N/Aを区別します。</p>
+      <div id="case-list" class="case-list"><p class="empty-state">表示データを読み込んでいます。</p></div>
+      <div class="supplement-heading"><h3>本人の後発追補</h3><p>ケース回答とは別資料として表示</p></div>
+      <div id="supplement-list" class="history-list"><p class="empty-state">表示データを読み込んでいます。</p></div>
+    </section>
+    <footer class="page-footer"><span>Magis · 仮想運用の記録表示</span><span>仮想運用の記録です。注文・推奨ではありません。</span></footer>
+  </main>
+</body>
+</html>
+

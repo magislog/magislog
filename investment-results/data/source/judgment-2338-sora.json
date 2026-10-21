@@ -1,0 +1,478 @@
+{
+  "schema": "persona-final-judgment/v1.2",
+  "judgment_id": "S137-4-2338-sora-20261020",
+  "persona": "そら",
+  "role": "stock_persona",
+  "stock": {
+    "company_name": "QUANTUM SOLUTIONS CO LTD",
+    "code": "2338",
+    "market": "東証スタンダード",
+    "share_class": "普通株式"
+  },
+  "as_of": {
+    "date": "2026-10-20",
+    "price_status": "unconfirmed",
+    "price": 101,
+    "currency": "JPY",
+    "price_type": "quote",
+    "delay_status": "unknown",
+    "unconfirmed_reason": "元caseのstock_fetcher/yfinance参考値101円を独立に当該Kabutan日次時系列URLから確定終値として実確認できず。株探メインページで遅延現在値として101円を確認したが、出典URL・観測時刻・遅延状態を裏付けとして確定できなかったため未確認とする。"
+  },
+  "case_a": {
+    "conclusion": "skip",
+    "reason": "成長の質が健全でない。通期予想非開示、直近H1売上109百万円（前年同期比-20.3%）、営業損失354百万円、経常損失178百万円、純損失146百万円。連続営業赤字・営業CF赤字、売上減少傾向が続き、AI/AIDC/ゲーム等の新事業は不確実性が高く、過去のGPU契約解除等の実行力に疑義。代替指標（暗号資産評価・売却益、第三者割当による純資産回復）は本業成長を支持せず、成長仮説を支持できない。債務・CFに重大疑義（債務超過履歴、純資産僅少、自己資本マイナス）。資料欠損（予想非開示）自体ではなく、評価後に成長方向を支持できないため見送り。配分・現金制約は問題ないが、新規条件不成立。",
+    "holding": false
+  },
+  "case_b": {
+    "conclusion": "sell",
+    "reason": "仮保有入力100株（取得単価100円、取得額10,000円、手数料0、取得時現金990,000円）。as_of参考値101円での評価額約10,100円、現在総資産約1,000,100円。1銘柄配分は約1%で30%上限を大幅に下回る。成長の質は健全でなく中間にも至らない（売上・営業利益の成長方向が逆転・悪化継続、予想非開示、実行力疑義、希薄化継続）。成長崩壊寄りと判断し全撤退。売却前100株、売却100株（全株）、売却後0株。指値は最新終値または参考値付近の指値で全株売却（執行条件は本人裁量で最新材料確認後）。未約定時は翌営業日再確認、条件不成立なら取消。",
+    "holding": true,
+    "hypothetical": true,
+    "acquisition_price_yen": 100,
+    "shares": 100,
+    "acquisition_date": "2026-10-19"
+  },
+  "overall_review": "クオンタムソリューションズ（2338）はAIインフラ・ゲーム・エンタープライズソリューション・ウェルネス等を標榜するが、本業の売上・営業利益は減少・赤字継続で成長の質が確認できない。FY2026（2026/2期）売上266百万円（-61.8%）、営業損失704百万円、純損失2,546百万円、純資産-343百万円。FY2027 H1（2026/8中間）売上109百万円（-20.3%）、営業損失354百万円、純損失146百万円、通期予想非開示。純資産はH1末で約2百万円に回復したが自己資本はマイナスのままで主に第三者割当・暗号資産関連であり、本業CFは赤字。希薄化（新株予約権・CB・第三者割当）と上場維持基準対応が継続。検索（会社IR・TDnet・決算短信等）でも成長仮説を支持する代替指標・推定は不十分。不確実性を引き受けても買い/追加は選ばず、Aは見送り、Bは全売却。価格は未確認の参考値。",
+  "buy_line": {
+    "mode": "discretionary",
+    "reason": "成長健全かつ配分内・織込過大でない場合に最新終値以下の指値で検討するが、現状条件不成立のため該当なし。Pmax廃止済み、価格単独条件なし。",
+    "persona_rule_basis": "本人ルール：新規は成長健全＋配分30%以下＋現金10%以上＋織込過大でない。材料は補助。価格上限式は廃止。"
+  },
+  "take_profit_sell_line": {
+    "mode": "discretionary",
+    "reason": "織込過大（過去1年終値中央値1.5倍超かつ成長鈍化）時に評価額1/4程度の部分売りを暫定検討するが、現状該当せず。質健全なら過熱でも持つ。",
+    "persona_rule_basis": "本人ルール：織込過大は利確として部分売り（暫定1/4）。配分調整と分ける。価格単独利確なし。"
+  },
+  "withdrawal": {
+    "price_based": {
+      "mode": "not_applicable",
+      "reason": "価格単独の損切りは不採用。単なる価格下落は質健全なら持つ。",
+      "persona_rule_basis": "本人ルール：価格単独損切り不採用。成長の質優先。"
+    },
+    "thesis_based": {
+      "mode": "discretionary",
+      "reason": "成長崩壊（下方修正で営業利益成長方向逆転、本業減益継続、実行力疑義）で全撤退。現状該当寄り。",
+      "persona_rule_basis": "本人ルール：成長崩壊時に最新終値の指値で全株売却。中間は次回四半期再確認。"
+    },
+    "action": "成長崩壊時全撤退"
+  },
+  "position_limits": {
+    "mode": "fixed",
+    "reason": "1銘柄配分上限30%以下（総資産に対する評価額）。現金下限10%以上。",
+    "persona_rule_basis": "本人ルール：1銘柄配分上限30%以下、現金10%以上。",
+    "value": 30
+  },
+  "averaging_down": {
+    "mode": "not_applicable",
+    "reason": "含み益継続は追加条件とせず、ナンピン前提の深いストップは置かない。質が崩れた場合は追加せず撤退。",
+    "persona_rule_basis": "本人ルール：含み益継続を追加条件としない。価格下落は質健全なら持つが、崩壊時は全撤退。"
+  },
+  "news_scenarios": [
+    {
+      "event": "減配",
+      "trigger": "普通配当の減配または無配転落の開示",
+      "action_case_a": "見送り継続。成長圧迫として注意。",
+      "action_case_b": "全撤退検討。成長の質圧迫なら売却。",
+      "deadline": "開示後1営業日以内に再確認",
+      "reassess_condition": "成長方向・財務健全性の変化を確認"
+    },
+    {
+      "event": "下方修正",
+      "trigger": "通期営業利益予想の下方修正（幅10%超等）",
+      "action_case_a": "見送り。成長崩壊寄りなら対象外。",
+      "action_case_b": "全撤退。成長方向逆転なら売却。",
+      "deadline": "開示後1営業日以内",
+      "reassess_condition": "本業減益継続・実行力疑義の有無"
+    },
+    {
+      "event": "上方修正",
+      "trigger": "通期営業利益予想の上方修正（幅10%超等）",
+      "action_case_a": "成長健全へ移行確認後、配分内なら買い検討。",
+      "action_case_b": "保有継続または追加検討。",
+      "deadline": "開示後1営業日以内",
+      "reassess_condition": "直近四半期方向と一致するか"
+    },
+    {
+      "event": "増配",
+      "trigger": "普通配当の増配開示",
+      "action_case_a": "参考程度。主目的外のため成長確認後判断。",
+      "action_case_b": "参考。質が健全なら持つ。",
+      "deadline": "開示後1営業日以内",
+      "reassess_condition": "成長の質が圧迫されていないか"
+    },
+    {
+      "event": "TOB",
+      "trigger": "公開買付の開始公告等",
+      "action_case_a": "条件確認後判断。プレミアム次第で検討。",
+      "action_case_b": "応募または保有判断。支配権異動リスクを評価。",
+      "deadline": "公告後1営業日以内",
+      "reassess_condition": "価格・条件・事業継続性"
+    },
+    {
+      "event": "不祥事/監査問題",
+      "trigger": "不正会計・課徴金・継続疑義注記等",
+      "action_case_a": "見送り。即対象外。",
+      "action_case_b": "全撤退。一発E相当で売却。",
+      "deadline": "開示後即時",
+      "reassess_condition": "認定・注記の有無"
+    },
+    {
+      "event": "自社株買い",
+      "trigger": "規模3%以上の自社株買い決定",
+      "action_case_a": "前向き参考。成長確認後検討。",
+      "action_case_b": "参考。質健全なら持つ。",
+      "deadline": "開示後1営業日以内",
+      "reassess_condition": "消却方針・規模・資金源"
+    }
+  ],
+  "reevaluation": {
+    "mode": "mixed",
+    "event_triggers": ["四半期決算開示", "業績予想修正", "重要開示（TOB・不祥事・大型調達）", "上場維持基準関連"],
+    "stale_action": "次回四半期開示時に再確認。中間状態なら健全移行で保有、崩壊で全撤退検討。",
+    "next_date": "2026-11-15",
+    "periodic_interval_days": 90
+  },
+  "realtime_items": [
+    {
+      "id": 27,
+      "name": "投資CF・設備投資",
+      "adoption": "adopted",
+      "reason": "成長投資の確認として参考。FY2026 ICF大幅マイナス、設備投資水準は攻めだが収益化不明。",
+      "period_checked": "2026/02期",
+      "observed_at": "2026-10-06T04:07:00+09:00",
+      "impact_if_missing": "成長投資の質が不明なまま判断",
+      "value_or_observation": "ICF大幅マイナス、GPU等投資試みあり",
+      "source_path": "pack persona_inputs/set_inputs",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 31,
+      "name": "特別利益・特別損失",
+      "adoption": "adopted",
+      "reason": "一過性確認。暗号資産関連益あり、本業かさ上げに注意。",
+      "period_checked": "2027/02 H1",
+      "observed_at": "2026-10-13T16:00:00+09:00",
+      "impact_if_missing": "一過性利益の識別不能",
+      "value_or_observation": "暗号資産評価益・売却益、自己新株予約権消却益",
+      "source_url": "https://japanir.jp/company/company-2338/ir/2338-20261013-02_wp_disclosure_update/"
+    },
+    {
+      "id": 62,
+      "name": "臨時報告書・公開買付・重要開示",
+      "adoption": "adopted",
+      "reason": "希薄化・上場維持・契約解除等を確認。TOBなし、第三者割当・予約権多数。",
+      "period_checked": "直近90日",
+      "observed_at": "2026-10-13T16:00:00+09:00",
+      "impact_if_missing": "重要リスクの見逃し",
+      "value_or_observation": "第三者割当、新株予約権、GPU契約解除、上場維持計画",
+      "source_url": "https://www.quantum-s.co.jp/"
+    },
+    {
+      "id": 63,
+      "name": "開示日前後の株価反応",
+      "adoption": "not_adopted",
+      "reason": "チャート参考のみ。単独で判断せず。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "織り込み確認の補助欠落"
+    },
+    {
+      "id": 70,
+      "name": "ニュース見出し",
+      "adoption": "adopted",
+      "reason": "一次開示優先。packは空だが検索で確認。",
+      "period_checked": "2026-10",
+      "observed_at": "2026-10-20T13:53:00+09:00",
+      "impact_if_missing": "最新材料の確認不足",
+      "value_or_observation": "H1決算、純資産回復計画、暗号資産益",
+      "source_url": "https://kabutan.jp/stock/news?code=2338"
+    },
+    {
+      "id": 72,
+      "name": "会計基準・連結区分",
+      "adoption": "adopted",
+      "reason": "J-GAAP連結を確認。",
+      "period_checked": "2026/02期",
+      "observed_at": "2026-04-14T16:10:00+09:00",
+      "impact_if_missing": "基準の確認不能",
+      "value_or_observation": "J-GAAP連結",
+      "source_path": "pack",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 73,
+      "name": "営業CFと純利益の関係",
+      "adoption": "adopted",
+      "reason": "利益より現金を厚く。OCF赤字継続。",
+      "period_checked": "2026/02期",
+      "observed_at": "2026-10-06T03:57:00+09:00",
+      "impact_if_missing": "現金創出力不明",
+      "value_or_observation": "OCF赤字、純損失大",
+      "source_path": "pack set_inputs B1",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 74,
+      "name": "営業CFと投資CF（設備投資）の関係",
+      "adoption": "adopted",
+      "reason": "攻めの投資確認。ICF大、OCF赤字。",
+      "period_checked": "2026/02期",
+      "observed_at": "2026-10-06T03:57:00+09:00",
+      "impact_if_missing": "投資の質不明",
+      "value_or_observation": "OCF赤字、ICF大幅マイナス",
+      "source_path": "pack",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 76,
+      "name": "配当性向とフリーCFの関係",
+      "adoption": "not_adopted",
+      "reason": "配当主目的外。無配。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "該当なし"
+    },
+    {
+      "id": 78,
+      "name": "PBRとROEの関係",
+      "adoption": "adopted",
+      "reason": "参考。純資産僅少・負の履歴でPBR意味薄。",
+      "period_checked": "2026/02期",
+      "observed_at": "2026-10-06T04:07:00+09:00",
+      "impact_if_missing": "バリュ参考欠落",
+      "value_or_observation": "PBR極端、ROE低または負",
+      "source_path": "pack set_inputs B6",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 79,
+      "name": "ROEと自己資本比率の関係",
+      "adoption": "adopted",
+      "reason": "レバ・安全性確認。自己資本比率負または僅少。",
+      "period_checked": "2026/02期・H1",
+      "observed_at": "2026-10-13T16:00:00+09:00",
+      "impact_if_missing": "財務健全性不明",
+      "value_or_observation": "自己資本比率負、H1で純資産改善も自己資本マイナス",
+      "source_url": "https://japanir.jp/en/company/company-2338/ir/2338-20261013-01_wp_financial_summary/"
+    },
+    {
+      "id": 80,
+      "name": "信用買残・株価推移・出来高の関係",
+      "adoption": "not_adopted",
+      "reason": "需給参考のみ。単独で売買せず。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "需給補助欠落"
+    },
+    {
+      "id": 81,
+      "name": "業績予想修正と株価反応の関係",
+      "adoption": "adopted",
+      "reason": "予想非開示のため修正なし。",
+      "period_checked": "直近",
+      "observed_at": "2026-10-13T16:00:00+09:00",
+      "impact_if_missing": "修正材料不明",
+      "value_or_observation": "通期予想非開示",
+      "source_url": "https://www2.jpx.co.jp/disc/23380/140120261007547341.pdf"
+    },
+    {
+      "id": 82,
+      "name": "自社株買い・総還元性向・PBRの関係",
+      "adoption": "not_adopted",
+      "reason": "自社株買いなし。配当主目的外。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "還元確認欠落"
+    },
+    {
+      "id": 84,
+      "name": "連続増配と配当性向推移の関係",
+      "adoption": "not_adopted",
+      "reason": "配当主目的外。無配。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "該当なし"
+    },
+    {
+      "id": 86,
+      "name": "通期進捗と予想修正の関係",
+      "adoption": "adopted",
+      "reason": "予想非開示のため進捗評価不能。",
+      "period_checked": "2027/02 H1",
+      "observed_at": "2026-10-13T16:00:00+09:00",
+      "impact_if_missing": "進捗不明",
+      "value_or_observation": "予想非開示、H1実績のみ",
+      "source_url": "https://japanir.jp/en/company/company-2338/ir/2338-20261013-01_wp_financial_summary/"
+    },
+    {
+      "id": 87,
+      "name": "5年PER・セクター対比・業績推移の関係",
+      "adoption": "not_adopted",
+      "reason": "赤字のためPER無意味。参考程度。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "相対バリュ欠落"
+    },
+    {
+      "id": 88,
+      "name": "営業CFと総還元の関係",
+      "adoption": "adopted",
+      "reason": "還元過多注意。OCF赤字で還元なし。",
+      "period_checked": "2026/02期",
+      "observed_at": "2026-10-06T03:57:00+09:00",
+      "impact_if_missing": "CFカバー不明",
+      "value_or_observation": "OCF赤字、配当なし",
+      "source_path": "pack",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 89,
+      "name": "配当利回り・配当性向・フリーCFの関係",
+      "adoption": "not_adopted",
+      "reason": "配当主目的外。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "該当なし"
+    },
+    {
+      "id": 90,
+      "name": "52週位置・バリュエーション・業績推移の関係",
+      "adoption": "adopted",
+      "reason": "押し目参考。52週位置低位だが質優先。",
+      "period_checked": "直近",
+      "observed_at": "2026-10-20T13:53:00+09:00",
+      "impact_if_missing": "位置確認欠落",
+      "value_or_observation": "高値から大幅下落",
+      "source_path": "pack technicals",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 91,
+      "name": "売上成長・総資産・営業CF成長の関係",
+      "adoption": "adopted",
+      "reason": "健全拡大確認。売上CAGR低・負、資産膨張は調達依存。",
+      "period_checked": "過去5期",
+      "observed_at": "2026-10-06T03:57:00+09:00",
+      "impact_if_missing": "成長の質不明",
+      "value_or_observation": "売上成長低、資産CAGR高、OCF負",
+      "source_path": "pack set_inputs B19",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 92,
+      "name": "セグメント・連結CF・ROEの関係",
+      "adoption": "adopted",
+      "reason": "本業毀損確認。セグメント詳細は限定的。",
+      "period_checked": "2026/02期",
+      "observed_at": "2026-10-06T04:07:00+09:00",
+      "impact_if_missing": "セグメント質不明",
+      "value_or_observation": "主力ウェルネス等、全体CF負",
+      "source_path": "pack segments",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 93,
+      "name": "為替・海外売上・予想の関係",
+      "adoption": "not_adopted",
+      "reason": "海外比率・予想欠損。参考程度。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "感応度不明"
+    },
+    {
+      "id": 100,
+      "name": "事業の景気感応度",
+      "adoption": "adopted",
+      "reason": "参考。AI・ゲーム・暗号は景気敏感寄り。",
+      "period_checked": "全般",
+      "observed_at": "2026-10-20T13:53:00+09:00",
+      "impact_if_missing": "感応度参考欠落",
+      "value_or_observation": "情報・通信、AI関連",
+      "source_path": "pack",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 101,
+      "name": "決算外材料の上方向",
+      "adoption": "adopted",
+      "reason": "確定開示のみ参考。純資産回復・AI計画あり。",
+      "period_checked": "直近",
+      "observed_at": "2026-10-13T16:00:00+09:00",
+      "impact_if_missing": "上方向材料不明",
+      "value_or_observation": "上場維持計画進捗、暗号資産益",
+      "source_url": "https://japanir.jp/company/company-2338/ir/2338-20261013-03_wp_disclosure_update/"
+    },
+    {
+      "id": 102,
+      "name": "決算外材料の下方向",
+      "adoption": "adopted",
+      "reason": "下方幅で見る。売上減・赤字継続・希薄化。",
+      "period_checked": "直近",
+      "observed_at": "2026-10-13T16:00:00+09:00",
+      "impact_if_missing": "下方向材料不明",
+      "value_or_observation": "売上減少、損失継続、契約解除",
+      "source_url": "https://www.quantum-s.co.jp/"
+    },
+    {
+      "id": 103,
+      "name": "継続性・重大不正等の重要リスク情報",
+      "adoption": "adopted",
+      "reason": "継続疑義注記履歴あり。上場維持基準対応中。",
+      "period_checked": "2026/02期",
+      "observed_at": "2026-05-28T17:30:00+09:00",
+      "impact_if_missing": "ガード確認不能",
+      "value_or_observation": "債務超過、改善計画開示",
+      "source_url": "https://www2.jpx.co.jp/disc/23380/140120260528551685.pdf"
+    },
+    {
+      "id": 104,
+      "name": "特別好材料",
+      "adoption": "adopted",
+      "reason": "裁量。ベースA必須だが現状該当せず。",
+      "period_checked": "全般",
+      "observed_at": "2026-10-20T13:53:00+09:00",
+      "impact_if_missing": "例外判断欠落",
+      "value_or_observation": "該当なし",
+      "source_path": "pack",
+      "source_hash": "68bdd868f490d9d8"
+    },
+    {
+      "id": 105,
+      "name": "既決算材料の重複扱い",
+      "adoption": "adopted",
+      "reason": "既出は0。二重加点せず。",
+      "period_checked": "直近",
+      "observed_at": "2026-10-13T16:00:00+09:00",
+      "impact_if_missing": "重複加点リスク",
+      "value_or_observation": "H1数値は業績で確認済み",
+      "source_url": "https://japanir.jp/en/company/company-2338/ir/2338-20261013-01_wp_financial_summary/"
+    }
+  ],
+  "data_missing": [
+    {
+      "field": "通期業績予想（売上・営業利益等）",
+      "searched": true,
+      "search_details": "会社短信・TDnet・IRで確認。意図的に非開示（不確実性高のため）。",
+      "substitute_assumption_sensitivity": "H1実績・過去推移から成長方向は負または不明。代替で暗号資産・調達を見ても本業支持せず。感度：予想が出ても大幅増益でない限り支持困難。",
+      "persona_decision": "成長仮説を支持できないため見送り/売却。欠損自体を自動停止とせず評価後判断。",
+      "status": "proceed_with_uncertainty"
+    },
+    {
+      "field": "as_of株価の確定出典",
+      "searched": true,
+      "search_details": "指定Kabutan日次時系列URLおよび株探メインページを確認。101円を当該URLから確定終値として独立確認できず。",
+      "substitute_assumption_sensitivity": "参考値101円は遅延現在値として他ページで見えたが、出典・時刻・遅延を確定できなかった。判断には影響せず。",
+      "persona_decision": "価格は未確認の参考値として扱い、判断・株数は変更しない。",
+      "status": "proceed_with_uncertainty"
+    }
+  ],
+  "confidence": {
+    "score": 0.55,
+    "basis": "一次開示・決算短信・IRで財務・開示を確認したが、予想非開示・事業不確実性・希薄化が多く、成長仮説の支持度は低い。価格は未確認の参考値。"
+  },
+  "stance_consistency": {
+    "consistent": true,
+    "note": "成長の質優先、配当主目的外、価格単独損切り不採用、欠損時は仮説評価後判断を維持。A見送り・B全売却はルールに沿う。as_ofは未確認に修正。",
+    "evidence": ["本人ルール09/10/12/13/14", "検索によるH1実績・非開示確認", "配分計算（総資産約100万円・評価額1万円で30%内）"]
+  }
+}

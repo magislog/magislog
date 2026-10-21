@@ -1,0 +1,582 @@
+{
+  "schema": "persona-final-judgment/v1.2",
+  "judgment_id": "S137-4-2338-ui-20261020",
+  "persona": "うい",
+  "role": "stock_persona",
+  "stock": {
+    "company_name": "クオンタムソリューションズ株式会社（QUANTUM SOLUTIONS CO LTD）",
+    "code": "2338",
+    "market": "東証スタンダード",
+    "share_class": "普通株式"
+  },
+  "as_of": {
+    "date": "2026-10-20",
+    "price_status": "unconfirmed",
+    "price": 101,
+    "currency": "JPY",
+    "observed_at": "2026-10-20T13:53:19+09:00",
+    "price_type": "quote",
+    "delay_status": "unknown",
+    "unconfirmed_reason": "13:53頃に取得した日中の参考値です（取得元はstock_fetcher/yfinanceで、会社の公式値ではありません）。確定終値・約定値ではありません。注文の基準には、株探の日次履歴で確認した前日終値（2026-10-19の100円）を使います。履歴ページを閲覧した精密な時刻は記録されていません。"
+  },
+  "case_a": {
+    "conclusion": "skip",
+    "reason": "5-2の見送り事由に該当します。期末の普通配当予想が無配です。2026/2期の年間配当は0円【確定】、2027/2期の予想も年間0円で、前回予想からの修正はありません【確定・中間短信 2026-10-13】。あわせて、5-1の①②③をいずれも満たしません。①推定普通配当が0円のため、利回りは0%です。②2026/2期のEPSは−54.07円【確定】、中間期は−2.97円【確定】です。会社予想も非開示のため、4-3により配当性向は算出不能となり、不適合です。FCFも5期連続でマイナスです【確定】。③配当方針の開示がなく、配当の実績もありません。さらに、2026/8末の自己資本は−228百万円（自己資本比率−6.6%）です。純資産は+2百万円ですが、継続企業の前提に関する注記が続いています【確定・中間短信】。配当という本人の収益源が存在しないため、データ欠損による保留ではなく、合理的な見送りです。",
+    "holding": false,
+    "initial_shares": 0,
+    "initial_amount_yen": 0,
+    "order_condition": "発注しません。次の4点がすべて確認できた後に、第5章の全条件を再判定します。(1)普通配当の再開（予想額と基準日）の開示、(2)直近実績と会社予想の黒字化、(3)自己資本のプラス化と継続企業注記の解消、(4)FCF配当倍率1.0倍以上。",
+    "buy_line": {
+      "mode": "not_applicable",
+      "reason": "本人の項目106では、無配または推定普通配当を算出できない場合、買い目安は×（算出不可）としています。今回は推定普通配当が0円です。",
+      "persona_rule_basis": "項目106（本人版）、3-5、5-2"
+    }
+  },
+  "case_b": {
+    "conclusion": "sell",
+    "reason": "第12章の排他段階で、9-1の撤退トリガーが確定事実で成立しています。(a)期末普通配当予想が無配です。2027/2期の予想は0円で、修正もありません【確定・中間短信】。9-3（復配待ち保有）の適用条件は、会社が復配する期と配当額を開示していることですが、その開示がないため適用できません。(c)最終赤字が2期連続しています。2025/2期は−3.17億円、2026/2期は−25.46億円です【確定】。配当継続の裏付けとなる開示もありません。10-4（一過性損失の例外）は、営業CFが−7.05億円とマイナスのため適用できません。中間期も最終損益−146百万円で赤字が続いています【確定】。以上から、9-2により全株を撤退します。入力の100株をすべて売却し、売却後は0株です。含み益・含み損は判断に使いません。",
+    "holding": true,
+    "hypothetical": true,
+    "acquisition_price_yen": 100,
+    "shares": 100,
+    "acquisition_date": "2026-10-19",
+    "continuation_conditions": [
+      "保有継続の条件はありません。撤退がすでに成立しているためです（9-1(a)(c)、9-2）",
+      "売却株数は100株、売却後の株数は0株です",
+      "第1回の注文：100株の売り指値で、価格は前日終値の100円です（2026-10-19の終値【確定・株探の履歴】）。発注日は判定日の2026-10-20、期限は2026-10-26の取引終了までです。次回判定日を2026-10-27（週1回の前提）とし、その前営業日を期限にしています",
+      "第2回：期限までに約定しなければ、旧注文の取消完了を確認してから、次回判定日にその前日終値で残り株数を出し直します（13-3、13-5）",
+      "第3回以降：2回続けて約定しなければ、指値を『前日終値−1×ATR14（円）』として、約定するまで出し直します（16-4）。10/20時点の参考値では100−4.63＝95.37円で、売りのため呼値1円単位に切り捨てて95円です。実際の価格は、発注時点の前日終値とATR14で計算します",
+      "1回あたりの株数上限：20日平均出来高は約12.8万〜13.3万株で、撤退時の上限は10%（約1.2万株）です。100株は1回で発注できます（16-3）",
+      "手数料：100株ブロックは無料のため0円です（共通契約）",
+      "部分約定のときは、次の注文株数を『100−約定済み株数』とします（13-4）",
+      "現時点で約定したとは扱いません（13-1）"
+    ],
+    "add_limit_shares": 0
+  },
+  "overall_review": "本人の収益源は普通配当です。2338は2013/2期以降ずっと無配で、2027/2期の予想も0円のまま修正されていません。本人の投資対象としての前提そのものが成立しません。財務面では、営業赤字が長く続き、FCFは5期連続でマイナスです。2026/8末は第三者割当などで純資産が+2百万円まで回復しましたが、自己資本は−228百万円です。継続企業注記が続き、上場維持基準（純資産基準）の改善期間にも入っています（2026-05-28開示）。以上から、Aは見送り、Bは9-1(a)(c)により100株すべてを撤退し、0株とします。株価の位置（52週安値から約11%上）やテクニカル指標は、判断に使っていません。",
+  "buy_line": {
+    "mode": "not_applicable",
+    "reason": "無配のため、推定普通配当から逆算する買い目安を算出できません（項目106の×）。",
+    "persona_rule_basis": "項目106（本人版）、5-1①、5-2"
+  },
+  "take_profit_sell_line": {
+    "mode": "not_applicable",
+    "reason": "無配のため、推定普通配当利回りと利確線（市場平均利回りの1.0倍）を算出できません。また、Bは撤退が成立しているため、一部利確（8-5）の対象外です。",
+    "persona_rule_basis": "8-5、項目108（本人版）、第12章（排他段階が優先）"
+  },
+  "withdrawal": {
+    "price_based": {
+      "mode": "not_applicable",
+      "reason": "価格だけによる一律の損切りは採用しません。株価の下落は、第11章の調査を始めるきっかけとしてだけ使います。",
+      "persona_rule_basis": "9-4、項目110（やめる）"
+    },
+    "thesis_based": {
+      "mode": "fixed",
+      "reason": "9-1(a)（無配）と9-1(c)（2期連続の最終赤字で、配当継続の裏付けなし）が確定事実で成立しています。9-3は、復配の開示がないため適用できません。",
+      "persona_rule_basis": "9-1(a)(c)、9-2、9-3、10-4、第12章、16-3、16-4",
+      "value": {
+        "sell_shares": 100,
+        "post_trade_shares": 0,
+        "order_type": "limit",
+        "first_limit_price_yen": 100,
+        "order_placed_on": "2026-10-20",
+        "first_order_expiry": "2026-10-26の取引終了まで",
+        "concession_after_two_unfilled": "前日終値−1×ATR14（円）。呼値1円単位に切り捨て",
+        "fee_yen": 0
+      },
+      "details": "約定は、約定通知またはゲーム上の約定記録で確認できた時点で認定します（13-1）。旧注文の取消完了を確認するまで、新しい注文は出しません（13-5）。"
+    },
+    "action": "Bは100株すべてを、前日終値100円の指値で売り注文に出します。売却後は0株です。Aは注文しません。"
+  },
+  "position_limits": {
+    "mode": "fixed",
+    "reason": "Bは撤退するため、保有上限は0株です。Aは新規条件を満たさないため、購入枠はありません。",
+    "persona_rule_basis": "8-2、8-4、5-2、9-2、16-3",
+    "value": {
+      "case_a_max_shares": 0,
+      "case_b_post_trade_shares": 0,
+      "single_stock_value_max_pct": 25,
+      "per_purchase_max_pct_total_assets": 15,
+      "case_b_current_value_pct_reference": 1.01
+    },
+    "details": "Bの評価額は参考値101円×100株＝10,100円で、総資産約1,000,100円に対する集中度は約1.0%です。8-4は発火しませんが、排他段階の撤退を優先します。"
+  },
+  "averaging_down": {
+    "mode": "fixed",
+    "reason": "撤退が成立した銘柄で、第5章の条件も満たしません。株価の下落を理由にした追加も禁止です。",
+    "persona_rule_basis": "6-1、6-2、9-2、第12章",
+    "value": 0
+  },
+  "news_scenarios": [
+    {
+      "event": "減配",
+      "trigger": "（すでに無配のため）無配の継続、または配当方針の不開示が続く場合",
+      "action_case_a": "見送りを続けます。",
+      "action_case_b": "撤退の注文を続けます。約定するまで、13-3と16-4の手順で出し直します。",
+      "deadline": "約定するまで（次回判定日は2026-10-27）",
+      "reassess_condition": "普通配当の再開と、その基準日・金額を一次開示で確認できたとき"
+    },
+    {
+      "event": "下方修正",
+      "trigger": "業績予想の開示と同時の下方修正、または赤字拡大・特別損失の開示",
+      "action_case_a": "見送りを続けます。",
+      "action_case_b": "撤退の注文を続けます。9-1(c)の根拠が強まるだけで、行動は変わりません。",
+      "deadline": "約定するまで",
+      "reassess_condition": "撤退済みのため、なし。新規としての再判定は、Aの発注条件に従います"
+    },
+    {
+      "event": "上方修正",
+      "trigger": "業績予想の初開示・上方修正、または黒字化見通しの開示",
+      "action_case_a": "見送りを続けます。無配の間は第5章の条件を満たしません。",
+      "action_case_b": "撤退の注文を続けます。黒字予想だけでは9-1(a)は解消しません。",
+      "deadline": "約定するまで",
+      "reassess_condition": "普通配当予想が0円を超え、かつ直近実績と会社予想がともに黒字になったとき"
+    },
+    {
+      "event": "増配",
+      "trigger": "復配（普通配当予想の開示）",
+      "action_case_a": "見送りを続けたうえで、第5章を再判定します。記念配当・特別配当は除外し、FCF配当倍率と自己資本のプラス化を確認します。",
+      "action_case_b": "約定前に復配と基準日が開示されても、9-1(c)が成立しているため、9-3の適用条件（(c)に該当しないこと）を満たしません。撤退を続けます。",
+      "deadline": "約定するまで",
+      "reassess_condition": "復配の開示を一次資料で確認したとき（新規として再判定します）"
+    },
+    {
+      "event": "TOB",
+      "trigger": "公開買付の開始・賛同などの開示",
+      "action_case_a": "新規の購入はしません。",
+      "action_case_b": "撤退の方針は変えません。約定するまで、市場での指値売りを続けます。",
+      "deadline": "約定、または公開買付期間の終了まで",
+      "reassess_condition": "TOBの条件と上場廃止方針を一次開示で確認したとき"
+    },
+    {
+      "event": "不祥事/監査問題",
+      "trigger": "不適切会計、限定付きの監査意見・意見不表明、監理銘柄・整理銘柄の指定、上場廃止の決定",
+      "action_case_a": "見送りを続けます。",
+      "action_case_b": "9-1(f)も重なりますが、行動は変わりません。撤退を続け、約定するまで16-4の価格譲歩を適用します。",
+      "deadline": "約定するまで（整理銘柄に指定された場合は、整理売買期間内）",
+      "reassess_condition": "なし（撤退を継続します）"
+    },
+    {
+      "event": "自社株買い",
+      "trigger": "自己株式取得の決議",
+      "action_case_a": "判断を変えません。自社株買いは本人の収益源ではないためです。",
+      "action_case_b": "判断を変えず、撤退を続けます。",
+      "deadline": "なし",
+      "reassess_condition": "なし"
+    }
+  ],
+  "reevaluation": {
+    "mode": "mixed",
+    "next_date": "2026-10-27",
+    "periodic_interval_days": 7,
+    "event_triggers": [
+      "B：売り注文の約定・部分約定・取消完了の確認",
+      "普通配当再開の開示（Aの再判定）",
+      "継続企業注記の解消、または自己資本のプラス化の開示",
+      "上場維持基準の適合状況、または上場廃止・整理銘柄指定の開示"
+    ],
+    "stale_action": "判定周期が不明なため、週1回とします。データが更新されなくても、確定事実（無配、2期連続の赤字）で判定を続けます。Bは約定するまで撤退注文を続けます。"
+  },
+  "realtime_items": [
+    {
+      "id": 27,
+      "name": "投資CF・設備投資",
+      "adoption": "adopted",
+      "reason": "4-4のFCF計算に使います。投資CFが正の期を0として扱うかの確認も含みます。",
+      "period_checked": "2022/2〜2026/2期 通期",
+      "observed_at": "2026-10-20T13:53:20+09:00",
+      "impact_if_missing": "FCFを計算できなくなります。ただし結論は無配で決まるため、影響は小さい",
+      "value_or_observation": "2026/2期は投資CF−39.9億円、設備投資−14百万円、営業CF−7.05億円で、FCFは−46.95億円です【確定・pack/Connect】。5期とも投資CFはマイナスで、正の期はありません。",
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "connect_financials / キャッシュ・フロー表"
+    },
+    {
+      "id": 31,
+      "name": "特別利益・特別損失",
+      "adoption": "adopted",
+      "reason": "10-4（一過性損失の例外）にあたるかを確認するために使います。",
+      "period_checked": "2026/2期通期、2027/2期中間期",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "赤字の性質を判別しにくくなります",
+      "value_or_observation": "2026/2期：特別損失は18百万円【確定・pack】。特別利益はpack上nullで、ゼロとは扱わず未確認とします。経常損失が−25.27億円あるため、特別利益の額にかかわらず最終赤字の主因は経常段階です。2027/2期中間期：特別利益32,887千円（自己新株予約権消却益）、特別損失0千円【確定・中間短信】。営業CFがマイナスのため、10-4は適用できません。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 中間短信、およびpackのconnect_financials"
+    },
+    {
+      "id": 62,
+      "name": "臨時報告書・重要開示",
+      "adoption": "adopted",
+      "reason": "9-1(f)（上場廃止・整理銘柄の指定）と、継続性に関わる開示を確認するために使います。",
+      "period_checked": "2025-10-08〜2026-09-18（pack）、中間短信、2026-10-20の追加検索",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "撤退トリガー(f)の確認が弱くなります。ただし撤退は(a)(c)ですでに成立しています",
+      "value_or_observation": "確認した開示：上場維持基準（純資産基準）の改善期間入り（2026-05-28）と進捗報告（2026-07-13）、第三者割当の払込完了（2026-08-24）、GPU基盤売買契約の合意解除（2026-09-18）。中間短信でも継続企業の前提に関する注記が続いています。上場廃止・整理銘柄の指定は、確認した範囲では見当たりません（網羅的な確認ではありません）。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 中間短信、およびpackの適時開示一覧"
+    },
+    {
+      "id": 63,
+      "name": "開示前後の株価反応",
+      "adoption": "not_adopted",
+      "reason": "本人判断「やめる」。株価の反応では判断しません。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "影響なし"
+    },
+    {
+      "id": 70,
+      "name": "ニュース見出し",
+      "adoption": "adopted",
+      "reason": "調査を始めるきっかけとしてだけ使います。packのニュース欄が空でも、材料がないとは扱いません。",
+      "period_checked": "2026-10-20の追加検索（2026年9〜10月）",
+      "observed_at": "2026-10-20T14:17:40+09:00",
+      "impact_if_missing": "直近の材料を見落とすおそれがあります",
+      "value_or_observation": "packのD15ニュースは未取得です（as_ofはnull）。追加検索で、2026-10-13 16:00に中間決算が発表され、最終損益が−1.46億円であることを確認しました【C】。会社短信の原文で裏付けています（項目62）。",
+      "source_url": "https://minkabu.jp/news/4634336",
+      "source_period": "2027/2期 第2四半期累計"
+    },
+    {
+      "id": 72,
+      "name": "会計基準・連結区分",
+      "adoption": "adopted",
+      "reason": "数値の読み方を確定するために使います。",
+      "period_checked": "2026/2期",
+      "observed_at": "2026-10-20T13:53:20+09:00",
+      "impact_if_missing": "数値の読み方の前提が不明になります",
+      "value_or_observation": "日本基準（J-GAAP）・連結",
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "connect_financials"
+    },
+    {
+      "id": 73,
+      "name": "B1 営業CF×純利益",
+      "adoption": "adopted",
+      "reason": "利益の質の参考にします。",
+      "period_checked": "2024/2〜2026/2期",
+      "observed_at": "2026-10-20T13:53:20+09:00",
+      "impact_if_missing": "影響は小さい",
+      "value_or_observation": "純利益・営業CFともにマイナスのため×（本業とも赤字）です。2026/2期は純利益−25.46億円、営業CF−7.05億円です。",
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "connect_financials"
+    },
+    {
+      "id": 74,
+      "name": "B2 営業CF×投資CF",
+      "adoption": "adopted",
+      "reason": "参考にします。",
+      "period_checked": "2026/2期",
+      "observed_at": "2026-10-20T13:53:20+09:00",
+      "impact_if_missing": "影響は小さい",
+      "value_or_observation": "直近期の営業CFが0以下のため「本業不振」です。",
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "connect_financials"
+    },
+    {
+      "id": 76,
+      "name": "B4 配当性向×FCF（本人版）",
+      "adoption": "adopted",
+      "reason": "5-1②・7-3と同じ尺度で確認するために使います。",
+      "period_checked": "2024/2〜2026/2期、2027/2期予想",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "影響なし（結論は無配で決まるため）",
+      "value_or_observation": "無配（2027/2期予想0円【確定】）のため配当総額が0円で、FCF配当倍率は算出できず×です。配当性向も、EPSがマイナス（中間期−2.97円）のため算出不能です。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 中間短信の配当状況、およびpackのcash_flow_coverage"
+    },
+    {
+      "id": 78,
+      "name": "B6 PBR×ROE",
+      "adoption": "not_adopted",
+      "reason": "本人判断「裁量」。割安かどうかの断定には使いません。snapshotのPBR 2525倍は保持値で、算出基準も不明です。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "影響なし"
+    },
+    {
+      "id": 79,
+      "name": "B7 ROE×自己資本比率",
+      "adoption": "adopted",
+      "reason": "参考にします。",
+      "period_checked": "2026/2期、2027/2期中間期",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "影響は小さい",
+      "value_or_observation": "自己資本がマイナスのため、ROEは算出できず×です。自己資本は2026/2期末−601百万円、2026/8末−228百万円で、自己資本比率は−6.6%です【確定】。packのROE 3.11%は2016/2期の古い値なので使いません。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 中間短信"
+    },
+    {
+      "id": 80,
+      "name": "B8 信用×株価トレンド",
+      "adoption": "not_adopted",
+      "reason": "本人判断「やめる」。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "影響なし"
+    },
+    {
+      "id": 81,
+      "name": "B9 予想修正×株価反応",
+      "adoption": "not_adopted",
+      "reason": "本人判断「やめる」。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "影響なし"
+    },
+    {
+      "id": 82,
+      "name": "B10 自社株買い×還元×PBR",
+      "adoption": "not_adopted",
+      "reason": "本人判断「裁量」。自社株買いは本人の収益源ではありません。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "影響なし"
+    },
+    {
+      "id": 84,
+      "name": "B12 連続増配×配当性向（本人版）",
+      "adoption": "adopted",
+      "reason": "配当余力の確認に使います。",
+      "period_checked": "2011〜2027/2期予想",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "影響なし",
+      "value_or_observation": "無配のため×です。連続増配は0年、EPSはマイナスです。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 中間短信の配当状況"
+    },
+    {
+      "id": 86,
+      "name": "B14 進捗率×予想修正",
+      "adoption": "adopted",
+      "reason": "第11章の材料として使います。",
+      "period_checked": "2027/2期",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "影響なし",
+      "value_or_observation": "通期の業績予想が非開示のため×です。中間短信でも引き続き非開示です。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 中間短信"
+    },
+    {
+      "id": 87,
+      "name": "B15 対5年PER×セクター×業績",
+      "adoption": "not_adopted",
+      "reason": "本人判断「裁量」。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "影響なし"
+    },
+    {
+      "id": 88,
+      "name": "B16 営業CF×総還元",
+      "adoption": "adopted",
+      "reason": "参考にします。",
+      "period_checked": "2024/2〜2026/2期",
+      "observed_at": "2026-10-20T13:53:20+09:00",
+      "impact_if_missing": "影響は小さい",
+      "value_or_observation": "営業CFの3期平均は−6.28億円です。総還元額は2024/2期の0.11百万円が最新で、2025/2期・2026/2期は未取得です（ゼロとは扱いません）。ラベル判定は×（データ不足）で、参考にとどめます。",
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "manual_tables.配当推移 / connect_financials"
+    },
+    {
+      "id": 89,
+      "name": "B17 利回り×配当性向×FCF（本人版）",
+      "adoption": "adopted",
+      "reason": "利回りの罠の判定に使います。",
+      "period_checked": "2026-10-20時点",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "影響なし",
+      "value_or_observation": "無配で利回りは0%のため×です。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 中間短信の配当予想"
+    },
+    {
+      "id": 90,
+      "name": "B18 52週位置×バリュ×業績",
+      "adoption": "not_adopted",
+      "reason": "本人判断「裁量」。価格の位置では判断しません。",
+      "period_checked": null,
+      "observed_at": null,
+      "impact_if_missing": "影響なし"
+    },
+    {
+      "id": 91,
+      "name": "B19 売上×資産×CF成長",
+      "adoption": "adopted",
+      "reason": "参考にします。",
+      "period_checked": "3年CAGR",
+      "observed_at": "2026-10-20T13:53:20+09:00",
+      "impact_if_missing": "影響は小さい",
+      "value_or_observation": "売上の3年CAGRは0.38%で、3%を下回るため「縮小均衡」です。総資産の3年CAGRは79.22%ですが、これは借入と第三者割当による膨張です。",
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "trends"
+    },
+    {
+      "id": 92,
+      "name": "B20 セグメント×CF/ROE",
+      "adoption": "adopted",
+      "reason": "参考にします。",
+      "period_checked": "2026/2期",
+      "observed_at": "2026-10-20T13:53:20+09:00",
+      "impact_if_missing": "影響は小さい",
+      "value_or_observation": "主力のウェルネスは売上1.46億円、営業利益5.2百万円です。AIソリューションは営業損失−3.05億円です。連結ROEは算出不能のため、ラベル判定は行わず参考扱いとします。",
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "segments_latest"
+    },
+    {
+      "id": 93,
+      "name": "B21 為替×海外売上",
+      "adoption": "not_adopted",
+      "reason": "海外売上比率がpackでも検索でも取得できないため×です。判断への影響もありません。",
+      "period_checked": "2026-10-20 検索",
+      "observed_at": "2026-10-20T14:17:40+09:00",
+      "impact_if_missing": "影響なし"
+    },
+    {
+      "id": 100,
+      "name": "座標Y",
+      "adoption": "adopted",
+      "reason": "銘柄の性格ラベルとして参考にします。",
+      "period_checked": "2017/2〜2026/2期",
+      "observed_at": "2026-10-20T13:53:20+09:00",
+      "impact_if_missing": "影響なし",
+      "value_or_observation": "内訳：営業利益率の平均がマイナスのため変動係数は+40で固定、10期中2期以上の営業赤字で+20、売上YoYの最小値−61.75%で+20、情報通信業のプリセットで−30、ベータは未計算のため0と仮置きしました。合計は約+50（景気敏感側）です【推定】。",
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "manual_tables.会社業績"
+    },
+    {
+      "id": 101,
+      "name": "トピック上方向",
+      "adoption": "adopted",
+      "reason": "参考にします。",
+      "period_checked": "直近90日（中間短信の2026-10-13を基準日とする）",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "影響は小さい",
+      "value_or_observation": "0です。中間短信の後に、上方向の確定材料は確認できませんでした。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2026-10-13以降"
+    },
+    {
+      "id": 102,
+      "name": "トピック下方向",
+      "adoption": "adopted",
+      "reason": "−3以上なら第11章の調査を始めます。",
+      "period_checked": "直近90日",
+      "observed_at": "2026-10-20T14:17:40+09:00",
+      "impact_if_missing": "影響は小さい",
+      "value_or_observation": "0です。GPU売買契約の合意解除（2026-09-18）などは、中間短信（2026-10-13）より前の材料のため、項目105により対象外としました。調査自体は実施済みです。",
+      "source_path": "[LOCAL_PATH_REDACTED]",
+      "source_hash": "643603f20324e2b8787dcc730bfdb2250f5fdf8f55c9cb462db7860ea025f45a",
+      "source_period": "disclosures"
+    },
+    {
+      "id": 103,
+      "name": "一発E",
+      "adoption": "adopted",
+      "reason": "分析上のletterとして確認します。撤退の判断は9-1で行います。",
+      "period_checked": "2027/2期 中間短信",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "影響なし（撤退は9-1(a)(c)で成立）",
+      "value_or_observation": "該当します。継続企業の前提に関する注記が中間期も続いているため、letterはEです。なお、2026/8末の純資産は+2百万円で、自己資本は−228百万円です。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 中間期"
+    },
+    {
+      "id": 104,
+      "name": "S",
+      "adoption": "adopted",
+      "reason": "参考にします。",
+      "period_checked": "2026/2期〜2027/2期中間",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "影響なし",
+      "value_or_observation": "不該当です。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 中間短信"
+    },
+    {
+      "id": 105,
+      "name": "二重加点の防止",
+      "adoption": "adopted",
+      "reason": "101・102の判定に適用しました。",
+      "period_checked": "直近決算短信（中間、2026-10-13）の日付基準",
+      "observed_at": "2026-10-20T14:29:16+09:00",
+      "impact_if_missing": "影響は小さい",
+      "value_or_observation": "2026-10-13より前の材料は、トピックの対象外として処理しました。基準日は会社の短信原文で確認しています。",
+      "source_url": "https://assets.minkabu.jp/news/article_media_content/urn%3Anewsml%3Atdnet.info%3A20261007547341/140120261007547341.pdf",
+      "source_period": "2027/2期 第2四半期（中間期）"
+    }
+  ],
+  "data_missing": [
+    {
+      "field": "中間短信の画像部分・添付資料の詳細（継続企業注記の解消計画、上場維持基準の適合見通し）",
+      "searched": true,
+      "search_details": "2026-10-20 14:29頃、会社短信の原文PDFをテキスト抽出で確認しました。1頁目の表と、継続企業注記・特別損益の記載は確認済みです。画像部分は確認していません。",
+      "substitute_assumption_sensitivity": "表で確認した事実（配当予想0円、中間期の最終損益−146百万円、自己資本−228百万円）で判断しました。画像部分にどのような記載があっても、無配と2期連続の赤字は変わりません。",
+      "persona_decision": "A見送り、B撤退の結論は変わりません",
+      "status": "proceed_with_uncertainty"
+    },
+    {
+      "field": "2026/2期の特別利益（packではnull）",
+      "searched": true,
+      "search_details": "packのextraordinary_incomeがnullであることを確認しました。会社の通期短信での確認はしていません。",
+      "substitute_assumption_sensitivity": "ゼロとは扱わず、未確認とします。経常損失−25.27億円のため、特別利益の額にかかわらず最終赤字の判定は変わりません。",
+      "persona_decision": "判断には影響しません",
+      "status": "proceed_with_uncertainty"
+    },
+    {
+      "field": "最新ニュース（packのD15は未取得）",
+      "searched": true,
+      "search_details": "Web検索で2026年9〜10月の材料を確認しました（網羅的な確認ではありません）。",
+      "substitute_assumption_sensitivity": "ニュース欄が空でも、材料がないとは扱いません。撤退の判断は確定済みの開示に基づきます。",
+      "persona_decision": "既存の確定事実で判断します",
+      "status": "proceed_with_uncertainty"
+    },
+    {
+      "field": "東証プライム平均利回り",
+      "searched": false,
+      "search_details": "無配銘柄のため、判断に必要ありません。",
+      "substitute_assumption_sensitivity": "推定普通配当が0円なので、どの値でも利回り条件は不適合です。",
+      "persona_decision": "使いません",
+      "status": "reasonable_skip"
+    },
+    {
+      "field": "当日の約定可能価格",
+      "searched": false,
+      "search_details": "101円は13:53頃の参考値で、遅延の有無は不明です。",
+      "substitute_assumption_sensitivity": "売却の指値は前日終値100円に固定し、約定は確認するまで未確定とします。",
+      "persona_decision": "前日終値の指値で発注し、約定は確認後に認定します",
+      "status": "proceed_with_uncertainty"
+    },
+    {
+      "field": "海外売上比率・TOPIXベータ",
+      "searched": true,
+      "search_details": "packに取得経路がなく、検索でも取得できませんでした。",
+      "substitute_assumption_sensitivity": "影響は参考項目（93、100）のみです。",
+      "persona_decision": "判断には使いません",
+      "status": "reasonable_skip"
+    }
+  ],
+  "confidence": {
+    "score": 0.9,
+    "basis": "結論は次の確定事実で決まります。無配（2027/2期予想0円、修正なし）、2期連続の最終赤字、中間期も最終赤字、自己資本のマイナス、継続企業注記の継続。いずれも会社の中間短信原文などの会社開示で確認しました。未確認の項目（短信の画像部分、当日の価格）には結論が左右されません。未確定なのは約定の有無だけです。"
+  },
+  "stance_consistency": {
+    "consistent": true,
+    "note": "本人の収益源は普通配当の現金収入ですが、2338には配当がありません。そのため新規は見送り、保有は撤退トリガーにより全株を売却します。株価水準、含み損益、テクニカル指標は判断に使っていません。テクニカル指標は、執行上の制約（出来高上限、ATRによる価格譲歩）にだけ使いました。中間短信を追加で確認しましたが、結論は変わりません。",
+    "evidence": [
+      "5-2：期末普通配当予想が無配（中間短信で修正なしを確認）のため、Aは見送り",
+      "4-3・5-1②：EPSがマイナス（中間期−2.97円）で配当性向は算出不能のため不適合",
+      "9-1(a)(c)・9-2：Bは100株すべてを売却し、売却後は0株",
+      "9-3：復配の開示がなく、(c)にも該当するため適用不可",
+      "13-2・13-6：前日終値100円の指値、期限は2026-10-26の取引終了まで",
+      "16-3・16-4：上限10%の範囲内で1回で発注。2回続けて未約定なら前日終値−1×ATR14",
+      "9-4：価格だけによる一律の損切りは採用しない"
+    ]
+  }
+}
