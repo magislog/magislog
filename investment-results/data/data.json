@@ -9,7 +9,7 @@
     "period_end": "2026-10-31",
     "status": "preview_unclosed",
     "source_artifact_id": "portfolio-report",
-    "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
+    "source_sha256": "f173765cee8106a7a546eb8f62818abcd2e9000b9099af7299b017da2c65a67d"
   },
   "portfolios": [
     {
@@ -54,7 +54,7 @@
         "status": "imported_answer"
       },
       "source_artifact_id": "portfolio-report",
-      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
+      "source_sha256": "f173765cee8106a7a546eb8f62818abcd2e9000b9099af7299b017da2c65a67d"
     },
     {
       "id": "grok",
@@ -98,7 +98,7 @@
         "status": "imported_answer"
       },
       "source_artifact_id": "portfolio-report",
-      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
+      "source_sha256": "f173765cee8106a7a546eb8f62818abcd2e9000b9099af7299b017da2c65a67d"
     },
     {
       "id": "astra",
@@ -142,7 +142,7 @@
         "status": "imported_answer"
       },
       "source_artifact_id": "portfolio-report",
-      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
+      "source_sha256": "f173765cee8106a7a546eb8f62818abcd2e9000b9099af7299b017da2c65a67d"
     },
     {
       "id": "agy",
@@ -186,7 +186,7 @@
         "status": "imported_answer"
       },
       "source_artifact_id": "portfolio-report",
-      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
+      "source_sha256": "f173765cee8106a7a546eb8f62818abcd2e9000b9099af7299b017da2c65a67d"
     },
     {
       "id": "ruka",
@@ -203,7 +203,7 @@
       "nav_value": 37858.0,
       "holdings_status": "settled_virtual_fund_holding",
       "source_artifact_id": "portfolio-report",
-      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e"
+      "source_sha256": "f173765cee8106a7a546eb8f62818abcd2e9000b9099af7299b017da2c65a67d"
     }
   ],
   "history": [
@@ -3722,8 +3722,8 @@
       "id": "portfolio-report",
       "kind": "portfolio_report",
       "path": "source/portfolio-report.json",
-      "source_sha256": "945ab517607fbc00e0daf22fbb5788d5fd9213369f87d122deeb6a7c5ea0ad8e",
-      "display_copy_sha256": "2828463ea2c430faa694ec8b3ad1ce784ca8b13a027b679940ba28967747aeaf",
+      "source_sha256": "f173765cee8106a7a546eb8f62818abcd2e9000b9099af7299b017da2c65a67d",
+      "display_copy_sha256": "dd5fdecce8df402477428604324329f502461198534cd5878b2328024f0e0a4b",
       "copy_mode": "sanitized_display_copy",
       "transformations": [
         "private_virtual_salary_setting_removed",

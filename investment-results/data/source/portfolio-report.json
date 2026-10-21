@@ -330,11 +330,11 @@
       "valuation_source": {
         "source": "[LOCAL_PATH_REDACTED]",
         "reference_date": "2026-10-21",
-        "sha256": "a1940715afabfdc971ad75df37ff348b092fe7d5f20201e3012d168fcd12f327",
+        "sha256": "b0bc8a1067c0ac4e878726e9caec627aaef697da80c13203f4d9b7eb654c323c",
         "nav_unit": "JPY_per_10000_units",
         "source_kind": "explicit_ruka_nav_file",
         "source_url": "https://fs.bk.mufg.jp/webasp/mufg/fund/detail/chart/csv/m00355920.csv",
-        "retrieved_at": "2026-10-21T15:01:52+00:00"
+        "retrieved_at": "2026-10-21T21:14:00+00:00"
       },
       "nav_reference_date": "2026-10-21",
       "nav_value": 37858.0,
