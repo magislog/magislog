@@ -378,7 +378,7 @@
       const data=await response.json();
       if(data.schema!=="investment_page_data_v1") throw new Error("表示データのschemaが想定と異なります。");
       set("load-status","仮想運用の記録を表示中");
-      if(data.notice) document.querySelector(".notice").textContent=data.notice;
+      // 公開用の注意書きはHTMLを正本とし、日次データの旧文言で上書きしない。
       const report=data.report||{};
       set("portfolio-dates",`レポート日 ${report.as_of||"未確認"} · 評価・日次反映 ${report.processed_through||"未確認"} · ${statusLabel(report.status)}`);
       const artifacts=artifactMap(data);
