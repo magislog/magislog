@@ -1,0 +1,54 @@
+{
+  "characters": [
+    {
+      "id": "ui",
+      "name": "うい",
+      "romaji": "UI",
+      "color": "#1689c4",
+      "intro": "議論を取りまとめ、各メンバーへ指示を出す司令塔。最終判断を導く役割を担います。",
+      "portrait": "/img/members/ui.png",
+      "face": "/img/characters/faces/ui.png",
+      "order": 1
+    },
+    {
+      "id": "kaname",
+      "name": "かなめ",
+      "romaji": "KANAME",
+      "color": "#c4321f",
+      "intro": "物事を厳しい視点で評価。リスクや見落としを鋭く指摘し、合議の精度を高めます。",
+      "portrait": "/img/members/kaname.png",
+      "face": "/img/characters/faces/kaname.png",
+      "order": 2
+    },
+    {
+      "id": "hikari",
+      "name": "ひかり",
+      "romaji": "HIKARI",
+      "color": "#9a5c34",
+      "intro": "物事のポジティブな側面に光を当てる視点。可能性や成長の余地を引き出します。",
+      "portrait": "/img/members/hikari.png",
+      "face": "/img/characters/faces/hikari.png",
+      "order": 3
+    },
+    {
+      "id": "ruka",
+      "name": "るか",
+      "romaji": "RUKA",
+      "color": "#b07a0c",
+      "intro": "データを根拠に中立な立場を保つ視点。客観的な事実から冷静な判断材料を提供します。",
+      "portrait": "/img/members/ruka.png",
+      "face": "/img/characters/faces/ruka.png",
+      "order": 4
+    },
+    {
+      "id": "sora",
+      "name": "そら",
+      "romaji": "SORA",
+      "color": "#178f88",
+      "intro": "最新トレンドと情報鮮度を重視する視点。新しい動向を素早くキャッチし合議に反映します。",
+      "portrait": "/img/members/sora.png",
+      "face": "/img/characters/faces/sora.png",
+      "order": 5
+    }
+  ]
+}

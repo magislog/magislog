@@ -9,6 +9,10 @@
     },
     {
       "handle": "filesystem"
+    },
+    {
+      "src": "^/illustrations/([a-z0-9-]+)/?$",
+      "dest": "/illustrations/index.html"
     }
   ]
 }

@@ -1,0 +1,52 @@
+{
+  "works": [
+    {
+      "characterId": "ui",
+      "title": "トップページのイラスト",
+      "image": "/assets/hero-ui.png",
+      "alt": "ノートパソコンで制作する、ういのイラスト",
+      "tags": ["HOME"],
+      "order": 1
+    },
+    {
+      "characterId": "ui",
+      "title": "うい 立ち絵",
+      "image": "/img/members/ui.png",
+      "alt": "うい",
+      "tags": ["MEMBER"],
+      "order": 2
+    },
+    {
+      "characterId": "kaname",
+      "title": "かなめ 立ち絵",
+      "image": "/img/members/kaname.png",
+      "alt": "かなめ",
+      "tags": ["MEMBER"],
+      "order": 1
+    },
+    {
+      "characterId": "hikari",
+      "title": "ひかり 立ち絵",
+      "image": "/img/members/hikari.png",
+      "alt": "ひかり",
+      "tags": ["MEMBER"],
+      "order": 1
+    },
+    {
+      "characterId": "ruka",
+      "title": "るか 立ち絵",
+      "image": "/img/members/ruka.png",
+      "alt": "るか",
+      "tags": ["MEMBER"],
+      "order": 1
+    },
+    {
+      "characterId": "sora",
+      "title": "そら 立ち絵",
+      "image": "/img/members/sora.png",
+      "alt": "そら",
+      "tags": ["MEMBER"],
+      "order": 1
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+# Pages CMS 設定（マスター専用のイラスト管理）
+# 編集した内容は GitHub の main に保存され、Vercel が自動で公開します。
+# /illustrations/ のページは data/characters.json と data/works.json を読んで組み立てます。
+media:
+  input: img/illustrations
+  output: /img/illustrations
+  categories: [image]
+
+content:
+  - name: works
+    label: イラスト（作品）
+    type: file
+    path: data/works.json
+    fields:
+      - name: works
+        label: 作品
+        type: object
+        list: true
+        fields:
+          - name: image
+            label: 画像
+            type: image
+            required: true
+          - name: characterId
+            label: キャラ
+            type: select
+            required: true
+            options:
+              values:
+                - { value: ui, label: うい }
+                - { value: kaname, label: かなめ }
+                - { value: hikari, label: ひかり }
+                - { value: ruka, label: るか }
+                - { value: sora, label: そら }
+          - name: title
+            label: タイトル
+            type: string
+            required: true
+          - name: alt
+            label: 画像の説明（読み上げ用・空でも可）
+            type: string
+          - name: tags
+            label: タグ
+            type: string
+            list: true
+          - name: order
+            label: 表示順（小さいほど先）
+            type: number
+
+  - name: characters
+    label: キャラクター
+    type: file
+    path: data/characters.json
+    fields:
+      - name: characters
+        label: キャラ
+        type: object
+        list: true
+        fields:
+          - name: id
+            label: ID（URL用・半角英小文字。例 ui → /illustrations/ui/）
+            type: string
+            required: true
+          - name: name
+            label: 名前
+            type: string
+            required: true
+          - name: romaji
+            label: ローマ字
+            type: string
+          - name: color
+            label: キャラ色（例 #1689c4）
+            type: string
+          - name: intro
+            label: 紹介（2行程度）
+            type: text
+          - name: portrait
+            label: 代表絵（立ち絵）
+            type: image
+          - name: face
+            label: 顔アイコン（正方形）
+            type: image
+          - name: order
+            label: 表示順（小さいほど先）
+            type: number
